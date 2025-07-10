@@ -25,6 +25,7 @@ set_target_fps(get_monitor_refresh_rate(current_monitor))
 
 ############################ import assets ############################
 
+os.makedirs("Data", exist_ok=True)
 player_textures = [load_texture(join("Assets", "Bat_1.png")), load_texture(join("Assets", "Bat_2.png"))]
 cursor_textures = [load_texture(join("Assets", "Cursor_Idle_1.png")), load_texture(join("Assets", "Cursor_Idle_2.png")), load_texture(join("Assets", "Cursor_Idle_3.png"))]
 gnat_textures = [load_texture(join("Assets", "Gnat_1.png")), load_texture(join("Assets", "Gnat_2.png"))]
@@ -70,4 +71,5 @@ while not window_should_close():
 process.kill()
 os.remove(join("Data", "Player_Data.txt"))
 os.remove(join("Data", "Mouse_Data.txt"))
+os.removedirs("Data")
 close_window()
