@@ -16,8 +16,8 @@ set_window_min_size(250, 250)
 set_window_max_size(500, 500)
 hide_cursor()
 
-cursor_texture = [load_texture(join("Assets", "Cursor_Idle_1.png"))]
-cursor = Cursor(cursor_texture, 0.0)
+cursor_textures = [load_texture(join("Assets", "Cursor_Idle_1.png")), load_texture(join("Assets", "Cursor_Idle_2.png")), load_texture(join("Assets", "Cursor_Idle_3.png"))]
+cursor = Cursor(cursor_textures, 0.0)
 
 # set the maximum frame rate to the maximum refresh rate of the monitor 
 set_target_fps(get_monitor_refresh_rate(current_monitor))

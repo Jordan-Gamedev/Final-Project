@@ -36,7 +36,7 @@ grass_texture = [load_texture(join("Assets", "Grass_1.png"))]
 player = Player(player_textures, 10.0, Vector2(), rot = 0.0, scale=4.9)
 player.speed = 1000
 
-cursor = Cursor(cursor_textures, 5.0, get_mouse_position(), 0, 2)
+cursor = Cursor(cursor_textures, 5.0, get_mouse_position())
 
 gnat = Sprite(gnat_textures, 15.0, Vector2(200, 200), 0, 2)
 
