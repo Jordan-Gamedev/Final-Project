@@ -35,7 +35,7 @@ class Cursor(Sprite):
     is_global_mouse_clicking:bool = False
     global_mouse_position:Vector2 = Vector2()
 
-    def __init__(self, textures, anim_speed, pos = Vector2(), rot = 0.0, scale = 2.5):
+    def __init__(self, textures, anim_speed, pos = Vector2(), rot = 0.0, scale = 2.0):
         super().__init__(textures, anim_speed, pos, rot, scale)
 
     def update(self, dt):

@@ -4,6 +4,7 @@ from pyray import *
 from raylib import *
 import shutil
 
+from bug import *
 from cursor import *
 from dynamic_sprite import *
 from player import *
@@ -39,11 +40,9 @@ player.speed = 1000
 
 cursor = Cursor(cursor_textures, 5.0, get_mouse_position())
 
-gnat = Sprite(gnat_textures, 15.0, Vector2(200, 200), 0, 2)
+gnat = Bug(gnat_textures, 15.0, 1.0, 50.0, Vector2(200, 200), 0, 2)
 
 grass = Sprite(grass_texture, 0.0, Vector2(0, get_monitor_height(current_monitor) - (27 * 5)), 0.0, 2.5)
-
-sprites = [player, gnat, grass, cursor]
 
 process = subprocess.Popen(["python", "Scripts/sub.py"])
 
@@ -53,7 +52,7 @@ while not window_should_close():
 
     delta_time = get_frame_time()
 
-    for sprite in sprites:
+    for sprite in Sprite.all_sprites:
         sprite.update(delta_time)
     
     # drawing
@@ -64,7 +63,7 @@ while not window_should_close():
     
     draw_text("Press 'Esc' to close game", get_monitor_width(current_monitor) // 2 - 350, int(get_monitor_height(current_monitor) * 0.05), 50, WHITE)
 
-    for sprite in sprites:
+    for sprite in Sprite.all_sprites:
         sprite.render()
 
     end_drawing()
@@ -72,7 +71,6 @@ while not window_should_close():
 process.kill()
 
 while os.path.exists("Data"):
-    print("run")
     shutil.rmtree("Data", ignore_errors=True)
 
 close_window()
