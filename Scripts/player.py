@@ -25,6 +25,6 @@ class Player(DynamicSprite):
         
         super().update(dt)
 
-        with open(join("Data", "Player_Data.txt"), "w") as file:
-                file.write(f"PosX: {self.pos.x:.4f}\nPosY: {self.pos.y:.4f}\nRot: {self.rot}\nScale: {self.scale:.4f}\n")
-                file.close()
+        file = open(join("Data", "Player_Data.txt"), "w")
+        file.write(f"PosX: {self.pos.x:.4f}\nPosY: {self.pos.y:.4f}\nRot: {self.rot}\nScale: {self.scale:.4f}\n")
+        file.close()

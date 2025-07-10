@@ -31,7 +31,7 @@ while not window_should_close():
     begin_drawing()
 
     clear_background(DARKGRAY)
-    cursor.render()    
+    cursor.render()
     
     end_drawing()
 

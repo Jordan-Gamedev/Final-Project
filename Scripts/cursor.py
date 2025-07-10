@@ -7,12 +7,12 @@ def calc_global_mouse_properties():
     if file_exists(join("Data", "Mouse_Data.txt")):
         file_data = []
 
-        with open(join("Data", "Mouse_Data.txt"), "r") as file:
-            for line in file:
-                if ':' in line:
-                    value = line.split(': ', 1)[1].strip()
-                    file_data.append(value)
-            file.close()
+        file = open(join("Data", "Mouse_Data.txt"), "r")
+        for line in file:
+            if ':' in line:
+                value = line.split(': ', 1)[1].strip()
+                file_data.append(value)
+        file.close()
                 
         if len(file_data) >= 2:
             Cursor.global_mouse_position = Vector2(float(file_data[0]), float(file_data[1]))
@@ -27,7 +27,7 @@ def calc_global_mouse_properties():
             other_window_has_mouse = vector2_distance(get_window_position(), saved_window_position) > 1
             
             if other_window_has_mouse:
-                Cursor.global_mouse_position = vector2_add(Cursor.global_mouse_position, get_window_position())
+                Cursor.global_mouse_position = vector2_subtract(Cursor.global_mouse_position, get_window_position())
                 Cursor.global_mouse_position = vector2_add(Cursor.global_mouse_position, saved_window_position)
             
 class Cursor(Sprite):
@@ -43,9 +43,9 @@ class Cursor(Sprite):
         super().update(dt)
 
         if is_cursor_on_screen():
-            with open(join("Data", "Mouse_Data.txt"), "w") as file:
-                file.write(f"PosX: {get_mouse_x()}\nPosY: {get_mouse_y()}\nClicking: {is_mouse_button_down(0)}\nWinPosX: {int(get_window_position().x)}\nWinPosY: {int(get_window_position().y)}\n")
-                file.close()
+            file = open(join("Data", "Mouse_Data.txt"), "w")
+            file.write(f"PosX: {get_mouse_x()}\nPosY: {get_mouse_y()}\nClicking: {is_mouse_button_down(0)}\nWinPosX: {int(get_window_position().x)}\nWinPosY: {int(get_window_position().y)}\n")
+            file.close()
         
         calc_global_mouse_properties()
         self.pos = Cursor.global_mouse_position

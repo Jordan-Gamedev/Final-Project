@@ -2,6 +2,7 @@ import os
 from os.path import join
 from pyray import *
 from raylib import *
+import shutil
 
 from cursor import *
 from dynamic_sprite import *
@@ -69,7 +70,9 @@ while not window_should_close():
     end_drawing()
 
 process.kill()
-os.remove(join("Data", "Player_Data.txt"))
-os.remove(join("Data", "Mouse_Data.txt"))
-os.removedirs("Data")
+
+while os.path.exists("Data"):
+    print("run")
+    shutil.rmtree("Data", ignore_errors=True)
+
 close_window()
