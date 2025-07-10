@@ -5,6 +5,7 @@ from raylib import *
 import shutil
 
 from bug import *
+from hopping_bug import *
 from cursor import *
 from dynamic_sprite import *
 from player import *
@@ -41,6 +42,10 @@ player.speed = 1000
 cursor = Cursor(cursor_textures, 5.0, get_mouse_position())
 
 gnat = Bug(gnat_textures, 15.0, 1.0, 50.0, Vector2(200, 200), 0, 2)
+
+grass_hopper = HoppingBug(gnat_textures, 15.0, 1.0, 50.0, hop_strength=Vector2(4, 15), \
+                          idle_time=Vector2(2, 4), pos=Vector2(400, 500), rot=0, scale=2)
+grass_hopper.speed = 100
 
 grass = Sprite(grass_texture, 0.0, Vector2(0, get_monitor_height(current_monitor) - (27 * 5)), 0.0, 2.5)
 

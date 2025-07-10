@@ -17,10 +17,10 @@ class Player(DynamicSprite):
             self.target_pos = self.center_position_at_other(cursor.Cursor.global_mouse_position)
 
         if vector2_distance(self.target_pos, self.pos) > self.speed * dt:
-            self.dir = vector2_subtract(self.target_pos, self.pos)
-            self.dir = vector2_normalize(self.dir)
+            self.vel = vector2_subtract(self.target_pos, self.pos)
+            self.vel = vector2_normalize(self.vel)
         else:
-            self.dir = Vector2()
+            self.vel = Vector2()
             self.pos = self.target_pos
         
         super().update(dt)

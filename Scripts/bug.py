@@ -32,6 +32,10 @@ class Bug(DynamicSprite):
                 
                 if vector2_distance(self.get_center_position_at_self(), player_pos) <= self.damage_size:
                     self.hp = max(0.0, self.hp - dt)
-                    if self.hp == 0.0:
-                        sprite.Sprite.all_sprites.remove(self)
-            print(f"Bug pos: ({self.pos.x:.2f}, {self.pos.y:.2f})  Player pos: ({player_pos.x:.2f}, {player_pos.y:.2f}  hp: {self.hp:.2f})")
+            
+            world_edge = (-400, get_monitor_width(get_current_monitor()) + 400)
+
+            if self.hp == 0.0 or self.pos.x < world_edge[0] or self.pos.x > world_edge[1]:
+                Sprite.all_sprites.remove(self)
+                print("Bug Destroyed")
+            #print(f"Bug pos: ({self.pos.x:.2f}, {self.pos.y:.2f})  Player pos: ({player_pos.x:.2f}, {player_pos.y:.2f}  hp: {self.hp:.2f})")
