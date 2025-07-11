@@ -1,11 +1,10 @@
-from os.path import join
 from pyray import *
 from raylib import *
 from bug import *
 import random
 
 class HoppingBug(Bug):
-    def __init__(self, textures, anim_speed, max_hp, damage_size, hop_strength:Vector2, idle_time:Vector2, pos = Vector2(), rot = 0.0, scale = 1.0):
+    def __init__(self, textures, anim_speed, max_hp, damage_size, hop_strength, idle_time:Vector2, pos = Vector2(), rot = 0.0, scale = 1.0):
         # A Vector2 that indicates the direction and strength of the initial velocity
         self.hop_strength = hop_strength
         # A Vector2 timer that lets the bug rest between hops with some random jitter between x and y
@@ -32,4 +31,5 @@ class HoppingBug(Bug):
         if self.current_idle_time <= 0:
             rest_timer = random.uniform(self.idle_time.x, self.idle_time.y)
             self.current_idle_time = rest_timer
-            self.vel = Vector2(self.hop_strength.x, -self.hop_strength.y)
+            self.vel.x = random.choice([-1, 1]) * random.uniform(self.hop_strength[0].x, self.hop_strength[1].x)
+            self.vel.y = random.uniform(-self.hop_strength[0].y, -self.hop_strength[1].y)
