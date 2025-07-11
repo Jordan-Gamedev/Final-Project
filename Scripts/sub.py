@@ -1,4 +1,6 @@
-import os
+import win32api
+import win32con
+
 from os.path import join
 from pathlib import Path
 from pyray import *
@@ -11,14 +13,26 @@ from cursor import *
 # get currently used monitor
 current_monitor = get_current_monitor()
 
-# create maximized window
+# create a small resizable window
 set_config_flags(FLAG_WINDOW_ALWAYS_RUN | FLAG_WINDOW_RESIZABLE | FLAG_WINDOW_TOPMOST)
 init_window(500, 500, 'Desert Biome')
 set_window_min_size(250, 250)
 set_window_max_size(500, 500)
 hide_cursor()
 
-# create texture cache
+# casts the raylib window into a pointer so that the Python Windows Api can access the window
+hwnd = ffi.cast("uintptr_t", get_window_handle())
+
+# retrieves the window style for configuration
+style = win32api.GetWindowLong(hwnd, win32con.GWL_STYLE)
+
+# uses the NOT and AND bitwise operators to disable maximize and minimize boxes on the window
+style &= ~(win32con.WS_MAXIMIZEBOX | win32con.WS_MINIMIZEBOX)
+
+# applies changes to the window
+win32api.SetWindowLong(hwnd, win32con.GWL_STYLE, style)
+
+# create a texture cache for easy texture lookup by path
 texture_cache = { }
 
 assets_folder = Path("Assets")
