@@ -1,4 +1,6 @@
+import os
 from os.path import join
+from pathlib import Path
 from pyray import *
 from raylib import *
 
@@ -16,11 +18,18 @@ set_window_min_size(250, 250)
 set_window_max_size(500, 500)
 hide_cursor()
 
-cursor_textures = [load_texture(join("Assets", "Cursor_Idle_1.png")), load_texture(join("Assets", "Cursor_Idle_2.png")), load_texture(join("Assets", "Cursor_Idle_3.png"))]
+# create texture cache
+texture_cache = { }
+
+assets_folder = Path("Assets")
+for file in assets_folder.glob("*.png"):
+    texture_cache[str(file)] = load_texture(str(file))
+
+cursor_textures = [join("Assets", "Cursor_Idle_1.png"), join("Assets", "Cursor_Idle_2.png"), join("Assets", "Cursor_Idle_3.png")]
 cursor = Cursor(cursor_textures, 0.0)
 
 # set the maximum frame rate to the maximum refresh rate of the monitor 
-set_target_fps(get_monitor_refresh_rate(current_monitor))
+set_target_fps(max(get_monitor_refresh_rate(current_monitor) // 2, 60))
 
 while not window_should_close():
 
@@ -31,8 +40,21 @@ while not window_should_close():
     begin_drawing()
 
     clear_background(DARKGRAY)
-    cursor.render()
     
+    file = open(join("Data", "Shared_Main_Process_Sprite_Data.txt"), "r")
+
+    while os.stat(join("Data", "Shared_Main_Process_Sprite_Data.txt")).st_size == 0:
+        pass
+
+    for line in file:
+        texture_path, pos_x, pos_y, rot, scale = line.split(',')
+        if texture_path in texture_cache:
+            draw_texture_ex(texture_cache[texture_path], Vector2(float(pos_x) - get_window_position().x, float(pos_y) - get_window_position().y), float(rot), float(scale), WHITE)
+
+    file.close()
+    
+    cursor.render()
+
     end_drawing()
 
 close_window()

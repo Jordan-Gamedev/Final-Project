@@ -5,8 +5,11 @@ class Sprite:
 
     all_sprites:list = []
 
-    def __init__(self, textures, anim_speed, pos = Vector2(), rot = 0.0, scale = 1.0):
-        self.textures = textures
+    def __init__(self, textures_paths:list, anim_speed, pos = Vector2(), rot = 0.0, scale = 1.0):
+        self.textures_paths = textures_paths
+        self.loaded_textures = []
+        for tex_path in self.textures_paths:
+            self.loaded_textures.append(load_texture(tex_path))
         self.curr_tex_index = 0.0
         self.anim_speed = anim_speed
         self.pos = pos
@@ -16,13 +19,16 @@ class Sprite:
     
     def update(self, dt):
         self.curr_tex_index += (self.anim_speed * dt)
-        self.curr_tex_index %= len(self.textures)
+        self.curr_tex_index %= len(self.loaded_textures)
         
     def render(self):
         draw_texture_ex(self.get_current_texture(), self.pos, self.rot, self.scale, WHITE)
 
     def get_current_texture(self):
-        return self.textures[int(self.curr_tex_index)]
+        return self.loaded_textures[int(self.curr_tex_index)]
+    
+    def get_current_texture_path(self):
+        return self.textures_paths[int(self.curr_tex_index)]
 
     def get_center_position_at_self(self):
         texture = self.get_current_texture()

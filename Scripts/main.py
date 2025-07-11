@@ -14,6 +14,10 @@ import subprocess
 
 ######################## set window properties ########################
 
+# delete data files in case the program crashed last time and the corrupted files are still there
+while os.path.exists("Data"):
+    shutil.rmtree("Data", ignore_errors=True)
+
 # get currently used monitor
 current_monitor = get_current_monitor()
 
@@ -29,10 +33,12 @@ set_target_fps(get_monitor_refresh_rate(current_monitor))
 ############################ import assets ############################
 
 os.makedirs("Data", exist_ok=True)
-player_textures = [load_texture(join("Assets", "Bat_1.png")), load_texture(join("Assets", "Bat_2.png"))]
-cursor_textures = [load_texture(join("Assets", "Cursor_Idle_1.png")), load_texture(join("Assets", "Cursor_Idle_2.png")), load_texture(join("Assets", "Cursor_Idle_3.png"))]
-gnat_textures = [load_texture(join("Assets", "Gnat_1.png")), load_texture(join("Assets", "Gnat_2.png"))]
-grass_texture = [load_texture(join("Assets", "Grass_1.png"))]
+open(join("Data", "Shared_Main_Process_Sprite_Data.txt"), "w").close()
+
+player_textures = [join("Assets", "Bat_1.png"), join("Assets", "Bat_2.png")]
+cursor_textures = [join("Assets", "Cursor_Idle_1.png"), join("Assets", "Cursor_Idle_2.png"), join("Assets", "Cursor_Idle_3.png")]
+gnat_textures = [join("Assets", "Gnat_1.png"), join("Assets", "Gnat_2.png")]
+grass_texture = [join("Assets", "Grass_1.png")]
 
 ############################## game loop ##############################
 
@@ -50,10 +56,10 @@ grasshopper.speed = 100
 
 grass = Sprite(grass_texture, 0.0, Vector2(0, get_monitor_height(current_monitor) - (27 * 5)), 0.0, 2.5)
 
-process = subprocess.Popen(["python", "Scripts/sub.py"])
+process = subprocess.Popen(["python", join("Scripts", "sub.py")])
 
 while not window_should_close():
-    
+
     # updating
 
     delta_time = get_frame_time()
@@ -71,8 +77,22 @@ while not window_should_close():
 
     for sprite in Sprite.all_sprites:
         sprite.render()
-
+    
+    draw_fps(0, 0)
+    
     end_drawing()
+
+    # sync visuals to subprocesses
+    file = open(join("Data", "Shared_Main_Process_Sprite_Data.txt"), "w")
+    file.truncate()
+    
+    file.write(f"{player.get_current_texture_path()},{player.pos.x:.2f},{player.pos.y:.2f},{player.rot:.2f},{player.scale:.2f}\n")
+    
+    little_bug:Bug = None
+    for little_bug in Bug.all_bugs:
+        file.write(f"{little_bug.get_current_texture_path()},{little_bug.pos.x:.2f},{little_bug.pos.y:.2f},{little_bug.rot:.2f},{little_bug.scale:.2f}\n")
+
+    file.close()
 
 process.kill()
 

@@ -44,6 +44,7 @@ class Cursor(Sprite):
 
         if is_cursor_on_screen():
             file = open(join("Data", "Mouse_Data.txt"), "w")
+            file.truncate()
             file.write(f"PosX: {get_mouse_x()}\nPosY: {get_mouse_y()}\nClicking: {is_mouse_button_down(0)}\nWinPosX: {int(get_window_position().x)}\nWinPosY: {int(get_window_position().y)}\n")
             file.close()
         

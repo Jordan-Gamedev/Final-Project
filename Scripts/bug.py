@@ -2,13 +2,15 @@ from os.path import join
 from pyray import *
 from raylib import *
 from dynamic_sprite import *
-import sprite
 
 class Bug(DynamicSprite):
     
+    all_bugs:list = []
+
     def __init__(self, textures, anim_speed, max_hp, damage_size, pos = Vector2(), rot = 0.0, scale = 1.0):
         self.damage_size = damage_size
         self.hp:float = max_hp
+        Bug.all_bugs.append(self)
         super().__init__(textures, anim_speed, pos, rot, scale)
     
     def update(self, dt):
@@ -25,7 +27,7 @@ class Bug(DynamicSprite):
             
             file.close()
 
-            if len(file_data) > 1:
+            if len(file_data) > 5:
                 
                 # centered player position
                 player_pos = Vector2(float(file_data[0]) + (float(file_data[4]) * float(file_data[3]) / 2.0), float(file_data[1]) + (float(file_data[5]) * float(file_data[3]) / 2.0))
@@ -37,5 +39,5 @@ class Bug(DynamicSprite):
 
             if self.hp == 0.0 or self.pos.x < world_edge[0] or self.pos.x > world_edge[1]:
                 Sprite.all_sprites.remove(self)
+                Bug.all_bugs.remove(self)
                 print("Bug Destroyed")
-            #print(f"Bug pos: ({self.pos.x:.2f}, {self.pos.y:.2f})  Player pos: ({player_pos.x:.2f}, {player_pos.y:.2f}  hp: {self.hp:.2f})")
