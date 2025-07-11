@@ -86,12 +86,13 @@ while not window_should_close():
     file = open(join("Data", "Shared_Main_Process_Sprite_Data.txt"), "w")
     file.truncate()
     
-    file.write(f"{player.get_current_texture_path()},{player.pos.x:.2f},{player.pos.y:.2f},{player.rot:.2f},{player.scale:.2f}\n")
-    
+    new_file_contents = f"{player.get_current_texture_path()},{player.pos.x:.2f},{player.pos.y:.2f},{player.rot:.2f},{player.scale:.2f}\n"
+
     little_bug:Bug = None
     for little_bug in Bug.all_bugs:
-        file.write(f"{little_bug.get_current_texture_path()},{little_bug.pos.x:.2f},{little_bug.pos.y:.2f},{little_bug.rot:.2f},{little_bug.scale:.2f}\n")
+        new_file_contents += f"{little_bug.get_current_texture_path()},{little_bug.pos.x:.2f},{little_bug.pos.y:.2f},{little_bug.rot:.2f},{little_bug.scale:.2f}\n"
 
+    file.write(new_file_contents)
     file.close()
 
 process.kill()

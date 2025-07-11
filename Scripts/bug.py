@@ -27,11 +27,10 @@ class Bug(DynamicSprite):
             
             file.close()
 
-            if len(file_data) > 5:
+            if len(file_data) > 4:
                 
                 # centered player position
-                player_pos = Vector2(float(file_data[0]) + (float(file_data[4]) * float(file_data[3]) / 2.0), float(file_data[1]) + (float(file_data[5]) * float(file_data[3]) / 2.0))
-                
+                player_pos = Vector2(float(file_data[0]) + (float(file_data[3]) * float(file_data[2]) / 2.0), float(file_data[1]) + (float(file_data[4]) * float(file_data[2]) / 2.0))
                 if vector2_distance(self.get_center_position_at_self(), player_pos) <= self.damage_size:
                     self.hp = max(0.0, self.hp - dt)
             

@@ -39,17 +39,20 @@ while not window_should_close():
 
     begin_drawing()
 
-    clear_background(DARKGRAY)
-    
     file = open(join("Data", "Shared_Main_Process_Sprite_Data.txt"), "r")
+    contents = []
+    
+    while len(contents) == 0:
+        for line in file:
+            contents.append(line)
+    
+    clear_background(DARKGRAY)
 
-    while os.stat(join("Data", "Shared_Main_Process_Sprite_Data.txt")).st_size == 0:
-        pass
-
-    for line in file:
-        texture_path, pos_x, pos_y, rot, scale = line.split(',')
-        if texture_path in texture_cache:
-            draw_texture_ex(texture_cache[texture_path], Vector2(float(pos_x) - get_window_position().x, float(pos_y) - get_window_position().y), float(rot), float(scale), WHITE)
+    for line in contents:
+        if ',' in line:
+            texture_path, pos_x, pos_y, rot, scale = line.split(',')
+            if texture_path in texture_cache:
+                draw_texture_ex(texture_cache[texture_path], Vector2(float(pos_x) - get_window_position().x, float(pos_y) - get_window_position().y), float(rot), float(scale), WHITE)
 
     file.close()
     

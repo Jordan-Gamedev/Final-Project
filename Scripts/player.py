@@ -28,5 +28,5 @@ class Player(DynamicSprite):
         file = open(join("Data", "Player_Data.txt"), "w")
         curr_tex:Texture2D = self.get_current_texture()
         file.truncate()
-        file.write(f"PosX: {self.pos.x:.4f}\nPosY: {self.pos.y:.4f}\nRot: {self.rot}\nScale: {self.scale:.4f}\nTexWidth: {curr_tex.width}\nTexHeight: {curr_tex.height}")
+        file.write(f"PosX: {self.pos.x:.4f}\nPosY: {self.pos.y:.4f}\nScale: {self.scale:.4f}\nTexWidth: {curr_tex.width}\nTexHeight: {curr_tex.height}")
         file.close()
