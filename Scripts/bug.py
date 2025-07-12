@@ -1,4 +1,3 @@
-from os.path import join
 from pyray import *
 from raylib import *
 from dynamic_sprite import *
@@ -7,18 +6,18 @@ class Bug(DynamicSprite):
     
     all_bugs:list = []
 
-    def __init__(self, textures, anim_speed, max_hp, damage_size, pos = Vector2(), rot = 0.0, scale = 1.0):
+    def __init__(self, textures_paths, loaded_textures, anim_speed, max_hp, damage_size, pos = Vector2(), rot = 0.0, scale = 1.0):
         self.damage_size = damage_size
         self.hp:float = max_hp
         Bug.all_bugs.append(self)
-        super().__init__(textures, anim_speed, pos, rot, scale)
+        super().__init__(textures_paths, loaded_textures, anim_speed, pos, rot, scale)
     
     def update(self, dt):
         super().update(dt)
 
-        if file_exists(join("Data", "Player_Data.txt")):
+        if file_exists("Data\Player_Data.txt"):
             file_data = []
-            file = open(join("Data", "Player_Data.txt"), "r")
+            file = open("Data\Player_Data.txt", "r")
             
             for line in file:
                 if ':' in line:

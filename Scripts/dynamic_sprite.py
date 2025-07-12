@@ -4,8 +4,8 @@ from sprite import *
 
 class DynamicSprite(Sprite):
     
-    def __init__(self, textures, anim_speed, pos = Vector2(), rot = 0.0, scale = 1.0):
-        super().__init__(textures, anim_speed, pos, rot, scale)
+    def __init__(self, textures_paths, loaded_textures, anim_speed, pos = Vector2(), rot = 0.0, scale = 1.0):
+        super().__init__(textures_paths, loaded_textures, anim_speed, pos, rot, scale)
         self.vel = Vector2()
         self.speed = 1.0
     

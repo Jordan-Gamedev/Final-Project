@@ -1,4 +1,3 @@
-from os.path import join
 from pyray import *
 from raylib import *
 
@@ -7,8 +6,8 @@ from dynamic_sprite import *
 
 class Player(DynamicSprite):
     
-    def __init__(self, textures, anim_speed, pos = Vector2(), rot = 0.0, scale = 1.0):
-        super().__init__(textures, anim_speed, pos, rot, scale)
+    def __init__(self, textures_paths, loaded_textures, anim_speed, pos = Vector2(), rot = 0.0, scale = 1.0):
+        super().__init__(textures_paths, loaded_textures, anim_speed, pos, rot, scale)
         self.target_pos = pos
 
     def update(self, dt):
@@ -25,7 +24,7 @@ class Player(DynamicSprite):
         
         super().update(dt)
 
-        file = open(join("Data", "Player_Data.txt"), "w")
+        file = open("Data\Player_Data.txt", "w")
         curr_tex:Texture2D = self.get_current_texture()
         file.truncate()
         file.write(f"PosX: {self.pos.x:.4f}\nPosY: {self.pos.y:.4f}\nScale: {self.scale:.4f}\nTexWidth: {curr_tex.width}\nTexHeight: {curr_tex.height}")

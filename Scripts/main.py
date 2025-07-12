@@ -1,8 +1,8 @@
 import os
-from os.path import join
 from pyray import *
 from raylib import *
 import shutil
+import subprocess
 
 from bug import *
 from hopping_bug import *
@@ -10,7 +10,7 @@ from cursor import *
 from dynamic_sprite import *
 from player import *
 from sprite import *
-import subprocess
+from bug_spawner import SpawnBugs
 
 ######################## set window properties ########################
 
@@ -33,36 +33,39 @@ set_target_fps(get_monitor_refresh_rate(current_monitor))
 ############################ import assets ############################
 
 os.makedirs("Data", exist_ok=True)
-open(join("Data", "Shared_Main_Process_Sprite_Data.txt"), "w").close()
+open("Data\Shared_Main_Process_Sprite_Data.txt", "w").close()
 
-player_textures = [join("Assets", "Bat_1.png"), join("Assets", "Bat_2.png")]
-cursor_textures = [join("Assets", "Cursor_Idle_1.png"), join("Assets", "Cursor_Idle_2.png"), join("Assets", "Cursor_Idle_3.png")]
-gnat_textures = [join("Assets", "Gnat_1.png"), join("Assets", "Gnat_2.png")]
-grass_texture = [join("Assets", "Grass_1.png")]
+player_textures_paths = ["Assets\Bat_1.png", "Assets\Bat_2.png"]
+player_loaded_textures = [load_texture(player_textures_paths[0]), load_texture(player_textures_paths[1])]
+
+cursor_textures_paths = ["Assets\Cursor_Idle_1.png", "Assets\Cursor_Idle_2.png", "Assets\Cursor_Idle_3.png"]
+cursor_loaded_textures = [load_texture(cursor_textures_paths[0]), load_texture(cursor_textures_paths[1]), load_texture(cursor_textures_paths[2])]
+
+grass_textures_paths = ["Assets\Grass_1.png"]
+grass_loaded_textures = [load_texture(grass_textures_paths[0])]
+
+gnat_textures_paths = ["Assets\Gnat_1.png", "Assets\Gnat_2.png"]
 
 ############################## game loop ##############################
 
-player = Player(player_textures, 10.0, Vector2(), rot = 0.0, scale=4.9)
+player = Player(player_textures_paths, player_loaded_textures, 10.0, Vector2(), rot = 0.0, scale=4.9)
 player.speed = 1000
 
-cursor = Cursor(cursor_textures, 5.0, get_mouse_position())
+cursor = Cursor(cursor_textures_paths, cursor_loaded_textures, 5.0, get_mouse_position())
 
-gnat = Bug(gnat_textures, 15.0, 1.0, 50.0, Vector2(200, 200), 0, 2)
+grass = Sprite(grass_textures_paths, grass_loaded_textures, 0.0, Vector2(0, get_monitor_height(current_monitor) - (27 * 5)), 0.0, 2.5)
 
-hop_strength = (Vector2(2, 2), Vector2(6, 12))
-grasshopper = HoppingBug(gnat_textures, 15.0, 1.0, 50.0, hop_strength=hop_strength, \
-                          idle_time=Vector2(3, 6), pos=Vector2(400, 500), rot=0, scale=2)
-grasshopper.speed = 100
+spawner = SpawnBugs(max_capacity=4, spawn_rate=3, fly_tex_paths=gnat_textures_paths, hopper_tex_paths=gnat_textures_paths, crawler_tex_paths=gnat_textures_paths)
 
-grass = Sprite(grass_texture, 0.0, Vector2(0, get_monitor_height(current_monitor) - (27 * 5)), 0.0, 2.5)
-
-process = subprocess.Popen(["python", join("Scripts", "sub.py")])
+process = subprocess.Popen(["python", "Scripts\sub.py"])
 
 while not window_should_close():
 
     # updating
 
     delta_time = get_frame_time()
+
+    spawner.update(delta_time)
 
     for sprite in Sprite.all_sprites:
         sprite.update(delta_time)
@@ -83,7 +86,7 @@ while not window_should_close():
     end_drawing()
 
     # sync visuals to subprocesses
-    file = open(join("Data", "Shared_Main_Process_Sprite_Data.txt"), "w")
+    file = open("Data\Shared_Main_Process_Sprite_Data.txt", "w")
     file.truncate()
     
     new_file_contents = f"{player.get_current_texture_path()},{player.pos.x:.2f},{player.pos.y:.2f},{player.rot:.2f},{player.scale:.2f}\n"

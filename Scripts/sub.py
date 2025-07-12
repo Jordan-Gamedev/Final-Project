@@ -1,7 +1,6 @@
 import win32api
 import win32con
 
-from os.path import join
 from pathlib import Path
 from pyray import *
 from raylib import *
@@ -39,8 +38,12 @@ assets_folder = Path("Assets")
 for file in assets_folder.glob("*.png"):
     texture_cache[str(file)] = load_texture(str(file))
 
-cursor_textures = [join("Assets", "Cursor_Idle_1.png"), join("Assets", "Cursor_Idle_2.png"), join("Assets", "Cursor_Idle_3.png")]
-cursor = Cursor(cursor_textures, 0.0)
+# set up cursor
+cursor_textures_paths = ["Assets\Cursor_Idle_1.png", "Assets\Cursor_Idle_2.png", "Assets\Cursor_Idle_3.png"]
+cursor_textures = [texture_cache[cursor_textures_paths[0]], \
+                   texture_cache[cursor_textures_paths[1]], \
+                      texture_cache[cursor_textures_paths[2]]]
+cursor = Cursor(cursor_textures_paths, cursor_textures, 5.0)
 
 # set the maximum frame rate to the maximum refresh rate of the monitor 
 set_target_fps(max(get_monitor_refresh_rate(current_monitor) // 2, 60))
@@ -53,7 +56,7 @@ while not window_should_close():
 
     begin_drawing()
 
-    file = open(join("Data", "Shared_Main_Process_Sprite_Data.txt"), "r")
+    file = open("Data\Shared_Main_Process_Sprite_Data.txt", "r")
     contents = []
     
     while len(contents) == 0:

@@ -5,11 +5,9 @@ class Sprite:
 
     all_sprites:list = []
 
-    def __init__(self, textures_paths:list, anim_speed, pos = Vector2(), rot = 0.0, scale = 1.0):
+    def __init__(self, textures_paths:list, loaded_textures:list, anim_speed, pos = Vector2(), rot = 0.0, scale = 1.0):
         self.textures_paths = textures_paths
-        self.loaded_textures = []
-        for tex_path in self.textures_paths:
-            self.loaded_textures.append(load_texture(tex_path))
+        self.loaded_textures = loaded_textures
         self.curr_tex_index = 0.0
         self.anim_speed = anim_speed
         self.pos = pos
