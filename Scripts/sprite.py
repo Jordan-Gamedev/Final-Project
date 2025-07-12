@@ -19,8 +19,8 @@ class Sprite:
         self.curr_tex_index += (self.anim_speed * dt)
         self.curr_tex_index %= len(self.loaded_textures)
         
-    def render(self):
-        draw_texture_ex(self.get_current_texture(), self.pos, self.rot, self.scale, WHITE)
+    def render(self, offset=Vector2()):
+        draw_texture_ex(self.get_current_texture(), vector2_add(self.pos, offset), self.rot, self.scale, WHITE)
 
     def get_current_texture(self):
         return self.loaded_textures[int(self.curr_tex_index)]

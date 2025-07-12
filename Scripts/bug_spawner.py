@@ -24,8 +24,8 @@ class SpawnBugs:
             self.crawler_tex.append(load_texture(path))
         
         self.current_time = spawn_rate
-        self.spawn_bounds_x = (-200, get_monitor_width(get_current_monitor()) + 200)
-        self.spawn_bounds_y = (0, get_monitor_height(get_current_monitor()) - 200)
+        self.spawn_bounds_x = (-100, get_monitor_width(get_current_monitor()) + 100)
+        self.spawn_bounds_y = (0, get_monitor_height(get_current_monitor()) - 100)
 
     def update(self, dt):
         # If a maximum number of bugs are already spawned, perform an early exit

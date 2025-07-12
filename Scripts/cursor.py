@@ -50,6 +50,3 @@ class Cursor(Sprite):
         
         calc_global_mouse_properties()
         self.pos = Cursor.global_mouse_position
-        
-    def render(self):
-        super().render()

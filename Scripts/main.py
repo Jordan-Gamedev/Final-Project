@@ -5,12 +5,12 @@ import shutil
 import subprocess
 
 from bug import *
-from hopping_bug import *
+from bug_spawner import SpawnBugs
 from cursor import *
 from dynamic_sprite import *
+from hopping_bug import *
 from player import *
 from sprite import *
-from bug_spawner import SpawnBugs
 
 ######################## set window properties ########################
 
@@ -55,7 +55,7 @@ cursor = Cursor(cursor_textures_paths, cursor_loaded_textures, 5.0, get_mouse_po
 
 grass = Sprite(grass_textures_paths, grass_loaded_textures, 0.0, Vector2(0, get_monitor_height(current_monitor) - (27 * 5)), 0.0, 2.5)
 
-spawner = SpawnBugs(max_capacity=4, spawn_rate=3, fly_tex_paths=gnat_textures_paths, hopper_tex_paths=gnat_textures_paths, crawler_tex_paths=gnat_textures_paths)
+spawner = SpawnBugs(max_capacity=12, spawn_rate=3, fly_tex_paths=gnat_textures_paths, hopper_tex_paths=gnat_textures_paths, crawler_tex_paths=gnat_textures_paths)
 
 process = subprocess.Popen(["python", "Scripts\sub.py"])
 
