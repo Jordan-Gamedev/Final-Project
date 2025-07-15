@@ -73,9 +73,10 @@ while not window_should_close():
     contents = []
     
     while len(contents) == 0:
-        for line in file:
-            contents.append(line)
+        contents = [line for line in file]
     
+    file.close()
+
     clear_background(DARKGRAY)
 
     for line in contents:
@@ -83,8 +84,6 @@ while not window_should_close():
             texture_path, pos_x, pos_y, rot, scale = line.split(',')
             if texture_path in texture_cache:
                 draw_texture_ex(texture_cache[texture_path], Vector2(float(pos_x) - get_window_position().x, float(pos_y) - get_window_position().y), float(rot), float(scale), WHITE)
-
-    file.close()
 
     # render local sprites
     render_offset = Vector2(-get_window_position().x, -get_window_position().y)

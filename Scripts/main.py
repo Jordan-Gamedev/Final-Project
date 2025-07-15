@@ -32,10 +32,39 @@ def main():
     # set the maximum frame rate to the maximum refresh rate of the monitor 
     set_target_fps(get_monitor_refresh_rate(current_monitor))
 
-    ############################ import assets ############################
+    ########################## create data files ##########################
 
     os.makedirs("Data", exist_ok=True)
+    os.makedirs("PersistentData", exist_ok=True)
     open("Data\Shared_Main_Process_Sprite_Data.txt", "w").close()
+
+    # delete corrupt backup save (worse case scenario for the user)
+    if file_exists("PersistentData\Backup_Save_Data.saving"):
+        os.remove("PersistentData\Backup_Save_Data.saving")
+
+    # recover corrupt save data from backup save, or delete it if there is no backup
+    if file_exists("PersistentData\Save_Data.saving"):
+        
+        # backup save exists, so recover data
+        if file_exists("PersistentData\Backup_Save_Data.txt"):
+            os.rename("PersistentData\Save_Data.saving", "PersistentData\Save_Data.txt")
+            shutil.copyfile("PersistentData\Backup_Save_Data.txt", "PersistentData\Save_Data.txt")
+        # backup save was somehow also corrupted and now does not exist, so delete corrupt data
+        else:
+            os.remove("PersistentData\Save_Data.saving")
+
+    # create save data file if it does not exist
+    if not file_exists("PersistentData\Save_Data.txt"):
+        file = open("PersistentData\Save_Data.txt", "w")
+        # Points, Size of Desert
+        file.write(f"{0},{0}")
+        file.close()
+    
+    # create backup save data file
+    open("PersistentData\Backup_Save_Data.txt", "w").close()
+    shutil.copyfile("PersistentData\Save_Data.txt", "PersistentData\Backup_Save_Data.txt")
+    
+    ############################ import assets ############################
 
     player_textures_paths = ["Assets\Bat_1.png", "Assets\Bat_2.png"]
     player_loaded_textures = [load_texture(player_textures_paths[0]), load_texture(player_textures_paths[1])]
@@ -53,9 +82,9 @@ def main():
     player = Player(player_textures_paths, player_loaded_textures, 10.0, Vector2(), rot = 0.0, scale=4.9)
     player.speed = 1000
 
-    cursor = Cursor(cursor_textures_paths, cursor_loaded_textures, 5.0, get_mouse_position())
+    Cursor(cursor_textures_paths, cursor_loaded_textures, 5.0, get_mouse_position())
 
-    grass = Sprite(grass_textures_paths, grass_loaded_textures, 0.0, Vector2(0, get_monitor_height(current_monitor) - (27 * 5)), 0.0, 2.5)
+    Sprite(grass_textures_paths, grass_loaded_textures, 0.0, Vector2(0, get_monitor_height(current_monitor) - (27 * 5)), 0.0, 2.5)
 
     spawner = SpawnBugs(max_capacity=12, spawn_rate=3, fly_tex_paths=gnat_textures_paths, hopper_tex_paths=gnat_textures_paths, crawler_tex_paths=gnat_textures_paths)
 
@@ -102,9 +131,15 @@ def main():
 
     process.kill()
 
+    # delete temporary data
     while os.path.exists("Data"):
         shutil.rmtree("Data", ignore_errors=True)
 
+    # update backup savefile
+    if file_exists("PersistentData\Save_Data.txt") and file_exists("PersistentData\Backup_Save_Data.txt"):
+        shutil.copyfile("PersistentData\Save_Data.txt", "PersistentData\Backup_Save_Data.txt")
+
+    # close the game
     close_window()
 
 if __name__ == "__main__":

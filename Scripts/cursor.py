@@ -1,34 +1,29 @@
-from os.path import join
 from pyray import *
 from raylib import *
 from sprite import *
 
 def calc_global_mouse_properties():
-    if file_exists(join("Data", "Mouse_Data.txt")):
-        file_data = []
-
-        file = open(join("Data", "Mouse_Data.txt"), "r")
-        for line in file:
-            if ':' in line:
-                value = line.split(': ', 1)[1].strip()
-                file_data.append(value)
+    if file_exists("Data\Mouse_Data.txt"):
+        file = open("Data\Mouse_Data.txt", "r")
+        values = file.readline().split(',')
+        file_data = [value for value in values]
         file.close()
-                
-        if len(file_data) >= 2:
-            Cursor.global_mouse_position = Vector2(float(file_data[0]), float(file_data[1]))
-        if len(file_data) >= 3:
-            if file_data[2] == "True":
-                Cursor.is_global_mouse_clicking = True
-            else:
-                Cursor.is_global_mouse_clicking = False
-        if len(file_data) >= 5:
+
+        if file_data[0] == '':
+            return
+
+        Cursor.global_mouse_position = Vector2(float(file_data[0]), float(file_data[1]))
+        if file_data[2] == "True":
+            Cursor.is_global_mouse_clicking = True
+        else:
+            Cursor.is_global_mouse_clicking = False
             
-            saved_window_position = Vector2(float(file_data[3]), float(file_data[4]))
-            other_window_has_mouse = vector2_distance(get_window_position(), saved_window_position) > 1
+        saved_window_position = Vector2(float(file_data[3]), float(file_data[4]))
+        other_window_has_mouse = vector2_distance(get_window_position(), saved_window_position) > 1
             
-            if other_window_has_mouse:
-                Cursor.global_mouse_position = vector2_subtract(Cursor.global_mouse_position, get_window_position())
-                Cursor.global_mouse_position = vector2_add(Cursor.global_mouse_position, saved_window_position)
+        if other_window_has_mouse:
+            Cursor.global_mouse_position = vector2_subtract(Cursor.global_mouse_position, get_window_position())
+            Cursor.global_mouse_position = vector2_add(Cursor.global_mouse_position, saved_window_position)
             
 class Cursor(Sprite):
     
@@ -43,9 +38,9 @@ class Cursor(Sprite):
         super().update(dt)
 
         if is_cursor_on_screen():
-            file = open(join("Data", "Mouse_Data.txt"), "w")
+            file = open("Data\Mouse_Data.txt", "w")
             file.truncate()
-            file.write(f"PosX: {get_mouse_x()}\nPosY: {get_mouse_y()}\nClicking: {is_mouse_button_down(0)}\nWinPosX: {int(get_window_position().x)}\nWinPosY: {int(get_window_position().y)}\n")
+            file.write(f"{get_mouse_x()},{get_mouse_y()},{is_mouse_button_down(0)},{int(get_window_position().x)},{int(get_window_position().y)}")
             file.close()
         
         calc_global_mouse_properties()
