@@ -4,7 +4,7 @@ from bug import *
 import random
 
 class HoppingBug(Bug):
-    def __init__(self, textures_paths, loaded_textures, anim_speed, max_hp, damage_size, hop_strength, idle_time:Vector2, pos = Vector2(), rot = 0.0, scale = 1.0):
+    def __init__(self, transform:Transform2D, animations:list, damage_size:float, max_hp:float, points:int, hop_strength:Vector2, idle_time:Vector2, speed:float, anim_speed:float = 1.0):
         # A Vector2 that indicates the direction and strength of the initial velocity
         self.hop_strength = hop_strength
         # A Vector2 timer that lets the bug rest between hops with some random jitter between x and y
@@ -12,18 +12,18 @@ class HoppingBug(Bug):
         # The current time in between hops
         self.current_idle_time:float = idle_time.y
         
-        super().__init__(textures_paths, loaded_textures, anim_speed, max_hp, damage_size, pos, rot, scale)
+        super().__init__(transform, animations, damage_size, max_hp, points, speed, anim_speed)
     
     def update(self, dt):
         super().update(dt)
 
         ground_pos = get_monitor_height(get_current_monitor()) - 200
-        is_grounded = True if self.pos.y >= ground_pos else False
+        is_grounded = True if self.transform.pos.y >= ground_pos else False
 
         if is_grounded:
             self.vel.y = 0
             self.vel.x = 0
-            self.pos.y = ground_pos
+            self.transform.pos.y = ground_pos
             self.current_idle_time -= dt
         else:
             self.vel.y += 16 * dt

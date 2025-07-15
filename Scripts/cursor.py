@@ -20,7 +20,7 @@ def calc_global_mouse_properties():
             
         saved_window_position = Vector2(float(file_data[3]), float(file_data[4]))
         other_window_has_mouse = vector2_distance(get_window_position(), saved_window_position) > 1
-            
+        
         if other_window_has_mouse:
             Cursor.global_mouse_position = vector2_subtract(Cursor.global_mouse_position, get_window_position())
             Cursor.global_mouse_position = vector2_add(Cursor.global_mouse_position, saved_window_position)
@@ -30,8 +30,8 @@ class Cursor(Sprite):
     is_global_mouse_clicking:bool = False
     global_mouse_position:Vector2 = Vector2()
 
-    def __init__(self, textures_paths, loaded_textures, anim_speed, pos = Vector2(), rot = 0.0, scale = 2.0):
-        super().__init__(textures_paths, loaded_textures, anim_speed, pos, rot, scale)
+    def __init__(self, transform:Transform2D, animations:list, anim_speed:float = 1.0):
+        super().__init__(transform, animations, anim_speed)
 
     def update(self, dt):
         
@@ -44,4 +44,4 @@ class Cursor(Sprite):
             file.close()
         
         calc_global_mouse_properties()
-        self.pos = Cursor.global_mouse_position
+        self.transform.pos = Cursor.global_mouse_position

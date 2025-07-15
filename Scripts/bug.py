@@ -7,11 +7,12 @@ class Bug(DynamicSprite):
     
     all_bugs:list = []
 
-    def __init__(self, textures_paths, loaded_textures, anim_speed, max_hp, damage_size, pos = Vector2(), rot = 0.0, scale = 1.0):
-        self.damage_size = damage_size
+    def __init__(self, transform:Transform2D, animations:list, damage_size:float, max_hp:float, points:int, speed:float, anim_speed:float = 1.0):
+        self.damage_size:float = damage_size
         self.hp:float = max_hp
+        self.points = points
         Bug.all_bugs.append(self)
-        super().__init__(textures_paths, loaded_textures, anim_speed, pos, rot, scale)
+        super().__init__(transform, animations, speed, anim_speed)
         print("Bug Created")
     
     def update(self, dt):
@@ -33,7 +34,7 @@ class Bug(DynamicSprite):
 
             player_is_in_window = window_pos.x < player_pos.x < window_pos.x + get_screen_width() and \
             window_pos.y < player_pos.y < window_pos.y + get_screen_height()
-                
+
             if player_is_in_window and vector2_distance(self.get_center_position_at_self(), player_pos) <= self.damage_size:
                 self.hp = max(0.0, self.hp - dt)
             
@@ -56,7 +57,7 @@ class Bug(DynamicSprite):
                 
                 # add points
                 points = int(file_data[0])
-                points += 1
+                points += self.points
                 file_data[0] = points
                 
                 # finalize change
@@ -64,7 +65,8 @@ class Bug(DynamicSprite):
                 file.close()
                 os.rename("PersistentData\Save_Data.saving", "PersistentData\Save_Data.txt")
             
-            if self.hp == 0.0 or self.pos.x < world_edge_x[0] or self.pos.x > world_edge_x[1] or self.pos.y < world_edge_y[0] or self.pos.y > world_edge_y[1]:
+            pos = self.transform.pos
+            if self.hp == 0.0 or pos.x < world_edge_x[0] or pos.x > world_edge_x[1] or pos.y < world_edge_y[0] or pos.y > world_edge_y[1]:
                 Sprite.all_sprites.remove(self)
                 Bug.all_bugs.remove(self)
                 print("Bug Destroyed")

@@ -1,27 +1,19 @@
 from pyray import *
-from bug import Bug
-from hopping_bug import HoppingBug
 import random
 
+from bug import Bug
+from hopping_bug import HoppingBug
+from transform import Transform2D
+
 class SpawnBugs:
-    def __init__(self, max_capacity, spawn_rate, fly_tex_paths, hopper_tex_paths, crawler_tex_paths):
+    def __init__(self, max_capacity, spawn_rate, fly_anims, hopper_anims, crawler_anims):
         self.max_capacity = max_capacity
 
         self.spawn_rate = spawn_rate
         
-        self.fly_tex_paths = fly_tex_paths
-        self.hopper_tex_paths = hopper_tex_paths
-        self.crawler_tex_paths = crawler_tex_paths
-        self.fly_tex = []
-        self.hopper_tex = []
-        self.crawler_tex = []
-
-        for path in self.fly_tex_paths:
-            self.fly_tex.append(load_texture(path))
-        for path in self.hopper_tex_paths:
-            self.hopper_tex.append(load_texture(path))
-        for path in self.crawler_tex_paths:
-            self.crawler_tex.append(load_texture(path))
+        self.fly_anims = fly_anims
+        self.hopper_anims = hopper_anims
+        self.crawler_anims = crawler_anims
         
         self.current_time = spawn_rate
         self.spawn_bounds_x = (-100, get_monitor_width(get_current_monitor()) + 100)
@@ -44,15 +36,13 @@ class SpawnBugs:
         spawn_pos_x = random.choice([self.spawn_bounds_x[0], self.spawn_bounds_x[1]])
         spawn_pos_y = random.uniform(self.spawn_bounds_y[0], self.spawn_bounds_y[1])
 
-        choice = random.choice(['fly', 'grasshopper'])
+        #choice = random.choice(['fly', 'grasshopper'])
+        choice = random.choice(['grasshopper', 'grasshopper'])
 
+        bug_transform = Transform2D(Vector2(spawn_pos_x, spawn_pos_y), 0, 2)
         match choice:
             case 'fly':
-                flyer = Bug(self.fly_tex_paths, self.fly_tex, 15.0, 1.0, 50.0, Vector2(spawn_pos_x, spawn_pos_y), 0, 2)
+                Bug(bug_transform, self.fly_anims, damage_size=45.0, max_hp=1.0, points=10, speed=100)
             case 'grasshopper':
                 hop_strength = (Vector2(2, 2), Vector2(6, 12))
-
-                grasshopper = HoppingBug(self.hopper_tex_paths, self.hopper_tex, 15.0, 1.0, 50.0, hop_strength=hop_strength, \
-                idle_time=Vector2(3, 6), pos=Vector2(spawn_pos_x, spawn_pos_y), rot=0, scale=2)
-        
-                grasshopper.speed = 100
+                HoppingBug(bug_transform, self.hopper_anims, damage_size=45.0, max_hp=1.0, points=10, hop_strength=hop_strength, idle_time=Vector2(3, 6), speed=100)
