@@ -18,7 +18,7 @@ def main():
     ######################## set window properties ########################
 
     # delete data files in case the program crashed last time and the corrupted files are still there
-    while os.path.exists("Data"):
+    if os.path.exists("Data"):
         shutil.rmtree("Data", ignore_errors=True)
 
     # get currently used monitor
@@ -37,7 +37,7 @@ def main():
 
     os.makedirs("Data", exist_ok=True)
     os.makedirs("PersistentData", exist_ok=True)
-    open("Data\Shared_Main_Process_Sprite_Data.txt", "w").close()
+    open("Data\Shared_Main_Process_Sprite_Data.txt", "x").close()
 
     # delete corrupt backup save (worse case scenario for the user)
     if file_exists("PersistentData\Backup_Save_Data.saving"):
@@ -123,7 +123,6 @@ def main():
 
         # sync visuals to subprocesses
         file = open("Data\Shared_Main_Process_Sprite_Data.txt", "w")
-        file.truncate()
     
         new_file_contents = f"{player.get_current_animation().get_current_texture_path()},{player.transform.pos.x:.2f},{player.transform.pos.y:.2f},{player.transform.rot:.2f},{player.transform.scale:.2f}\n"
 
