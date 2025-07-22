@@ -73,20 +73,21 @@ def set_up_window():
 
 def create_asset_instances():
     # set up player
-    player_idle_anim = Animation("Assets\\Bat_Sprite", (100.0, 100.0))
+    player_idle_anim = Animation("Assets\\Sprites\\Bat", (100.0, 100.0))
     player = Player(Transform2D(scale=4.9), [player_idle_anim], speed=1000)
 
-    # set up custom cursor
-    cursor_idle_anim = Animation("Assets\\Cursor_Sprite", (50.0, 50.0, 50.0))
-    Cursor(Transform2D(get_mouse_position(), rot=0, scale=2), [cursor_idle_anim])
-
     # set up grass which hangs out at the bottom of the screen
-    grass_idle_anim = Animation("Assets\\Background_Sprites", (250.0,))
+    grass_idle_anim = Animation("Assets\\Sprites\\Background", (250.0,))
     Sprite(Transform2D(Vector2(0, get_monitor_height(get_current_monitor()) - (27 * 5)), rot=0, scale=2.5), [grass_idle_anim])
 
     # set up spawner which spawns bugs over time
-    gnat_idle_anim = Animation("Assets\\Gnat_Sprite", (300.0, 300.0))
+    gnat_idle_anim = Animation("Assets\\Sprites\\Gnat", (300.0, 300.0))
     spawner = SpawnBugs(max_capacity=12, spawn_rate=3, fly_anims=[gnat_idle_anim], hopper_anims=[gnat_idle_anim], crawler_anims=[gnat_idle_anim])
+
+    # set up custom cursor
+    cursor_idle_anim = Animation("Assets\\Sprites\\Cursor", (50.0, 50.0, 50.0))
+    Cursor(Transform2D(get_mouse_position(), rot=0, scale=2), [cursor_idle_anim])
+
     return (player, spawner)
 
 #######################################################################
