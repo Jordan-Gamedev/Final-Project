@@ -86,9 +86,9 @@ def create_asset_instances():
 
     # set up custom cursor
     cursor_idle_anim = Animation("Assets\\Sprites\\Cursor", (50.0, 50.0, 50.0))
-    Cursor(Transform2D(get_mouse_position(), rot=0, scale=2), [cursor_idle_anim])
+    cursor = Cursor(Transform2D(get_mouse_position(), rot=0, scale=2), [cursor_idle_anim])
 
-    return (player, spawner)
+    return (player, cursor, spawner)
 
 #######################################################################
 
@@ -96,7 +96,7 @@ def main():
 
     set_up_data_files()
     set_up_window()
-    player, spawner = create_asset_instances()
+    player, cursor, spawner = create_asset_instances()
 
     ############################## game loop ##############################
 
@@ -117,9 +117,14 @@ def main():
         monitor = get_current_monitor()
         draw_text("Press 'Esc' to close game", get_monitor_width(monitor) // 2 - 350, int(get_monitor_height(monitor) * 0.05), 50, WHITE)
 
+        # render all sprites except the cursor
         for sprite in Sprite.all_sprites:
-            sprite.render()
-    
+            if sprite is not cursor:
+                sprite.render()
+
+        # render cursor over everything
+        cursor.render()
+
         draw_fps(0, 0)
         end_drawing()
 
