@@ -13,31 +13,21 @@ from hopping_bug import *
 from player import *
 from sprite import *
 
-def main():
-
-    ######################## set window properties ########################
+########################## create data files ##########################
+def set_up_data_files():
 
     # delete data files in case the program crashed last time and the corrupted files are still there
     if os.path.exists("Data"):
         shutil.rmtree("Data", ignore_errors=True)
 
-    # get currently used monitor
-    current_monitor = get_current_monitor()
-
-    # create maximized window
-    set_config_flags(FLAG_WINDOW_TRANSPARENT | FLAG_WINDOW_UNDECORATED | FLAG_WINDOW_ALWAYS_RUN | FLAG_WINDOW_RESIZABLE)
-    init_window(1920, 1080, 'Game')
-    maximize_window()
-    hide_cursor()
-
-    # set the maximum frame rate to the maximum refresh rate of the monitor 
-    set_target_fps(get_monitor_refresh_rate(current_monitor))
-
-    ########################## create data files ##########################
-
+    # create temporary and persistent data folders if they do not exist
     os.makedirs("Data", exist_ok=True)
     os.makedirs("PersistentData", exist_ok=True)
+
+    # create temporary data files
     open("Data\Shared_Main_Process_Sprite_Data.txt", "x").close()
+    open("Data\Player_Data.txt", "x").close()
+    open("Data\Mouse_Data.txt", "x").close()
 
     # delete corrupt backup save (worse case scenario for the user)
     if file_exists("PersistentData\Backup_Save_Data.saving"):
@@ -64,9 +54,24 @@ def main():
     # create backup save data file
     open("PersistentData\Backup_Save_Data.txt", "w").close()
     shutil.copyfile("PersistentData\Save_Data.txt", "PersistentData\Backup_Save_Data.txt")
-    
-    ############################ import assets ############################
+#######################################################################
 
+######################## set window properties ########################
+def set_up_window():
+    # create maximized window
+    set_config_flags(FLAG_WINDOW_TRANSPARENT | FLAG_WINDOW_UNDECORATED | FLAG_WINDOW_ALWAYS_RUN | FLAG_WINDOW_RESIZABLE)
+    init_window(1920, 1080, 'Game')
+    maximize_window()
+    
+    # make Window's default cursor invisible
+    hide_cursor()
+
+    # set the maximum frame rate to the maximum refresh rate of the monitor 
+    set_target_fps(get_monitor_refresh_rate(get_current_monitor()))
+#######################################################################
+
+############################ import assets ############################
+def create_asset_instances():
     # set up player
     player_textures_paths = ("Assets\Bat_1.png", "Assets\Bat_2.png")
     player_loaded_textures = (load_texture(player_textures_paths[0]), load_texture(player_textures_paths[1]))
@@ -83,13 +88,21 @@ def main():
     grass_textures_paths = ("Assets\Grass_1.png",)
     grass_loaded_textures = (load_texture(grass_textures_paths[0]),)
     grass_idle_anim = Animation(grass_textures_paths, grass_loaded_textures, (250.0,))
-    Sprite(Transform2D(Vector2(0, get_monitor_height(current_monitor) - (27 * 5)), rot=0, scale=2.5), [grass_idle_anim])
+    Sprite(Transform2D(Vector2(0, get_monitor_height(get_current_monitor()) - (27 * 5)), rot=0, scale=2.5), [grass_idle_anim])
 
     # set up spawner which spawns bugs over time
     gnat_textures_paths = ("Assets\Gnat_1.png", "Assets\Gnat_2.png")
     gnat_loaded_textures = (load_texture(gnat_textures_paths[0]), load_texture(gnat_textures_paths[1]))
     gnat_idle_anim = Animation(gnat_textures_paths, gnat_loaded_textures, (300.0, 300.0))
     spawner = SpawnBugs(max_capacity=12, spawn_rate=3, fly_anims=[gnat_idle_anim], hopper_anims=[gnat_idle_anim], crawler_anims=[gnat_idle_anim])
+    return (player, spawner)
+#######################################################################
+
+def main():
+
+    set_up_data_files()
+    set_up_window()
+    player, spawner = create_asset_instances()
 
     ############################## game loop ##############################
 
@@ -98,27 +111,22 @@ def main():
     while not window_should_close():
 
         # updating
-
         delta_time = get_frame_time()
-
         spawner.update(delta_time)
-
         for sprite in Sprite.all_sprites:
             sprite.update(delta_time)
     
         # drawing
-    
         begin_drawing()
-
         clear_background(Color(0, 0, 0, 0))
-    
-        draw_text("Press 'Esc' to close game", get_monitor_width(current_monitor) // 2 - 350, int(get_monitor_height(current_monitor) * 0.05), 50, WHITE)
+
+        monitor = get_current_monitor()
+        draw_text("Press 'Esc' to close game", get_monitor_width(monitor) // 2 - 350, int(get_monitor_height(monitor) * 0.05), 50, WHITE)
 
         for sprite in Sprite.all_sprites:
             sprite.render()
     
         draw_fps(0, 0)
-    
         end_drawing()
 
         # sync visuals to subprocesses
