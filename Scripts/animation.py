@@ -1,9 +1,15 @@
 from pyray import *
+import os
 
 class Animation:
 
-    def __init__(self, texture_paths:tuple, loaded_textures:tuple, frame_durations:tuple, is_loop = True, on_finish_event = None):
-        self.texture_paths = texture_paths
+    def __init__(self, folder_path:str, loaded_textures:list, frame_durations:tuple, is_loop = True, on_finish_event = None):
+        self.texture_paths = []
+
+
+        for sprite in os.listdir(folder_path):
+            self.texture_paths.append(folder_path + "\\" + sprite)
+
         self.loaded_textures = loaded_textures
         self.frame_durations = frame_durations
         self.is_loop = is_loop

@@ -25,35 +25,35 @@ def set_up_data_files():
     os.makedirs("PersistentData", exist_ok=True)
 
     # create temporary data files
-    open("Data\Shared_Main_Process_Sprite_Data.txt", "x").close()
-    open("Data\Player_Data.txt", "x").close()
-    open("Data\Mouse_Data.txt", "x").close()
+    open("Data\\Shared_Main_Process_Sprite_Data.txt", "x").close()
+    open("Data\\Player_Data.txt", "x").close()
+    open("Data\\Mouse_Data.txt", "x").close()
 
     # delete corrupt backup save (worse case scenario for the user)
-    if file_exists("PersistentData\Backup_Save_Data.saving"):
-        os.remove("PersistentData\Backup_Save_Data.saving")
+    if file_exists("PersistentData\\Backup_Save_Data.saving"):
+        os.remove("PersistentData\\Backup_Save_Data.saving")
 
     # recover corrupt save data from backup save, or delete it if there is no backup
-    if file_exists("PersistentData\Save_Data.saving"):
+    if file_exists("PersistentData\\Save_Data.saving"):
         
         # backup save exists, so recover data
-        if file_exists("PersistentData\Backup_Save_Data.txt"):
-            os.rename("PersistentData\Save_Data.saving", "PersistentData\Save_Data.txt")
-            shutil.copyfile("PersistentData\Backup_Save_Data.txt", "PersistentData\Save_Data.txt")
+        if file_exists("PersistentData\\Backup_Save_Data.txt"):
+            os.rename("PersistentData\\Save_Data.saving", "PersistentData\\Save_Data.txt")
+            shutil.copyfile("PersistentData\\Backup_Save_Data.txt", "PersistentData\\Save_Data.txt")
         # backup save was somehow also corrupted and now does not exist, so delete corrupt data
         else:
-            os.remove("PersistentData\Save_Data.saving")
+            os.remove("PersistentData\\Save_Data.saving")
 
     # create save data file if it does not exist
-    if not file_exists("PersistentData\Save_Data.txt"):
-        file = open("PersistentData\Save_Data.txt", "w")
+    if not file_exists("PersistentData\\Save_Data.txt"):
+        file = open("PersistentData\\Save_Data.txt", "w")
         # Points, Size of Desert
         file.write(f"{0},{0}")
         file.close()
     
     # create backup save data file
-    open("PersistentData\Backup_Save_Data.txt", "w").close()
-    shutil.copyfile("PersistentData\Save_Data.txt", "PersistentData\Backup_Save_Data.txt")
+    open("PersistentData\\Backup_Save_Data.txt", "w").close()
+    shutil.copyfile("PersistentData\\Save_Data.txt", "PersistentData\\Backup_Save_Data.txt")
 #######################################################################
 
 ######################## set window properties ########################
@@ -73,27 +73,27 @@ def set_up_window():
 ############################ import assets ############################
 def create_asset_instances():
     # set up player
-    player_textures_paths = ("Assets\Bat_1.png", "Assets\Bat_2.png")
+    player_textures_paths = ("Assets\\Bat_Sprite\\Bat_1.png", "Assets\\Bat_Sprite\\Bat_2.png")
     player_loaded_textures = (load_texture(player_textures_paths[0]), load_texture(player_textures_paths[1]))
-    player_idle_anim = Animation(player_textures_paths, player_loaded_textures, (100.0, 100.0))
+    player_idle_anim = Animation("Assets\\Bat_Sprite", player_loaded_textures, (100.0, 100.0))
     player = Player(Transform2D(scale=4.9), [player_idle_anim], speed=1000)
 
     # set up custom cursor
-    cursor_textures_paths = ("Assets\Cursor_Idle_1.png", "Assets\Cursor_Idle_2.png", "Assets\Cursor_Idle_3.png")
+    cursor_textures_paths = ("Assets\\Cursor_Sprite\\Cursor_Idle_1.png", "Assets\\Cursor_Sprite\\Cursor_Idle_2.png", "Assets\\Cursor_Sprite\\Cursor_Idle_3.png")
     cursor_loaded_textures = (load_texture(cursor_textures_paths[0]), load_texture(cursor_textures_paths[1]), load_texture(cursor_textures_paths[2]))
-    cursor_idle_anim = Animation(cursor_textures_paths, cursor_loaded_textures, (50.0, 50.0, 50.0))
+    cursor_idle_anim = Animation("Assets\\Cursor_Sprite", cursor_loaded_textures, (50.0, 50.0, 50.0))
     Cursor(Transform2D(get_mouse_position(), rot=0, scale=2), [cursor_idle_anim])
 
     # set up grass which hangs out at the bottom of the screen
-    grass_textures_paths = ("Assets\Grass_1.png",)
+    grass_textures_paths = ("Assets\\Background_Sprites\\Grass_1.png",)
     grass_loaded_textures = (load_texture(grass_textures_paths[0]),)
-    grass_idle_anim = Animation(grass_textures_paths, grass_loaded_textures, (250.0,))
+    grass_idle_anim = Animation("Assets\\Background_Sprites", grass_loaded_textures, (250.0,))
     Sprite(Transform2D(Vector2(0, get_monitor_height(get_current_monitor()) - (27 * 5)), rot=0, scale=2.5), [grass_idle_anim])
 
     # set up spawner which spawns bugs over time
-    gnat_textures_paths = ("Assets\Gnat_1.png", "Assets\Gnat_2.png")
+    gnat_textures_paths = ("Assets\\Gnat_Sprite\\Gnat_1.png", "Assets\\Gnat_Sprite\\Gnat_2.png")
     gnat_loaded_textures = (load_texture(gnat_textures_paths[0]), load_texture(gnat_textures_paths[1]))
-    gnat_idle_anim = Animation(gnat_textures_paths, gnat_loaded_textures, (300.0, 300.0))
+    gnat_idle_anim = Animation("Assets\\Gnat_Sprite", gnat_loaded_textures, (300.0, 300.0))
     spawner = SpawnBugs(max_capacity=12, spawn_rate=3, fly_anims=[gnat_idle_anim], hopper_anims=[gnat_idle_anim], crawler_anims=[gnat_idle_anim])
     return (player, spawner)
 #######################################################################
@@ -106,7 +106,7 @@ def main():
 
     ############################## game loop ##############################
 
-    process = subprocess.Popen(["python", "Scripts\sub.py"])
+    process = subprocess.Popen(["python", "Scripts\\sub.py"])
 
     while not window_should_close():
 
@@ -130,7 +130,7 @@ def main():
         end_drawing()
 
         # sync visuals to subprocesses
-        file = open("Data\Shared_Main_Process_Sprite_Data.txt", "w")
+        file = open("Data\\Shared_Main_Process_Sprite_Data.txt", "w")
     
         new_file_contents = f"{player.get_current_animation().get_current_texture_path()},{player.transform.pos.x:.2f},{player.transform.pos.y:.2f},{player.transform.rot:.2f},{player.transform.scale:.2f}\n"
 
@@ -143,12 +143,12 @@ def main():
     process.kill()
 
     # delete temporary data
-    while os.path.exists("Data"):
-        shutil.rmtree("Data", ignore_errors=True)
+    #while os.path.exists("Data"):
+     #   shutil.rmtree("Data", ignore_errors=True)
 
     # update backup savefile
-    if file_exists("PersistentData\Save_Data.txt") and file_exists("PersistentData\Backup_Save_Data.txt"):
-        shutil.copyfile("PersistentData\Save_Data.txt", "PersistentData\Backup_Save_Data.txt")
+    if file_exists("PersistentData\\Save_Data.txt") and file_exists("PersistentData\\Backup_Save_Data.txt"):
+        shutil.copyfile("PersistentData\\Save_Data.txt", "PersistentData\\Backup_Save_Data.txt")
 
     # close the game
     close_window()

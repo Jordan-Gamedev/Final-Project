@@ -1,0 +1,2 @@
+Assets\Bat_Sprite\Bat_2.png,1573.90,733.55,0.00,4.90
+Assets\Gnat_Sprite\Gnat_1.png,2660.00,1400.00,0.00,2.00
