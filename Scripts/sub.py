@@ -45,15 +45,11 @@ for file in assets_folder.rglob("**\\*.png"):
     texture_cache[str(file)] = load_texture(str(file))
 
 # set up custom cursor
-cursor_textures_paths = ("Assets\\Cursor_Sprite\\Cursor_Idle_1.png", "Assets\\Cursor_Sprite\\Cursor_Idle_2.png", "Assets\\Cursor_Sprite\\Cursor_Idle_3.png")
-cursor_loaded_textures = (load_texture(cursor_textures_paths[0]), load_texture(cursor_textures_paths[1]), load_texture(cursor_textures_paths[2]))
-cursor_idle_anim = Animation("Assets\\Cursor_Sprite", cursor_loaded_textures, (50.0, 50.0, 50.0))
+cursor_idle_anim = Animation("Assets\\Cursor_Sprite", (50.0, 50.0, 50.0))
 cursor = Cursor(Transform2D(get_mouse_position(), rot=0, scale=2), [cursor_idle_anim])
 
 # set up spawner which spawns bugs over time
-gnat_textures_paths = ("Assets\\Gnat_Sprite\\Gnat_1.png", "Assets\\Gnat_Sprite\\Gnat_2.png")
-gnat_loaded_textures = (load_texture(gnat_textures_paths[0]), load_texture(gnat_textures_paths[1]))
-gnat_idle_anim = Animation("Assets\\Gnat_Sprite", gnat_loaded_textures, (300.0, 300.0))
+gnat_idle_anim = Animation("Assets\\Gnat_Sprite", (300.0, 300.0))
 spawner = SpawnBugs(max_capacity=12, spawn_rate=3, fly_anims=[gnat_idle_anim], hopper_anims=[gnat_idle_anim], crawler_anims=[gnat_idle_anim])
 
 while not window_should_close():

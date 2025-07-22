@@ -3,14 +3,15 @@ import os
 
 class Animation:
 
-    def __init__(self, folder_path:str, loaded_textures:list, frame_durations:tuple, is_loop = True, on_finish_event = None):
+    def __init__(self, folder_path:str, frame_durations:tuple, is_loop = True, on_finish_event = None):
         self.texture_paths = []
-
+        self.loaded_textures = []
 
         for sprite in os.listdir(folder_path):
-            self.texture_paths.append(folder_path + "\\" + sprite)
+            asset_path = folder_path + "\\" + sprite
+            self.texture_paths.append(asset_path)
+            self.loaded_textures.append(load_texture(asset_path))
 
-        self.loaded_textures = loaded_textures
         self.frame_durations = frame_durations
         self.is_loop = is_loop
         self.on_finish_event = on_finish_event

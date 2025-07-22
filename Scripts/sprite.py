@@ -1,7 +1,6 @@
 from transform import Transform2D
 from pyray import *
 from raylib import *
-import os
 
 class Sprite:
 

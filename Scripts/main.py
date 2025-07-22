@@ -46,10 +46,9 @@ def set_up_data_files():
 
     # create save data file if it does not exist
     if not file_exists("PersistentData\\Save_Data.txt"):
-        file = open("PersistentData\\Save_Data.txt", "w")
-        # Points, Size of Desert
-        file.write(f"{0},{0}")
-        file.close()
+        with open("PersistentData\\Save_Data.txt", "w") as file:
+            # Points, Size of Desert
+            file.write(f"{0},{0}")
     
     # create backup save data file
     open("PersistentData\\Backup_Save_Data.txt", "w").close()
@@ -71,31 +70,25 @@ def set_up_window():
 #######################################################################
 
 ############################ import assets ############################
+
 def create_asset_instances():
     # set up player
-    player_textures_paths = ("Assets\\Bat_Sprite\\Bat_1.png", "Assets\\Bat_Sprite\\Bat_2.png")
-    player_loaded_textures = (load_texture(player_textures_paths[0]), load_texture(player_textures_paths[1]))
-    player_idle_anim = Animation("Assets\\Bat_Sprite", player_loaded_textures, (100.0, 100.0))
+    player_idle_anim = Animation("Assets\\Bat_Sprite", (100.0, 100.0))
     player = Player(Transform2D(scale=4.9), [player_idle_anim], speed=1000)
 
     # set up custom cursor
-    cursor_textures_paths = ("Assets\\Cursor_Sprite\\Cursor_Idle_1.png", "Assets\\Cursor_Sprite\\Cursor_Idle_2.png", "Assets\\Cursor_Sprite\\Cursor_Idle_3.png")
-    cursor_loaded_textures = (load_texture(cursor_textures_paths[0]), load_texture(cursor_textures_paths[1]), load_texture(cursor_textures_paths[2]))
-    cursor_idle_anim = Animation("Assets\\Cursor_Sprite", cursor_loaded_textures, (50.0, 50.0, 50.0))
+    cursor_idle_anim = Animation("Assets\\Cursor_Sprite", (50.0, 50.0, 50.0))
     Cursor(Transform2D(get_mouse_position(), rot=0, scale=2), [cursor_idle_anim])
 
     # set up grass which hangs out at the bottom of the screen
-    grass_textures_paths = ("Assets\\Background_Sprites\\Grass_1.png",)
-    grass_loaded_textures = (load_texture(grass_textures_paths[0]),)
-    grass_idle_anim = Animation("Assets\\Background_Sprites", grass_loaded_textures, (250.0,))
+    grass_idle_anim = Animation("Assets\\Background_Sprites", (250.0,))
     Sprite(Transform2D(Vector2(0, get_monitor_height(get_current_monitor()) - (27 * 5)), rot=0, scale=2.5), [grass_idle_anim])
 
     # set up spawner which spawns bugs over time
-    gnat_textures_paths = ("Assets\\Gnat_Sprite\\Gnat_1.png", "Assets\\Gnat_Sprite\\Gnat_2.png")
-    gnat_loaded_textures = (load_texture(gnat_textures_paths[0]), load_texture(gnat_textures_paths[1]))
-    gnat_idle_anim = Animation("Assets\\Gnat_Sprite", gnat_loaded_textures, (300.0, 300.0))
+    gnat_idle_anim = Animation("Assets\\Gnat_Sprite", (300.0, 300.0))
     spawner = SpawnBugs(max_capacity=12, spawn_rate=3, fly_anims=[gnat_idle_anim], hopper_anims=[gnat_idle_anim], crawler_anims=[gnat_idle_anim])
     return (player, spawner)
+
 #######################################################################
 
 def main():
@@ -143,8 +136,8 @@ def main():
     process.kill()
 
     # delete temporary data
-    #while os.path.exists("Data"):
-     #   shutil.rmtree("Data", ignore_errors=True)
+    while os.path.exists("Data"):
+        shutil.rmtree("Data", ignore_errors=True)
 
     # update backup savefile
     if file_exists("PersistentData\\Save_Data.txt") and file_exists("PersistentData\\Backup_Save_Data.txt"):
