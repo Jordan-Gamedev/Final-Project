@@ -34,7 +34,7 @@ class Animation:
                     self.curr_frame_time = 0.0
                     self.on_finish_event()
         
-    def get_current_texture(self):
+    def get_current_texture(self) -> Texture2D:
         return self.loaded_textures[int(self.curr_frame)]
     
     def get_current_texture_path(self):

@@ -3,6 +3,7 @@ import random
 
 from bug import Bug
 from hopping_bug import HoppingBug
+from hover_bug import HoverBug
 from transform import Transform2D
 
 class SpawnBugs:
@@ -37,12 +38,15 @@ class SpawnBugs:
         spawn_pos_y = random.uniform(self.spawn_bounds_y[0], self.spawn_bounds_y[1])
 
         #choice = random.choice(['fly', 'grasshopper'])
-        choice = random.choice(['grasshopper', 'grasshopper'])
+        #choice = random.choice(['grasshopper', 'grasshopper'])
+        choice = random.choice(['hover', 'hover'])
 
         bug_transform = Transform2D(Vector2(spawn_pos_x, spawn_pos_y), 0, 2)
         match choice:
             case 'fly':
-                Bug(bug_transform, self.fly_anims, damage_size=45.0, max_hp=1.0, points=10, speed=100)
+                Bug(bug_transform, self.fly_anims, damage_size=45.0, max_hp=1.0, points=10, speed=500)
             case 'grasshopper':
                 hop_strength = (Vector2(2, 2), Vector2(6, 12))
                 HoppingBug(bug_transform, self.hopper_anims, damage_size=45.0, max_hp=1.0, points=10, hop_strength=hop_strength, idle_time=Vector2(3, 6), speed=100)
+            case 'hover':
+                HoverBug(bug_transform, self.hopper_anims, damage_size=45.0, max_hp=1.0, points=10, jitter=10.0, max_move_dist=200.0, idle_time=Vector2(3, 6), speed=100)
