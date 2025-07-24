@@ -12,6 +12,7 @@ class Animation:
             self.texture_paths.append(asset_path)
             self.loaded_textures.append(load_texture(asset_path))
 
+        self.folder_path = folder_path
         self.frame_durations = frame_durations
         self.is_loop = is_loop
         self.on_finish_event = on_finish_event

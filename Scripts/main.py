@@ -82,7 +82,7 @@ def create_asset_instances():
 
     # set up spawner which spawns bugs over time
     gnat_idle_anim = Animation("Assets\\Sprites\\Gnat", (300.0, 300.0))
-    spawner = SpawnBugs(max_capacity=12, spawn_rate=3, fly_anims=[gnat_idle_anim], hopper_anims=[gnat_idle_anim], crawler_anims=[gnat_idle_anim])
+    spawner = SpawnBugs(max_capacity=12, spawn_rate=1, fly_anims=[gnat_idle_anim], hopper_anims=[gnat_idle_anim], crawler_anims=[gnat_idle_anim])
 
     # set up custom cursor
     cursor_idle_anim = Animation("Assets\\Sprites\\Cursor", (50.0, 50.0, 50.0))
