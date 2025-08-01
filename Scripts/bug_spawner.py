@@ -41,7 +41,7 @@ class SpawnBugs:
         spawn_pos_x = random.choice([self.spawn_bounds_x[0], self.spawn_bounds_x[1]])
         spawn_pos_y = random.uniform(self.spawn_bounds_y[0], self.spawn_bounds_y[1])
 
-        #choice = random.choice(['fly', 'fly'])
+        #choice = random.choice(['hover', 'hover'])
         choice = random.choice(['fly', 'hop', 'hover', 'crawl'])
 
         bug_transform = Transform2D(Vector2(spawn_pos_x, spawn_pos_y), 0, 2)
@@ -54,7 +54,7 @@ class SpawnBugs:
             case 'hover':
 
                 anims = [Animation(animation.folder_path, animation.frame_durations, animation.is_loop, animation.on_finish_event) for animation in self.hover_anims]
-                HoverBug(bug_transform, anims, damage_size=50.0, max_hp=0.5, points=10, jitter=10.0, max_move_dist=700.0, idle_time=Vector2(3, 6), speed=250)
+                HoverBug(bug_transform, anims, damage_size=50.0, max_hp=0.5, points=10, jitter=10.0, jitter_speed_mult=.15, max_move_dist=700.0, idle_time=Vector2(3, 6), speed=1200)
 
             case 'hop':
                 

@@ -4,14 +4,14 @@ from raylib import *
 import shutil
 import subprocess
 
-from animation import *
-from bug import *
+from animation import Animation
+from bug import Bug
 from bug_spawner import SpawnBugs
-from cursor import *
-from dynamic_sprite import *
-from hopping_bug import *
-from player import *
-from sprite import *
+from cursor import Cursor
+from particle import Particle
+from player import Player
+from sprite import Sprite
+from transform import Transform2D
 
 ########################## create data files ##########################
 def set_up_data_files():
@@ -80,7 +80,7 @@ def create_asset_instances():
     gnat_idle_anim = Animation("Assets\\Sprites\\Gnat", (300.0, 300.0))
     hoverer_idle_anim = Animation("Assets\\Sprites\\Hoverer", (50, 50))
     spawner = SpawnBugs(max_capacity=12, spawn_rate=1, fly_anims=[gnat_idle_anim], hover_anims=[hoverer_idle_anim], hopper_anims=[gnat_idle_anim], crawler_anims=[gnat_idle_anim])
-    
+
     # set up grass which hangs out at the bottom of the screen
     grass_idle_anim = Animation("Assets\\Sprites\\Background", (250.0,))
     grass = Sprite(Transform2D(Vector2(0, get_monitor_height(get_current_monitor()) - (27 * 5)), rot=0, scale=2.5), [grass_idle_anim])
@@ -139,7 +139,8 @@ def main():
 
         for little_bug in Bug.all_bugs:
             new_file_contents += f"{little_bug.get_current_animation().get_current_texture_path()},{little_bug.transform.pos.x:.2f},{little_bug.transform.pos.y:.2f},{little_bug.transform.rot:.2f},{little_bug.transform.scale:.2f}\n"
-
+        for particle in Particle.all_particles:
+            new_file_contents += f"{particle.get_current_animation().get_current_texture_path()},{particle.transform.pos.x:.2f},{particle.transform.pos.y:.2f},{particle.transform.rot:.2f},{particle.transform.scale:.2f}\n"
         file.write(new_file_contents)
         file.close()
 
