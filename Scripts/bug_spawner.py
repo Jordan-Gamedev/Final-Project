@@ -41,7 +41,7 @@ class SpawnBugs:
         spawn_pos_x = random.choice([self.spawn_bounds_x[0], self.spawn_bounds_x[1]])
         spawn_pos_y = random.uniform(self.spawn_bounds_y[0], self.spawn_bounds_y[1])
 
-        #choice = random.choice(['hover', 'hover'])
+        #choice = random.choice(['hop', 'hop'])
         choice = random.choice(['fly', 'hop', 'hover', 'crawl'])
 
         bug_transform = Transform2D(Vector2(spawn_pos_x, spawn_pos_y), 0, 2)

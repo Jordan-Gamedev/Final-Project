@@ -17,6 +17,6 @@ class Particle(DynamicSprite):
         self.rotate_around_center(math.degrees(vector2_angle(Vector2(1,0), self.vel)))
         
         # destroy the particle if it falls on grass
-        if self.transform.pos.y < -200:
+        if self.transform.pos.y < -100:
             Sprite.all_sprites.remove(self)
             Particle.all_particles.remove(self)
