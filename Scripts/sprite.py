@@ -1,5 +1,6 @@
 from animation import Animation
 from transform import Transform2D
+import math
 from pyray import *
 from raylib import *
 
@@ -31,13 +32,30 @@ class Sprite:
         return self.animations[self.anim_index]
 
     def get_center_position_at_self(self):
+
         texture = self.get_current_animation().get_current_texture()
-        return Vector2(self.transform.pos.x + (texture.width * self.transform.scale / 2.0), self.transform.pos.y + (texture.height * self.transform.scale / 2.0))
+
+        hypotenuse = math.sqrt(texture.width**2 + texture.height**2)
+        angle = math.atan(float(texture.height) / float(texture.width)) + math.radians(self.transform.rot)
+
+        return Vector2(self.transform.pos.x + (hypotenuse * math.cos(angle) * self.transform.scale * 0.5), self.transform.pos.y + (hypotenuse * math.sin(angle) * self.transform.scale * 0.5))
 
     def center_position_at_other(self, pos):
         texture = self.get_current_animation().get_current_texture()
-        return Vector2(pos.x - (texture.width * self.transform.scale / 2.0), pos.y - (texture.height * self.transform.scale / 2.0))
+
+        hypotenuse = math.sqrt(texture.width**2 + texture.height**2)
+        angle = math.atan(float(texture.height) / float(texture.width)) + math.radians(self.transform.rot)
+
+        return Vector2(pos.x - (hypotenuse * math.cos(angle) * self.transform.scale * 0.5), pos.y - (hypotenuse * math.sin(angle) * self.transform.scale * 0.5))
+
     
+    def rotate_around_center(self, rotation:float):
+        prev_centered_position = self.get_center_position_at_self()
+        self.transform.rot = rotation
+        new_centered_position = self.get_center_position_at_self()
+        diff = vector2_subtract(prev_centered_position, new_centered_position)
+        self.transform.pos = vector2_add(self.transform.pos, diff)
+
     def flip_sprite(self):
         self.facing_direction = -self.facing_direction
         for anim in self.animations:

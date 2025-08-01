@@ -9,8 +9,10 @@ class Animation:
 
         for sprite in os.listdir(folder_path):
             asset_path = folder_path + "\\" + sprite
-            self.texture_paths.append(asset_path)
-            self.loaded_textures.append(load_texture(asset_path))
+
+            if ".png" in asset_path:
+                self.texture_paths.append(asset_path)
+                self.loaded_textures.append(load_texture(asset_path))
 
         self.folder_path = folder_path
         self.frame_durations = frame_durations

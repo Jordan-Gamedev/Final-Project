@@ -76,19 +76,19 @@ def create_asset_instances():
     player_idle_anim = Animation("Assets\\Sprites\\Bat", (100.0, 100.0))
     player = Player(Transform2D(scale=4.9), [player_idle_anim], speed=1000)
 
-    # set up grass which hangs out at the bottom of the screen
-    grass_idle_anim = Animation("Assets\\Sprites\\Background", (250.0,))
-    Sprite(Transform2D(Vector2(0, get_monitor_height(get_current_monitor()) - (27 * 5)), rot=0, scale=2.5), [grass_idle_anim])
-
     # set up spawner which spawns bugs over time
     gnat_idle_anim = Animation("Assets\\Sprites\\Gnat", (300.0, 300.0))
     spawner = SpawnBugs(max_capacity=12, spawn_rate=1, fly_anims=[gnat_idle_anim], hopper_anims=[gnat_idle_anim], crawler_anims=[gnat_idle_anim])
+    
+    # set up grass which hangs out at the bottom of the screen
+    grass_idle_anim = Animation("Assets\\Sprites\\Background", (250.0,))
+    grass = Sprite(Transform2D(Vector2(0, get_monitor_height(get_current_monitor()) - (27 * 5)), rot=0, scale=2.5), [grass_idle_anim])
 
     # set up custom cursor
     cursor_idle_anim = Animation("Assets\\Sprites\\Cursor", (50.0, 50.0, 50.0))
     cursor = Cursor(Transform2D(get_mouse_position(), rot=0, scale=2), [cursor_idle_anim])
 
-    return (player, cursor, spawner)
+    return (player, cursor, grass, spawner)
 
 #######################################################################
 
@@ -96,7 +96,7 @@ def main():
 
     set_up_data_files()
     set_up_window()
-    player, cursor, spawner = create_asset_instances()
+    player, cursor, grass, spawner = create_asset_instances()
 
     ############################## game loop ##############################
 
@@ -119,8 +119,11 @@ def main():
 
         # render all sprites except the cursor
         for sprite in Sprite.all_sprites:
-            if sprite is not cursor:
+            if sprite is not cursor and sprite is not grass:
                 sprite.render()
+
+        # render grass over bugs
+        grass.render()
 
         # render cursor over everything
         cursor.render()

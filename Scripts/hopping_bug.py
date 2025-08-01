@@ -17,7 +17,7 @@ class HoppingBug(Bug):
     def update(self, dt):
         super().update(dt)
 
-        ground_pos = get_monitor_height(get_current_monitor()) - 200
+        ground_pos = get_monitor_height(get_current_monitor()) - 100
         is_grounded = True if self.transform.pos.y >= ground_pos else False
 
         if is_grounded:

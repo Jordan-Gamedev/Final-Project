@@ -1,9 +1,9 @@
-import copy
 from pyray import *
 import random
 
 from animation import Animation
 from bug import Bug
+from flying_bug import FlyingBug
 from hopping_bug import HoppingBug
 from hover_bug import HoverBug
 from transform import Transform2D
@@ -40,22 +40,21 @@ class SpawnBugs:
         spawn_pos_x = random.choice([self.spawn_bounds_x[0], self.spawn_bounds_x[1]])
         spawn_pos_y = random.uniform(self.spawn_bounds_y[0], self.spawn_bounds_y[1])
 
-        #choice = random.choice(['fly', 'grasshopper'])
-        #choice = random.choice(['grasshopper', 'grasshopper'])
-        choice = random.choice(['hover', 'grasshopper'])
+        #choice = random.choice(['fly', 'fly'])
+        choice = random.choice(['hover', 'hop', 'fly'])
 
         bug_transform = Transform2D(Vector2(spawn_pos_x, spawn_pos_y), 0, 2)
         match choice:
             case 'fly':
                 
                 anims = [Animation(animation.folder_path, animation.frame_durations, animation.is_loop, animation.on_finish_event) for animation in self.fly_anims]                
-                Bug(bug_transform, anims, damage_size=45.0, max_hp=1.0, points=10, speed=500)
-            case 'grasshopper':
+                FlyingBug(bug_transform, anims, damage_size=60.0, max_hp=1.0, points=10, rot_speed=Vector2(.75, 2), min_move_speed_mult=1, speed=100, anim_speed=5)
+            case 'hop':
                 
                 anims = [Animation(animation.folder_path, animation.frame_durations, animation.is_loop, animation.on_finish_event) for animation in self.hopper_anims]
                 hop_strength = (Vector2(2, 2), Vector2(6, 12))
-                HoppingBug(bug_transform, anims, damage_size=45.0, max_hp=1.0, points=10, hop_strength=hop_strength, idle_time=Vector2(3, 6), speed=100)
+                HoppingBug(bug_transform, anims, damage_size=60.0, max_hp=1.0, points=10, hop_strength=hop_strength, idle_time=Vector2(3, 6), speed=100)
             case 'hover':
 
                 anims = [Animation(animation.folder_path, animation.frame_durations, animation.is_loop, animation.on_finish_event) for animation in self.fly_anims]
-                HoverBug(bug_transform, anims, damage_size=45.0, max_hp=1.0, points=10, jitter=10.0, max_move_dist=200.0, idle_time=Vector2(3, 6), speed=250)
+                HoverBug(bug_transform, anims, damage_size=60.0, max_hp=1.0, points=10, jitter=10.0, max_move_dist=200.0, idle_time=Vector2(3, 6), speed=250)
