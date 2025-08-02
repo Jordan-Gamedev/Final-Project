@@ -12,13 +12,14 @@ class Sprite:
         self.transform = transform
         self.animations = animations
         self.anim_speed = anim_speed
+        self.curr_anim_speed = anim_speed
         self.anim_index = 0
         self.facing_direction_x = 1
         self.facing_direction_y = 1
         Sprite.all_sprites.append(self)
     
     def update(self, dt):
-        self.get_current_animation().update(self.anim_speed * dt)
+        self.get_current_animation().update(self.curr_anim_speed * dt)
         
     def render(self, offset=Vector2()):
         draw_texture_ex(self.get_current_animation().get_current_texture(), vector2_add(self.transform.pos, offset), self.transform.rot, self.transform.scale, WHITE)
@@ -28,6 +29,20 @@ class Sprite:
         curr_anim.curr_frame = 0
         curr_anim.curr_frame_time = 0.0
         self.anim_index = anim_index
+        self.curr_anim_speed = self.anim_speed
+
+    def stop_animation(self, frame_index = -1):
+        
+        # get the current animation that is being played
+        curr_anim = self.get_current_animation()
+        
+        # move the animation to the specified frame
+        if frame_index > -1:
+            curr_anim.curr_frame = frame_index
+            curr_anim.curr_frame_time = 0.0
+
+        # stop the animation
+        self.curr_anim_speed = 0.0
 
     def get_current_animation(self):
         return self.animations[self.anim_index]
