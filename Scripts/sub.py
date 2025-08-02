@@ -51,7 +51,13 @@ cursor = Cursor(Transform2D(get_mouse_position(), rot=0, scale=2), [cursor_idle_
 # set up spawner which spawns bugs over time
 gnat_idle_anim = Animation("Assets\\Sprites\\Gnat", (300.0, 300.0))
 hoverer_idle_anim = Animation("Assets\\Sprites\\Hoverer", (50, 50))
-spawner = SpawnBugs(max_capacity=12, spawn_rate=3, fly_anims=[gnat_idle_anim], hover_anims=[hoverer_idle_anim], hopper_anims=[gnat_idle_anim], crawler_anims=[gnat_idle_anim])
+hopper_idle_anim = Animation("Assets\\Sprites\\Hopper\\Idle", (50, 50, 50, 50, 50, 50))
+hopper_jump_anim = Animation("Assets\\Sprites\\Hopper\\Jump", (50, 50, 50, 50, 50, 50), is_loop=False)
+crawler_idle_anim = Animation("Assets\\Sprites\\Crawler\\Idle", (50, 50, 50, 50, 50, 50, 50, 50))
+crawler_walk_anim = Animation("Assets\\Sprites\\Crawler\\Walk", (50, 50, 50, 50, 50, 50))
+crawler_fall_anim = Animation("Assets\\Sprites\\Crawler\\Fall", (25, 25, 25, 25, 25, 25))
+spawner = SpawnBugs(max_capacity=12, spawn_rate=1, fly_anims=[gnat_idle_anim], hover_anims=[hoverer_idle_anim], \
+                hopper_anims=[hopper_idle_anim, hopper_jump_anim], crawler_anims=[crawler_idle_anim, crawler_walk_anim, crawler_fall_anim])
 
 while not window_should_close():
 

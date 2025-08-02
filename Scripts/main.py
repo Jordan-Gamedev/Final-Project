@@ -81,7 +81,11 @@ def create_asset_instances():
     hoverer_idle_anim = Animation("Assets\\Sprites\\Hoverer", (50, 50))
     hopper_idle_anim = Animation("Assets\\Sprites\\Hopper\\Idle", (50, 50, 50, 50, 50, 50))
     hopper_jump_anim = Animation("Assets\\Sprites\\Hopper\\Jump", (50, 50, 50, 50, 50, 50), is_loop=False)
-    spawner = SpawnBugs(max_capacity=12, spawn_rate=1, fly_anims=[gnat_idle_anim], hover_anims=[hoverer_idle_anim], hopper_anims=[hopper_idle_anim, hopper_jump_anim], crawler_anims=[gnat_idle_anim])
+    crawler_idle_anim = Animation("Assets\\Sprites\\Crawler\\Idle", (50, 50, 50, 50, 50, 50, 50, 50))
+    crawler_walk_anim = Animation("Assets\\Sprites\\Crawler\\Walk", (50, 50, 50, 50, 50, 50))
+    crawler_fall_anim = Animation("Assets\\Sprites\\Crawler\\Fall", (25, 25, 25, 25, 25, 25))
+    spawner = SpawnBugs(max_capacity=15, spawn_rate=1, fly_anims=[gnat_idle_anim], hover_anims=[hoverer_idle_anim], \
+                    hopper_anims=[hopper_idle_anim, hopper_jump_anim], crawler_anims=[crawler_idle_anim, crawler_walk_anim, crawler_fall_anim])
 
     # set up grass which hangs out at the bottom of the screen
     grass_idle_anim = Animation("Assets\\Sprites\\Background", (250.0,))

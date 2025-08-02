@@ -3,6 +3,7 @@ import random
 
 from animation import Animation
 from bug import Bug
+from crawling_bug import CrawlingBug
 from flying_bug import FlyingBug
 from hopping_bug import HoppingBug
 from hover_bug import HoverBug
@@ -41,7 +42,7 @@ class SpawnBugs:
         spawn_pos_x = random.choice([self.spawn_bounds_x[0], self.spawn_bounds_x[1]])
         spawn_pos_y = random.uniform(self.spawn_bounds_y[0], self.spawn_bounds_y[1])
 
-        #choice = random.choice(['hop', 'hop'])
+        #choice = random.choice(['crawl', 'crawl'])
         choice = random.choice(['fly', 'hop', 'hover', 'crawl'])
 
         bug_transform = Transform2D(Vector2(spawn_pos_x, spawn_pos_y), 0, 2)
@@ -54,7 +55,7 @@ class SpawnBugs:
             case 'hover':
 
                 anims = [Animation(animation.folder_path, animation.frame_durations, animation.is_loop, animation.on_finish_event) for animation in self.hover_anims]
-                HoverBug(bug_transform, anims, damage_size=50.0, max_hp=0.5, points=10, jitter=10.0, jitter_speed_mult=.15, max_move_dist=700.0, idle_time=Vector2(3, 6), speed=1200)
+                HoverBug(bug_transform, anims, damage_size=50.0, max_hp=0.5, points=15, jitter=10.0, jitter_speed_mult=.15, max_move_dist=700.0, idle_time=Vector2(3, 6), speed=1200)
 
             case 'hop':
                 
@@ -64,6 +65,7 @@ class SpawnBugs:
 
             case 'crawl':
 
-                #anims = [Animation(animation.folder_path, animation.frame_durations, animation.is_loop, animation.on_finish_event) for animation in self.fly_anims]
-                #HoverBug(bug_transform, anims, damage_size=60.0, max_hp=1.0, points=10, jitter=10.0, max_move_dist=200.0, idle_time=Vector2(3, 6), speed=250)
-                pass
+                anims = [Animation(animation.folder_path, animation.frame_durations, animation.is_loop, animation.on_finish_event) for animation in self.crawler_anims]
+                on_ceiling = random.choice([True, False])
+                CrawlingBug(bug_transform, anims, damage_size=50.0, max_hp=0.65, points=5, idle_fall_prob_per_sec=0.01, walk_fall_prob_per_sec=0.025, on_ceiling=on_ceiling, \
+                            idle_time=Vector2(1.5, 5), walk_time=Vector2(1.5, 4), speed=100)

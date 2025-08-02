@@ -46,16 +46,16 @@ class HoverBug(Bug):
             if self.current_idle_time <= 0:
 
                 # compute new random idle position
-                min_x = self.idle_position.x - (self.max_move_dist * 0.5) if self.facing_direction == 1 else self.idle_position.x - self.max_move_dist
-                max_x = self.idle_position.x + self.max_move_dist if self.facing_direction == 1 else self.idle_position.x + (self.max_move_dist * 0.5)
+                min_x = self.idle_position.x - (self.max_move_dist * 0.5) if self.facing_direction_x == 1 else self.idle_position.x - self.max_move_dist
+                max_x = self.idle_position.x + self.max_move_dist if self.facing_direction_x == 1 else self.idle_position.x + (self.max_move_dist * 0.5)
                 self.target_position.x = random.uniform(min_x, max_x)
                 min_y = self.idle_position.y - (self.max_move_dist * 0.5)
                 max_y = self.idle_position.y + (self.max_move_dist * 0.5)
                 self.target_position.y = random.uniform(min_y, max_y)
                 self.idle_position = Vector2(self.target_position.x, self.target_position.y)
 
-                if (self.target_position.x < self.transform.pos.x and self.facing_direction > 0) or (self.target_position.x > self.transform.pos.x and self.facing_direction < 0):
-                    self.flip_sprite()
+                if (self.target_position.x < self.transform.pos.x and self.facing_direction_x > 0) or (self.target_position.x > self.transform.pos.x and self.facing_direction_x < 0):
+                    self.flip_sprite_horiz()
 
         elif vector2_distance(self.transform.pos, self.target_position) < self.speed * dt:
             # reset idle time

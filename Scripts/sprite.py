@@ -13,7 +13,8 @@ class Sprite:
         self.animations = animations
         self.anim_speed = anim_speed
         self.anim_index = 0
-        self.facing_direction = 1
+        self.facing_direction_x = 1
+        self.facing_direction_y = 1
         Sprite.all_sprites.append(self)
     
     def update(self, dt):
@@ -56,11 +57,20 @@ class Sprite:
         diff = vector2_subtract(prev_centered_position, new_centered_position)
         self.transform.pos = vector2_add(self.transform.pos, diff)
 
-    def flip_sprite(self):
-        self.facing_direction = -self.facing_direction
+    def flip_sprite_horiz(self):
+        self.facing_direction_x = -self.facing_direction_x
         for anim in self.animations:
             for i, tex in enumerate(anim.loaded_textures):
                 image_to_flip = load_image_from_texture(tex)
                 image_flip_horizontal(image_to_flip)
+                unload_texture(tex)
+                anim.loaded_textures[i] = load_texture_from_image(image_to_flip)
+
+    def flip_sprite_vert(self):
+        self.facing_direction_y = -self.facing_direction_y
+        for anim in self.animations:
+            for i, tex in enumerate(anim.loaded_textures):
+                image_to_flip = load_image_from_texture(tex)
+                image_flip_vertical(image_to_flip)
                 unload_texture(tex)
                 anim.loaded_textures[i] = load_texture_from_image(image_to_flip)
