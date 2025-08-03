@@ -17,7 +17,7 @@ current_monitor = get_current_monitor()
 
 # create a small resizable window
 set_config_flags(FLAG_WINDOW_RESIZABLE | FLAG_WINDOW_TOPMOST)
-init_window(500, 500, 'Desert Biome')
+init_window(500, 500, 'Mountain Biome')
 set_window_min_size(250, 250)
 set_window_max_size(500, 500)
 hide_cursor()
@@ -59,6 +59,8 @@ crawler_fall_anim = Animation("Assets\\Sprites\\Crawler\\Fall", (25, 25, 25, 25,
 spawner = SpawnBugs(max_capacity=12, spawn_rate=1, fly_anims=[gnat_idle_anim], hover_anims=[hoverer_idle_anim], \
                 hopper_anims=[hopper_idle_anim, hopper_jump_anim], crawler_anims=[crawler_idle_anim, crawler_walk_anim, crawler_fall_anim])
 
+background_art = load_texture("Assets\\Sprites\\Background\\Mountain_Background.jpg")
+
 while not window_should_close():
 
     delta_time = get_frame_time()
@@ -79,8 +81,13 @@ while not window_should_close():
     
     file.close()
 
-    clear_background(DARKGRAY)
+    clear_background(WHITE)
 
+    source_rect = Rectangle(0, 0, background_art.width, background_art.height)
+    dest_rect = Rectangle(0, 0, GetMonitorWidth(get_current_monitor()), GetMonitorHeight(get_current_monitor()))
+    
+    draw_texture_pro(background_art, source_rect, dest_rect, Vector2(get_window_position().x, get_window_position().y), 0, WHITE)
+    
     for line in contents:
         if ',' in line:
             texture_path, pos_x, pos_y, rot, scale = line.split(',')

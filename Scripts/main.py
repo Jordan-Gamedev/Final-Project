@@ -14,6 +14,16 @@ from player import Player
 from sprite import Sprite
 from transform import Transform2D
 
+######################### globals #####################################
+background_art = None
+process = None
+game_started:bool = False
+player = None
+cursor = None
+grass = None
+spawner = None
+#######################################################################
+
 ########################## create data files ##########################
 def set_up_data_files():
 
@@ -59,7 +69,7 @@ def set_up_data_files():
 ######################## set window properties ########################
 def set_up_window():
     # create maximized window
-    set_config_flags(FLAG_WINDOW_TRANSPARENT | FLAG_WINDOW_UNDECORATED | FLAG_WINDOW_ALWAYS_RUN | FLAG_WINDOW_RESIZABLE)
+    set_config_flags(FLAG_WINDOW_UNDECORATED | FLAG_WINDOW_ALWAYS_RUN | FLAG_WINDOW_RESIZABLE)
     init_window(1920, 1080, 'Game')
     maximize_window()
     
@@ -68,18 +78,15 @@ def set_up_window():
 
     # set the maximum frame rate to the maximum refresh rate of the monitor 
     set_target_fps(get_monitor_refresh_rate(get_current_monitor()))
-#######################################################################
 
-game_started:bool = False
-player = None
-cursor = None
-grass = None
-spawner = None
+    global background_art ; background_art = load_texture("Assets\\Sprites\\Background\\Main_Background.jpg")
+#######################################################################
 
 def start_game():
     global game_started ; game_started = True
     Sprite.all_sprites.clear()
     create_asset_instances()
+    global process ; process = subprocess.Popen(["python", "Scripts\\sub.py"])
 
 ############################ import assets ############################
 def create_asset_instances():
@@ -118,7 +125,9 @@ def start_menu():
     # drawing
     begin_drawing()
     clear_background(Color(0, 0, 0, 0))
-
+    source_rect = Rectangle(0, 0, background_art.width, background_art.height)
+    dest_rect = Rectangle(0, 0, GetScreenWidth(), GetScreenHeight())
+    draw_texture_pro(background_art, source_rect, dest_rect, Vector2(), 0, WHITE)
     monitor = get_current_monitor()
     draw_text("Press 'Esc' to close game", get_monitor_width(monitor) // 2 - 350, int(get_monitor_height(monitor) * 0.05), 50, WHITE)
 
@@ -145,6 +154,10 @@ def game_loop():
     # drawing
     begin_drawing()
     clear_background(Color(0, 0, 0, 0))
+
+    source_rect = Rectangle(0, 0, background_art.width, background_art.height)
+    dest_rect = Rectangle(0, 0, GetScreenWidth(), GetScreenHeight())
+    draw_texture_pro(background_art, source_rect, dest_rect, Vector2(), 0, WHITE)
 
     monitor = get_current_monitor()
     draw_text("Press 'Esc' to close game", get_monitor_width(monitor) // 2 - 350, int(get_monitor_height(monitor) * 0.05), 50, WHITE)
@@ -177,15 +190,13 @@ def game_loop():
 #######################################################################
 
 def main():
-
     set_up_data_files()
     set_up_window()
-
+    
     # set up custom cursor
     cursor_idle_anim = Animation("Assets\\Sprites\\Cursor", (50.0, 50.0, 50.0))
     global cursor ; cursor = Cursor(Transform2D(get_mouse_position(), rot=0, scale=2), [cursor_idle_anim])
 
-    #process = subprocess.Popen(["python", "Scripts\\sub.py"])
     button_transform = Transform2D(pos=Vector2(), rot=0, scale=5)
     
     start_button_idle_anim = Animation("Assets\\Sprites\\Start_Button", (100, 100, 100, 100))
@@ -206,7 +217,7 @@ def main():
         else:
             start_menu()
 
-    #process.kill()
+    process.kill()
 
     # delete temporary data
     while os.path.exists("Data"):
