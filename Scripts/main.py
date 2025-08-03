@@ -1,4 +1,3 @@
-import copy
 import os
 from pyray import *
 from raylib import *
@@ -23,6 +22,7 @@ player = None
 cursor = None
 grass = None
 spawner = None
+last_known_points = 0
 #######################################################################
 
 ########################## create data files ##########################
@@ -77,8 +77,8 @@ def set_up_window():
     # make Window's default cursor invisible
     hide_cursor()
 
-    # set the maximum frame rate to the maximum refresh rate of the monitor 
-    set_target_fps(get_monitor_refresh_rate(get_current_monitor()))
+    # set the maximum frame rate to 60 because the optimization sucks 
+    set_target_fps(60)
     
     # make it so you can't exit with a key press
     set_exit_key(KEY_NULL)
@@ -141,11 +141,15 @@ def create_asset_instances():
 #######################################################################
 
 def set_up_start_menu():
+
+    if process != None:
+        process.kill()
+
     # set up custom cursor
     cursor_idle_anim = Animation("Assets\\Sprites\\Cursor", (50.0, 50.0, 50.0))
     global cursor ; cursor = Cursor(Transform2D(get_mouse_position(), rot=0, scale=2), [cursor_idle_anim])
 
-    start_button_hover_anim = Animation("Assets\\Sprites\\Start_Button", (100, 100, 100, 100))
+    start_button_hover_anim = Animation("Assets\\Sprites\\Start_Button", (150, 150, 150, 150))
     start_button = Clickable(Transform2D(scale=5), [start_button_hover_anim])
 
     start_button.transform.pos = start_button.center_position_at_other(Vector2(get_monitor_width(get_current_monitor()) * 0.5, get_monitor_height(get_current_monitor()) * 0.3))
@@ -154,7 +158,7 @@ def set_up_start_menu():
     start_button.on_mouse_exit = lambda : start_button.stop_animation(0)
     start_button.on_mouse_click = lambda : start_game()
 
-    quit_button_hover_anim = Animation("Assets\\Sprites\\Quit_Button", (100, 100, 100, 100))
+    quit_button_hover_anim = Animation("Assets\\Sprites\\Quit_Button", (150, 150, 150, 150))
     quit_button = Clickable(Transform2D(scale=5), [quit_button_hover_anim])
     
     quit_button.transform.pos = quit_button.center_position_at_other(Vector2(get_monitor_width(get_current_monitor()) * 0.5, get_monitor_height(get_current_monitor()) * 0.6))
@@ -162,6 +166,17 @@ def set_up_start_menu():
     quit_button.on_mouse_enter = lambda : quit_button.play_animation(0)
     quit_button.on_mouse_exit = lambda : quit_button.stop_animation(0)
     quit_button.on_mouse_click = quit_game
+
+    settings_button_hover_anim = Animation("Assets\\Sprites\\Settings_Icon", (50, 50, 50, 50), is_loop=False)
+    settings_button = Clickable(Transform2D(scale=2.5), [settings_button_hover_anim])
+    settings_button_hover_anim.on_finish_event = lambda : settings_button.stop_animation(0)
+    settings_button.transform.pos = settings_button.center_position_at_other(Vector2(get_monitor_width(get_current_monitor()) * 0.5 + 300, get_monitor_height(get_current_monitor()) * 0.3))
+    settings_button.curr_anim_speed = 0
+    settings_button.on_mouse_enter = lambda : settings_button.play_animation(0)
+    settings_button.on_mouse_click = settings_menu
+
+def settings_menu():
+    pass
 
 ############################# start menu ##############################
 def start_menu():
@@ -198,6 +213,11 @@ def game_loop():
     for sprite in Sprite.all_sprites:
         sprite.update(delta_time)
 
+    # get points from save data
+    if file_exists("PersistentData\\Save_Data.txt"):
+        with open("PersistentData\\Save_Data.txt", "r") as save_data_file:
+            global last_known_points ; last_known_points = int(save_data_file.read().split(",", 1)[0])
+
     # drawing
     begin_drawing()
     clear_background(Color(0, 0, 0, 0))
@@ -212,8 +232,10 @@ def game_loop():
         Sprite.all_sprites.clear()
         Bug.all_bugs.clear()
         set_up_start_menu()
-        
     
+    # show how many points the player has
+    draw_text(f"Points: {last_known_points}", int(get_monitor_width(get_current_monitor()) * 0.52), int(get_monitor_height(get_current_monitor()) * 0.52), 64, WHITE)
+
     # render all sprites except the cursor
     for sprite in Sprite.all_sprites:
         if sprite is not cursor and sprite is not grass:

@@ -50,18 +50,18 @@ class SpawnBugs:
             case 'fly':
                 
                 anims = [Animation(animation.folder_path, animation.frame_durations, animation.is_loop, animation.on_finish_event) for animation in self.fly_anims]                
-                FlyingBug(bug_transform, anims, damage_size=70.0, max_hp=1.0, points=10, rot_speed=Vector2(.75, 2), min_move_speed_mult=1, speed=100, anim_speed=5)
+                FlyingBug(bug_transform, anims, damage_size=70.0, max_hp=1.0, points=15, rot_speed=Vector2(.75, 2), min_move_speed_mult=1, speed=100, anim_speed=5)
             
             case 'hover':
 
                 anims = [Animation(animation.folder_path, animation.frame_durations, animation.is_loop, animation.on_finish_event) for animation in self.hover_anims]
-                HoverBug(bug_transform, anims, damage_size=50.0, max_hp=0.5, points=15, jitter=10.0, jitter_speed_mult=.15, max_move_dist=700.0, idle_time=Vector2(3, 6), speed=1200)
+                HoverBug(bug_transform, anims, damage_size=50.0, max_hp=0.5, points=10, jitter=10.0, jitter_speed_mult=.15, max_move_dist=700.0, idle_time=Vector2(3, 6), speed=1200)
 
             case 'hop':
                 
                 anims = [Animation(animation.folder_path, animation.frame_durations, animation.is_loop, animation.on_finish_event) for animation in self.hopper_anims]
                 hop_strength = (Vector2(2, 2), Vector2(6, 12))
-                HoppingBug(bug_transform, anims, damage_size=70.0, max_hp=1.0, points=10, hop_strength=hop_strength, idle_time=Vector2(3, 6), speed=100)
+                HoppingBug(bug_transform, anims, damage_size=70.0, max_hp=1.5, points=25, hop_strength=hop_strength, idle_time=Vector2(3, 6), speed=100)
 
             case 'crawl':
 

@@ -32,4 +32,4 @@ class SpawnParticles:
                 
         particle = Particle(particle_transform, self.particle_anim, speed=10, anim_speed=2)
         particle.vel.x = random.uniform(-1, 1) * 50
-        particle.vel.y = -16
+        particle.vel.y = -32
