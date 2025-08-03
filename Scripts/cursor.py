@@ -3,8 +3,8 @@ from raylib import *
 from sprite import *
 
 def calc_global_mouse_properties():
-    if file_exists("Data\Mouse_Data.txt"):
-        file = open("Data\Mouse_Data.txt", "r")
+    if file_exists("Data\\Mouse_Data.txt"):
+        file = open("Data\\Mouse_Data.txt", "r")
         values = file.readline().split(',')
         file_data = [value for value in values]
         file.close()

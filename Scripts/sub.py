@@ -22,6 +22,9 @@ set_window_min_size(250, 250)
 set_window_max_size(500, 500)
 hide_cursor()
 
+# make it so that the only way to close the biome is with the window exit button
+set_exit_key(KEY_NULL)
+
 # set the maximum framerate to 60
 set_target_fps(60)
 

@@ -85,11 +85,11 @@ class CrawlingBug(Bug):
             # the idle time is up, so set up walking
             if self.current_idle_time <= 0:
                 self.current_walk_time = random.uniform(self.walk_time.x, self.walk_time.y)
-                self.vel.x = self.facing_direction_x
 
         # the bug is currently walking
         if self.current_walk_time > 0:
             self.current_walk_time -= dt
+            self.vel.x = self.facing_direction_x
 
             # the walk time is up, so set up resting
             if self.current_walk_time <= 0:
@@ -101,13 +101,18 @@ class CrawlingBug(Bug):
             self.vel.x = 0
             if self.current_walk_time > 0:
                 self.flip_sprite_vert()
+                self.current_walk_time = 0
+                self.current_idle_time = random.uniform(self.idle_time.x, self.idle_time.y)
 
         # play fall animation
-        if not is_on_ceiling and not is_grounded and self.anim_index != 2:
-            self.play_animation(2)
+        if not is_on_ceiling and self.facing_direction_y == -1:
+            if self.anim_index != 2:
+                self.play_animation(2)
         # play idle animation
-        elif self.current_idle_time > 0 and self.anim_index != 0 and self.anim_index != 2:
-            self.play_animation(0)
+        elif self.current_idle_time > 0:
+            if self.anim_index != 0:
+                self.play_animation(0)
         # play walk animation
-        elif self.current_walk_time > 0 and self.anim_index != 1:
-            self.play_animation(1)
+        elif self.current_walk_time > 0:
+            if self.anim_index != 1:
+                self.play_animation(1)

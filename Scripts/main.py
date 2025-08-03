@@ -1,3 +1,4 @@
+import copy
 import os
 from pyray import *
 from raylib import *
@@ -78,7 +79,11 @@ def set_up_window():
 
     # set the maximum frame rate to the maximum refresh rate of the monitor 
     set_target_fps(get_monitor_refresh_rate(get_current_monitor()))
-
+    
+    # make it so you can't exit with a key press
+    set_exit_key(KEY_NULL)
+    
+    # load background art into gpu vram
     global background_art ; background_art = load_texture("Assets\\Sprites\\Background\\Main_Background.jpg")
 #######################################################################
 
@@ -88,12 +93,33 @@ def start_game():
     create_asset_instances()
     global process ; process = subprocess.Popen(["python", "Scripts\\sub.py"])
 
+def quit_game():
+    
+    # end the process if it is active
+    if process != None:
+        process.kill()
+
+    # delete temporary data
+    while os.path.exists("Data"):
+        shutil.rmtree("Data", ignore_errors=True)
+
+    # update backup savefile
+    if file_exists("PersistentData\\Save_Data.txt") and file_exists("PersistentData\\Backup_Save_Data.txt"):
+        shutil.copyfile("PersistentData\\Save_Data.txt", "PersistentData\\Backup_Save_Data.txt")
+
+    # close the game
+    close_window()
+
+    # close the application
+    exit(0)
+
 ############################ import assets ############################
 def create_asset_instances():
     # set up player
     player_idle_anim = Animation("Assets\\Sprites\\Bat", (100.0, 100.0))
     global player ; player = Player(Transform2D(scale=4.9), [player_idle_anim], speed=1000)
-
+    player.transform.pos = player.center_position_at_other(Cursor.global_mouse_position)
+    
     # set up spawner which spawns bugs over time
     gnat_idle_anim = Animation("Assets\\Sprites\\Gnat", (300.0, 300.0))
     hoverer_idle_anim = Animation("Assets\\Sprites\\Hoverer", (50, 50))
@@ -114,6 +140,29 @@ def create_asset_instances():
     global grass ; grass = Sprite(Transform2D(Vector2(0, get_monitor_height(get_current_monitor()) - (27 * 5)), rot=0, scale=2.5), [grass_idle_anim])
 #######################################################################
 
+def set_up_start_menu():
+    # set up custom cursor
+    cursor_idle_anim = Animation("Assets\\Sprites\\Cursor", (50.0, 50.0, 50.0))
+    global cursor ; cursor = Cursor(Transform2D(get_mouse_position(), rot=0, scale=2), [cursor_idle_anim])
+
+    start_button_hover_anim = Animation("Assets\\Sprites\\Start_Button", (100, 100, 100, 100))
+    start_button = Clickable(Transform2D(scale=5), [start_button_hover_anim])
+
+    start_button.transform.pos = start_button.center_position_at_other(Vector2(get_monitor_width(get_current_monitor()) * 0.5, get_monitor_height(get_current_monitor()) * 0.3))
+    start_button.curr_anim_speed = 0
+    start_button.on_mouse_enter = lambda : start_button.play_animation(0)
+    start_button.on_mouse_exit = lambda : start_button.stop_animation(0)
+    start_button.on_mouse_click = lambda : start_game()
+
+    quit_button_hover_anim = Animation("Assets\\Sprites\\Quit_Button", (100, 100, 100, 100))
+    quit_button = Clickable(Transform2D(scale=5), [quit_button_hover_anim])
+    
+    quit_button.transform.pos = quit_button.center_position_at_other(Vector2(get_monitor_width(get_current_monitor()) * 0.5, get_monitor_height(get_current_monitor()) * 0.6))
+    quit_button.curr_anim_speed = 0
+    quit_button.on_mouse_enter = lambda : quit_button.play_animation(0)
+    quit_button.on_mouse_exit = lambda : quit_button.stop_animation(0)
+    quit_button.on_mouse_click = quit_game
+
 ############################# start menu ##############################
 def start_menu():
     # updating
@@ -128,9 +177,7 @@ def start_menu():
     source_rect = Rectangle(0, 0, background_art.width, background_art.height)
     dest_rect = Rectangle(0, 0, GetScreenWidth(), GetScreenHeight())
     draw_texture_pro(background_art, source_rect, dest_rect, Vector2(), 0, WHITE)
-    monitor = get_current_monitor()
-    draw_text("Press 'Esc' to close game", get_monitor_width(monitor) // 2 - 350, int(get_monitor_height(monitor) * 0.05), 50, WHITE)
-
+    
     # render all sprites except the cursor
     for sprite in Sprite.all_sprites:
         if sprite is not cursor and sprite is not grass:
@@ -159,9 +206,14 @@ def game_loop():
     dest_rect = Rectangle(0, 0, GetScreenWidth(), GetScreenHeight())
     draw_texture_pro(background_art, source_rect, dest_rect, Vector2(), 0, WHITE)
 
-    monitor = get_current_monitor()
-    draw_text("Press 'Esc' to close game", get_monitor_width(monitor) // 2 - 350, int(get_monitor_height(monitor) * 0.05), 50, WHITE)
-
+    # go back to start menu if the escape key is pressed
+    if is_key_pressed(KEY_ESCAPE):
+        global game_started ; game_started = False
+        Sprite.all_sprites.clear()
+        Bug.all_bugs.clear()
+        set_up_start_menu()
+        
+    
     # render all sprites except the cursor
     for sprite in Sprite.all_sprites:
         if sprite is not cursor and sprite is not grass:
@@ -192,23 +244,7 @@ def game_loop():
 def main():
     set_up_data_files()
     set_up_window()
-    
-    # set up custom cursor
-    cursor_idle_anim = Animation("Assets\\Sprites\\Cursor", (50.0, 50.0, 50.0))
-    global cursor ; cursor = Cursor(Transform2D(get_mouse_position(), rot=0, scale=2), [cursor_idle_anim])
-
-    button_transform = Transform2D(pos=Vector2(), rot=0, scale=5)
-    
-    start_button_idle_anim = Animation("Assets\\Sprites\\Start_Button", (100, 100, 100, 100))
-    start_button = Clickable(button_transform, [start_button_idle_anim])
-
-    button_transform.pos = start_button.center_position_at_other(Vector2(get_monitor_width(get_current_monitor()) * 0.5, get_monitor_height(get_current_monitor()) * 0.5))
-    start_button.transform.pos = button_transform.pos
-
-    start_button.curr_anim_speed = 0
-    start_button.on_mouse_enter = lambda : start_button.play_animation(0)
-    start_button.on_mouse_exit = lambda : start_button.stop_animation(0)
-    start_button.on_mouse_click = lambda : start_game()
+    set_up_start_menu()
 
     while not window_should_close():
 
@@ -217,18 +253,7 @@ def main():
         else:
             start_menu()
 
-    process.kill()
-
-    # delete temporary data
-    while os.path.exists("Data"):
-        shutil.rmtree("Data", ignore_errors=True)
-
-    # update backup savefile
-    if file_exists("PersistentData\\Save_Data.txt") and file_exists("PersistentData\\Backup_Save_Data.txt"):
-        shutil.copyfile("PersistentData\\Save_Data.txt", "PersistentData\\Backup_Save_Data.txt")
-
-    # close the game
-    close_window()
+    quit_game()
 
 if __name__ == "__main__":
     main()
