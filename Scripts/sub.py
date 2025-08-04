@@ -91,12 +91,15 @@ while not window_should_close():
     
     draw_texture_pro(background_art, source_rect, dest_rect, Vector2(get_window_position().x, get_window_position().y), 0, WHITE)
     
-    for line in contents:
-        if ',' in line:
-            texture_path, pos_x, pos_y, rot, scale = line.split(',')
-            if texture_path in texture_cache:
-                draw_texture_ex(texture_cache[texture_path], Vector2(float(pos_x) - get_window_position().x, float(pos_y) - get_window_position().y), float(rot), float(scale), WHITE)
-
+    try:
+        for line in contents:
+            if ',' in line:
+                texture_path, pos_x, pos_y, rot, scale = line.split(',')
+                if texture_path in texture_cache:
+                    draw_texture_ex(texture_cache[texture_path], Vector2(float(pos_x) - get_window_position().x, float(pos_y) - get_window_position().y), float(rot), float(scale), WHITE)
+    except:
+        pass
+    
     # render local sprites
     render_offset = Vector2(-get_window_position().x, -get_window_position().y)
     for sprite in Sprite.all_sprites:

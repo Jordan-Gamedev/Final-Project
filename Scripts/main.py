@@ -140,8 +140,10 @@ def create_asset_instances():
     global grass ; grass = Sprite(Transform2D(Vector2(0, get_monitor_height(get_current_monitor()) - (27 * 5)), rot=0, scale=2.5), [grass_idle_anim])
 #######################################################################
 
-def set_up_start_menu():
-
+def go_to_start_menu():
+    # remove previous scene
+    Sprite.all_sprites.clear()
+    Bug.all_bugs.clear()
     if process != None:
         process.kill()
 
@@ -173,10 +175,43 @@ def set_up_start_menu():
     settings_button.transform.pos = settings_button.center_position_at_other(Vector2(get_monitor_width(get_current_monitor()) * 0.5 + 300, get_monitor_height(get_current_monitor()) * 0.3))
     settings_button.curr_anim_speed = 0
     settings_button.on_mouse_enter = lambda : settings_button.play_animation(0)
-    settings_button.on_mouse_click = settings_menu
+    settings_button.on_mouse_click = go_to_settings_menu
 
-def settings_menu():
-    pass
+def go_to_settings_menu():
+
+    # remove previous scene
+    Sprite.all_sprites.clear()
+    Bug.all_bugs.clear()
+    if process != None:
+        process.kill()
+
+    # set up custom cursor
+    cursor_idle_anim = Animation("Assets\\Sprites\\Cursor", (50.0, 50.0, 50.0))
+    global cursor ; cursor = Cursor(Transform2D(get_mouse_position(), rot=0, scale=2), [cursor_idle_anim])
+
+    # clear save button
+    clear_save_button_hover_anim = Animation("Assets\\Sprites\\Delete_Button", (150, 150, 150, 150), is_loop=True)
+    clear_save_button = Clickable(Transform2D(scale=5), [clear_save_button_hover_anim])
+    clear_save_button.transform.pos = clear_save_button.center_position_at_other(Vector2(get_monitor_width(get_current_monitor()) * 0.5, get_monitor_height(get_current_monitor()) * 0.5))
+    clear_save_button.curr_anim_speed = 0
+    clear_save_button.on_mouse_enter = lambda : clear_save_button.play_animation(0)
+    clear_save_button.on_mouse_exit = lambda : clear_save_button.stop_animation(0)
+    clear_save_button.on_mouse_click = delete_save
+
+    # back button
+    back_button_hover_anim = Animation("Assets\\Sprites\\Settings_Icon", (50, 50, 50, 50), is_loop=False)
+    back_button = Clickable(Transform2D(scale=2.5), [back_button_hover_anim])
+    back_button_hover_anim.on_finish_event = lambda : back_button.stop_animation(0)
+    back_button.transform.pos = back_button.center_position_at_other(Vector2(get_monitor_width(get_current_monitor()) * 0.5, get_monitor_height(get_current_monitor()) * 0.7))
+    back_button.curr_anim_speed = 0
+    back_button.on_mouse_enter = lambda : back_button.play_animation(0)
+    back_button.on_mouse_click = go_to_start_menu
+
+def delete_save():
+    # delete data files in case the program crashed last time and the corrupted files are still there
+    if os.path.exists("PersistentData"):
+        shutil.rmtree("PersistentData", ignore_errors=True)
+    set_up_data_files()
 
 ############################# start menu ##############################
 def start_menu():
@@ -229,9 +264,7 @@ def game_loop():
     # go back to start menu if the escape key is pressed
     if is_key_pressed(KEY_ESCAPE):
         global game_started ; game_started = False
-        Sprite.all_sprites.clear()
-        Bug.all_bugs.clear()
-        set_up_start_menu()
+        go_to_start_menu()
     
     # show how many points the player has
     draw_text(f"Points: {last_known_points}", int(get_monitor_width(get_current_monitor()) * 0.52), int(get_monitor_height(get_current_monitor()) * 0.52), 64, WHITE)
@@ -266,7 +299,7 @@ def game_loop():
 def main():
     set_up_data_files()
     set_up_window()
-    set_up_start_menu()
+    go_to_start_menu()
 
     while not window_should_close():
 
