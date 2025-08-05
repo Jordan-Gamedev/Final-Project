@@ -35,7 +35,9 @@ class Animation:
                 
                 if not self.is_loop:
                     self.curr_frame_time = 0.0
-                    self.on_finish_event()
+                    
+                    if self.on_finish_event != None:
+                        self.on_finish_event()
         
     def get_current_texture(self) -> Texture2D:
         return self.loaded_textures[int(self.curr_frame)]

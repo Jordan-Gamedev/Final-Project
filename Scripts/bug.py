@@ -58,12 +58,12 @@ class Bug(DynamicSprite):
             # reward points to the player when a bug dies from health loss
             if self.hp == 0.0:
                 # make this process wait for the saving process to finish
-                while not file_exists("PersistentData\Save_Data.txt"):
+                while not file_exists("PersistentData\\Save_Data.txt"):
                     pass
                 
                 # open and get file data
-                os.rename("PersistentData\Save_Data.txt", "PersistentData\Save_Data.saving")
-                file = open("PersistentData\Save_Data.saving", "r+")
+                os.rename("PersistentData\\Save_Data.txt", "PersistentData\\Save_Data.saving")
+                file = open("PersistentData\\Save_Data.saving", "r+")
                 file_data = [value for value in file.readline().split(',', 1)]
                 file.seek(0)
                 file.truncate()
@@ -76,7 +76,7 @@ class Bug(DynamicSprite):
                 # finalize change
                 file.write(f"{file_data[0]},{file_data[1]}")
                 file.close()
-                os.rename("PersistentData\Save_Data.saving", "PersistentData\Save_Data.txt")
+                os.rename("PersistentData\\Save_Data.saving", "PersistentData\\Save_Data.txt")
             
             pos = self.transform.pos
             if self.hp == 0.0 or pos.x < world_edge_x[0] or pos.x > world_edge_x[1] or pos.y < world_edge_y[0] or pos.y > world_edge_y[1]:

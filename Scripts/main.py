@@ -199,14 +199,14 @@ def go_to_settings_menu():
     clear_save_button.on_mouse_click = delete_save
 
     # back button
-    back_button_hover_anim = Animation("Assets\\Sprites\\Settings_Icon", (50, 50, 50, 50), is_loop=False)
+    back_button_hover_anim = Animation("Assets\\Sprites\\Back_Button", (150, 150, 150, 150), is_loop=True)
     back_button = Clickable(Transform2D(scale=2.5), [back_button_hover_anim])
-    back_button_hover_anim.on_finish_event = lambda : back_button.stop_animation(0)
     back_button.transform.pos = back_button.center_position_at_other(Vector2(get_monitor_width(get_current_monitor()) * 0.5, get_monitor_height(get_current_monitor()) * 0.7))
     back_button.curr_anim_speed = 0
     back_button.on_mouse_enter = lambda : back_button.play_animation(0)
+    back_button.on_mouse_exit = lambda : back_button.stop_animation(0)
     back_button.on_mouse_click = go_to_start_menu
-
+    
 def delete_save():
     # delete data files in case the program crashed last time and the corrupted files are still there
     if os.path.exists("PersistentData"):
@@ -284,16 +284,21 @@ def game_loop():
     end_drawing()
 
     # sync visuals to subprocesses
-    file = open("Data\\Shared_Main_Process_Sprite_Data.txt", "w")
 
-    new_file_contents = f"{player.get_current_animation().get_current_texture_path()},{player.transform.pos.x:.2f},{player.transform.pos.y:.2f},{player.transform.rot:.2f},{player.transform.scale:.2f}\n"
+    with open("Data\\Shared_Main_Process_Sprite_Data.txt", "w") as file:
 
-    for little_bug in Bug.all_bugs:
-        new_file_contents += f"{little_bug.get_current_animation().get_current_texture_path()},{little_bug.transform.pos.x:.2f},{little_bug.transform.pos.y:.2f},{little_bug.transform.rot:.2f},{little_bug.transform.scale:.2f}\n"
-    for particle in Particle.all_particles:
-        new_file_contents += f"{particle.get_current_animation().get_current_texture_path()},{particle.transform.pos.x:.2f},{particle.transform.pos.y:.2f},{particle.transform.rot:.2f},{particle.transform.scale:.2f}\n"
-    file.write(new_file_contents)
-    file.close()
+        new_file_contents = f"{player.get_current_animation().get_current_texture_path()},{player.transform.pos.x:.2f},{player.transform.pos.y:.2f},"
+        new_file_contents += f"{player.transform.rot:.2f},{player.transform.scale:.2f},1,1\n"
+
+        for little_bug in Bug.all_bugs:
+            new_file_contents += f"{little_bug.get_current_animation().get_current_texture_path()},{little_bug.transform.pos.x:.2f},{little_bug.transform.pos.y:.2f},"
+            new_file_contents += f"{little_bug.transform.rot:.2f},{little_bug.transform.scale:.2f},{little_bug.facing_direction_x},{little_bug.facing_direction_y}\n"
+        for particle in Particle.all_particles:
+            new_file_contents += f"{particle.get_current_animation().get_current_texture_path()},{particle.transform.pos.x:.2f},{particle.transform.pos.y:.2f},"
+            new_file_contents += f"{particle.transform.rot:.2f},{particle.transform.scale:.2f},1,1\n"
+        
+        file.write(new_file_contents)
+        
 #######################################################################
 
 def main():

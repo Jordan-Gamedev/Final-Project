@@ -89,3 +89,4 @@ class Sprite:
                 image_flip_vertical(image_to_flip)
                 unload_texture(tex)
                 anim.loaded_textures[i] = load_texture_from_image(image_to_flip)
+                unload_image(image_to_flip)

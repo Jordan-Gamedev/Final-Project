@@ -74,15 +74,13 @@ while not window_should_close():
     for sprite in Sprite.all_sprites:
         sprite.update(delta_time)
 
-    begin_drawing()
-
-    file = open("Data\\Shared_Main_Process_Sprite_Data.txt", "r")
     contents = []
-    
-    while len(contents) == 0:
-        contents = [line for line in file]
-    
-    file.close()
+
+    with open("Data\\Shared_Main_Process_Sprite_Data.txt") as file:
+        while len(contents) == 0:
+            contents = [line for line in file]
+
+    begin_drawing()
 
     clear_background(WHITE)
 
@@ -94,9 +92,25 @@ while not window_should_close():
     try:
         for line in contents:
             if ',' in line:
-                texture_path, pos_x, pos_y, rot, scale = line.split(',')
+                texture_path, pos_x, pos_y, rot, scale, dir_x, dir_y = line.split(',')
                 if texture_path in texture_cache:
-                    draw_texture_ex(texture_cache[texture_path], Vector2(float(pos_x) - get_window_position().x, float(pos_y) - get_window_position().y), float(rot), float(scale), WHITE)
+
+                    dir_x = int(dir_x)
+                    dir_y = int(dir_y)
+                    if dir_x == -1 or dir_y == -1:
+
+                        image = load_image(texture_path)
+                        if dir_x == -1:
+                            image_flip_horizontal(image)
+                        if dir_y == -1:
+                            image_flip_vertical(image)
+                        
+                        tex = load_texture_from_image(image)
+                        draw_texture_ex(tex, Vector2(float(pos_x) - get_window_position().x, float(pos_y) - get_window_position().y), float(rot), float(scale), WHITE)
+                        unload_image(image)
+                    else:
+
+                        draw_texture_ex(texture_cache[texture_path], Vector2(float(pos_x) - get_window_position().x, float(pos_y) - get_window_position().y), float(rot), float(scale), WHITE)
     except:
         pass
     
@@ -112,3 +126,6 @@ while not window_should_close():
     end_drawing()
 
 close_window()
+
+if file_exists("Data\\Shared_Main_Process_Sprite_Data.sub1"):
+    os.rename("Data\\Shared_Main_Process_Sprite_Data.sub1", "Data\\Shared_Main_Process_Sprite_Data.main")
