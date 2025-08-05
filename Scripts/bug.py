@@ -81,7 +81,7 @@ class Bug(DynamicSprite):
                 # add points
                 points = int(file_data[0])
                 points += self.points
-                file_data[0] = f"{points}\n"
+                file_data[0] = f"{points}"
                 
                 # finalize change
                 for data in file_data:

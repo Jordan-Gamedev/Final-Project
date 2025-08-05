@@ -1,7 +1,12 @@
-from biome import Biome
 from io import TextIOWrapper
 import os
-from pyray import file_exists
+from pyray import *
+
+from animation import Animation
+from biome import Biome
+from clickable import Clickable
+from sprite import Sprite
+from transform import Transform2D
 
 def open_save_file() -> TextIOWrapper:
         
@@ -49,6 +54,19 @@ class Shop:
         for i in range(len(self.purchaseable_biomes)):
             self.purchaseable_biomes[i].times_purchased = int(file_data[i])
 
+        # create a jar purchase button
+        jar_button_hover_anim = Animation("Assets\\Sprites\\Start_Button", (150, 150, 150, 150))
+        self.jar_button = Clickable(Transform2D(scale=5), [jar_button_hover_anim])
+        self.jar_button.transform.pos = self.jar_button.center_position_at_other(Vector2(get_monitor_width(get_current_monitor()) * 0.5, get_monitor_height(get_current_monitor()) * 0.6))
+        self.jar_button.curr_anim_speed = 0
+        self.jar_button.on_mouse_enter = lambda : self.jar_button.play_animation(0)
+        self.jar_button.on_mouse_exit = lambda : self.jar_button.stop_animation(0)
+        self.jar_button.on_mouse_click = lambda : self.buy_jar()
+
+        # load jar textures
+        self.restored_jar_texture = load_texture("Assets\\Sprites\\Bug_Bottle\\Bug_Bottle_1.png")
+        self.broken_jar_texture = load_texture("Assets\\Sprites\\Bug_Bottle\\Bug_Bottle_2.png")
+
     def buy_jar(self) -> bool:
 
         # safely open the save file for reading and writing
@@ -68,12 +86,14 @@ class Shop:
         # player has all the jars or is too broke to buy a jar
         if self.num_jars == self.max_jars or points < jar_cost:
             # unsuccessful purchase
-            close_save_file()
+            for data in file_data:
+                file.write(f"{data}\n")
+            close_save_file(file)
             return False
 
         # spend the points
         points -= jar_cost
-        file_data[0] = f"{points}\n"
+        file_data[0] = f"{points}"
         
         # add the jar
         self.num_jars += 1
@@ -103,12 +123,14 @@ class Shop:
         # player is too broke to buy this biome or the biome is maxed (obtains biome otherwise)
         if points < self.purchaseable_biomes[biome_index].get_price() or not self.purchaseable_biomes[biome_index].obtain():
             # unsuccessful purchase
-            close_save_file()
+            for data in file_data:
+                file.write(f"{data}\n")
+            close_save_file(file)
             return False
 
         # spend the points
         points -= self.purchaseable_biomes[biome_index].get_price()
-        file_data[0] = f"{points}\n"
+        file_data[0] = f"{points}"
 
         # save the biome purchase
         file_data[biome_index + 2] = f"{self.purchaseable_biomes[biome_index].times_purchased}\n"
@@ -124,3 +146,18 @@ class Shop:
     def close_shop(self):
         for biome in self.purchaseable_biomes:
             biome.close_biome()
+        try:
+            Sprite.all_sprites.remove(self.jar_button)
+        except:
+            pass
+
+    def render(self):
+
+        monitor_width = get_monitor_width(get_current_monitor())
+        pos = Vector2(monitor_width * 0.42, get_monitor_height(get_current_monitor()) * 0.43)
+
+        for i in range(self.num_jars):
+            draw_texture_ex(self.restored_jar_texture, Vector2(pos.x + (monitor_width * i * 0.07), pos.y), 0, 3, WHITE)
+
+        for i in range(self.max_jars - self.num_jars):
+            draw_texture_ex(self.broken_jar_texture, Vector2(pos.x + (monitor_width * (i + self.num_jars) * 0.07), pos.y), 0, 3, WHITE)

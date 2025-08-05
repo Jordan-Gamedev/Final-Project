@@ -34,7 +34,7 @@ class Clickable(Sprite):
             self.transform.pos.y < Cursor.global_mouse_position.y < self.transform.pos.y + tex_dimensions.y
 
         # clicked on hitbox
-        if self.on_mouse_click != None and Cursor.is_global_mouse_clicking and self.__is_mouse_in:
+        if self.on_mouse_click != None and is_mouse_button_pressed(0) and self.__is_mouse_in:
             self.on_mouse_click()
         # mouse just entered hitbox
         elif self.on_mouse_enter != None and not was_mouse_in_prev and self.__is_mouse_in:

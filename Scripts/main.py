@@ -115,6 +115,10 @@ def quit_game():
 
 ############################ import assets ############################
 def create_asset_instances():
+
+    # set up shop
+    global shop ; shop = Shop(starting_jar_cost=10, purchaseable_biomes=[Biome("Cave", 1500, 250, 1.5, 100, 100, 1000), Biome("Mountain", 2000, 250, 1.5, 100, 100, 1000)])
+
     # set up player
     player_idle_anim = Animation("Assets\\Sprites\\Bat", (100.0, 100.0))
     global player ; player = Player(Transform2D(scale=4.9), [player_idle_anim], speed=1000)
@@ -138,9 +142,6 @@ def create_asset_instances():
     # set up grass which hangs out at the bottom of the screen
     grass_idle_anim = Animation("Assets\\Sprites\\Background", (250.0,))
     global grass ; grass = Sprite(Transform2D(Vector2(0, get_monitor_height(get_current_monitor()) - (27 * 5)), rot=0, scale=2.5), [grass_idle_anim])
-
-    # set up shop
-    global shop ; shop = Shop(purchaseable_biomes=[Biome("Cave", 1500, 250, 1.5, 100, 100, 1000), Biome("Mountain", 2000, 250, 1.5, 100, 100, 1000)])
 #######################################################################
 
 def go_to_start_menu():
@@ -161,7 +162,7 @@ def go_to_start_menu():
     start_button.curr_anim_speed = 0
     start_button.on_mouse_enter = lambda : start_button.play_animation(0)
     start_button.on_mouse_exit = lambda : start_button.stop_animation(0)
-    start_button.on_mouse_click = lambda : start_game()
+    start_button.on_mouse_click = start_game
 
     quit_button_hover_anim = Animation("Assets\\Sprites\\Quit_Button", (150, 150, 150, 150))
     quit_button = Clickable(Transform2D(scale=5), [quit_button_hover_anim])
@@ -271,6 +272,9 @@ def game_loop():
     
     # show how many points the player has
     draw_text(f"Points: {last_known_points}", int(get_monitor_width(get_current_monitor()) * 0.52), int(get_monitor_height(get_current_monitor()) * 0.52), 64, WHITE)
+
+    # render the shop's glass jars
+    shop.render()
 
     # render all sprites except the cursor
     for sprite in Sprite.all_sprites:
