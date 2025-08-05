@@ -2,27 +2,28 @@ import os
 from pyray import *
 from raylib import *
 import shutil
-import subprocess
 
 from animation import Animation
+from biome import Biome
 from bug import Bug
 from bug_spawner import SpawnBugs
 from clickable import Clickable
 from cursor import Cursor
 from particle import Particle
 from player import Player
+from shop import Shop
 from sprite import Sprite
 from transform import Transform2D
 
 ######################### globals #####################################
 background_art = None
-process = None
 game_started:bool = False
 player = None
 cursor = None
 grass = None
 spawner = None
 last_known_points = 0
+shop:Shop = None
 #######################################################################
 
 ########################## create data files ##########################
@@ -59,8 +60,8 @@ def set_up_data_files():
     # create save data file if it does not exist
     if not file_exists("PersistentData\\Save_Data.txt"):
         with open("PersistentData\\Save_Data.txt", "w") as file:
-            # Points, Size of Desert
-            file.write(f"{0},{0}")
+            # points, number of jars, cave biome purchases, mountain biome purchases
+            file.write(f"{0}\n{0}\n{0}\n{0}")
     
     # create backup save data file
     open("PersistentData\\Backup_Save_Data.txt", "w").close()
@@ -91,13 +92,12 @@ def start_game():
     global game_started ; game_started = True
     Sprite.all_sprites.clear()
     create_asset_instances()
-    global process ; process = subprocess.Popen(["python", "Scripts\\sub.py"])
 
 def quit_game():
     
     # end the process if it is active
-    if process != None:
-        process.kill()
+    if shop != None:
+        shop.close_shop()
 
     # delete temporary data
     while os.path.exists("Data"):
@@ -138,14 +138,17 @@ def create_asset_instances():
     # set up grass which hangs out at the bottom of the screen
     grass_idle_anim = Animation("Assets\\Sprites\\Background", (250.0,))
     global grass ; grass = Sprite(Transform2D(Vector2(0, get_monitor_height(get_current_monitor()) - (27 * 5)), rot=0, scale=2.5), [grass_idle_anim])
+
+    # set up shop
+    global shop ; shop = Shop(purchaseable_biomes=[Biome("Cave", 1500, 250, 1.5, 100, 100, 1000), Biome("Mountain", 2000, 250, 1.5, 100, 100, 1000)])
 #######################################################################
 
 def go_to_start_menu():
     # remove previous scene
     Sprite.all_sprites.clear()
     Bug.all_bugs.clear()
-    if process != None:
-        process.kill()
+    if shop != None:
+        shop.close_shop()
 
     # set up custom cursor
     cursor_idle_anim = Animation("Assets\\Sprites\\Cursor", (50.0, 50.0, 50.0))
@@ -182,8 +185,8 @@ def go_to_settings_menu():
     # remove previous scene
     Sprite.all_sprites.clear()
     Bug.all_bugs.clear()
-    if process != None:
-        process.kill()
+    if shop != None:
+        shop.close_shop()
 
     # set up custom cursor
     cursor_idle_anim = Animation("Assets\\Sprites\\Cursor", (50.0, 50.0, 50.0))
@@ -251,7 +254,7 @@ def game_loop():
     # get points from save data
     if file_exists("PersistentData\\Save_Data.txt"):
         with open("PersistentData\\Save_Data.txt", "r") as save_data_file:
-            global last_known_points ; last_known_points = int(save_data_file.read().split(",", 1)[0])
+            global last_known_points ; last_known_points = int(save_data_file.readline())
 
     # drawing
     begin_drawing()
@@ -298,7 +301,6 @@ def game_loop():
             new_file_contents += f"{particle.transform.rot:.2f},{particle.transform.scale:.2f},1,1\n"
         
         file.write(new_file_contents)
-        
 #######################################################################
 
 def main():
