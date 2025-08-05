@@ -9,13 +9,13 @@ class Bug(DynamicSprite):
     blood_anim = None
 
     def create_particle_anim():
-        Bug.blood_anim = Animation("Assets\\Sprites\\Blood", (50, 50, 50, 50, 50, 50))
-
+        Bug.blood_anim = Animation("Assets\\Sprites\\Liquid_Drop", (50, 50, 50, 50, 50, 50))
+        
     def __init__(self, transform:Transform2D, animations:list, damage_size:float, max_hp:float, points:int, speed:float, anim_speed:float = 1.0):
         if not Bug.blood_anim:
             Bug.create_particle_anim()
 
-        self.particle_spawner = SpawnParticles(False, .05, Bug.blood_anim)
+        self.particle_spawner = SpawnParticles(.05, Bug.blood_anim)
         self.damage_size:float = damage_size
         self.hp:float = max_hp
         self.points = points

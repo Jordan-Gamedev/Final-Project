@@ -19,8 +19,8 @@ from transform import Transform2D
 background_art = None
 game_started:bool = False
 player = None
+grass_texture = None
 cursor = None
-grass = None
 spawner = None
 last_known_points = 0
 shop:Shop = None
@@ -139,15 +139,15 @@ def create_asset_instances():
     cursor_idle_anim = Animation("Assets\\Sprites\\Cursor", (50.0, 50.0, 50.0))
     global cursor ; cursor = Cursor(Transform2D(get_mouse_position(), rot=0, scale=2), [cursor_idle_anim])
 
-    # set up grass which hangs out at the bottom of the screen
-    grass_idle_anim = Animation("Assets\\Sprites\\Background", (250.0,))
-    global grass ; grass = Sprite(Transform2D(Vector2(0, get_monitor_height(get_current_monitor()) - (27 * 5)), rot=0, scale=2.5), [grass_idle_anim])
 #######################################################################
 
 def go_to_start_menu():
     # remove previous scene
     Sprite.all_sprites.clear()
     Bug.all_bugs.clear()
+
+    global grass_texture ; grass_texture = load_texture("Assets\\Sprites\\Background\\Grass_1.png")
+
     if shop != None:
         shop.close_shop()
 
@@ -234,8 +234,10 @@ def start_menu():
     
     # render all sprites except the cursor
     for sprite in Sprite.all_sprites:
-        if sprite is not cursor and sprite is not grass:
+        if sprite is not cursor:
             sprite.render()
+
+    draw_texture_ex(grass_texture, Vector2(0, get_monitor_height(get_current_monitor()) - (27 * 5)), 0, 2.5, WHITE)
 
     # render cursor over everything
     cursor.render()
@@ -278,11 +280,11 @@ def game_loop():
 
     # render all sprites except the cursor
     for sprite in Sprite.all_sprites:
-        if sprite is not cursor and sprite is not grass:
+        if sprite is not cursor:
             sprite.render()
 
     # render grass over bugs
-    grass.render()
+    draw_texture_ex(grass_texture, Vector2(0, get_monitor_height(get_current_monitor()) - (27 * 5)), 0, 2.5, WHITE)
 
     # render cursor over everything
     cursor.render()
