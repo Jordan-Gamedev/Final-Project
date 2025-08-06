@@ -2,7 +2,7 @@ from io import TextIOWrapper
 import os
 from pyray import file_exists
 
-def open_save_file(open_mode:str = "r") -> tuple[TextIOWrapper, list[int]]:
+def open_save_file(open_mode:str = "r") -> tuple[TextIOWrapper, list[str]]:
     
     while not file_exists("PersistentData\\Save_Data.txt"):
         pass
@@ -25,16 +25,15 @@ def open_save_file(open_mode:str = "r") -> tuple[TextIOWrapper, list[int]]:
             except:
                 pass
 
+    contents = [line.strip() for line in file if line.strip()]
+
     if open_mode == "r+":
-            
-        contents = [int(line) for line in file if line.strip().isdigit()]
         file.seek(0)
         file.truncate()
-        return file, contents
-    elif open_mode == "r":
-        return file, [int(line) for line in file if line.strip().isdigit()]
+    
+    return file, contents
 
-def close_save_file(file:TextIOWrapper):
+def close_save_file(file:TextIOWrapper) -> None:
 
     file.close()
     
@@ -45,7 +44,7 @@ def close_save_file(file:TextIOWrapper):
         except:
             pass
 
-def get_save_contents() -> list[int]:
+def get_save_contents() -> list[str]:
      file, contents = open_save_file()
      close_save_file(file)
      return contents

@@ -13,6 +13,8 @@ from sprite import *
 
 ######################## set window properties ########################
 
+set_trace_log_level(LOG_ERROR | LOG_FATAL)
+
 # get the biome stats
 BIOME_NAME = sys.argv[1]
 BIOME_START_SIZE = int(sys.argv[2])
@@ -21,7 +23,7 @@ BIOME_MAX_SIZE = int(sys.argv[4])
 
 # get the current max window size
 file_data = save_data_handler.get_save_contents()
-times_purchased = file_data[2] if BIOME_NAME == "Cave" else file_data[3]
+times_purchased = int(file_data[2]) if BIOME_NAME == "Cave" else int(file_data[3])
 curr_max_window_size = min(BIOME_START_SIZE + (BIOME_SIZE_INCREMENT * (times_purchased - 1)), BIOME_MAX_SIZE)
 
 # create a small resizable window
@@ -68,7 +70,7 @@ for file in assets_folder.rglob("**\\*.png"):
     texture_cache[str(file)] = load_texture(str(file))
 
 # set up custom cursor
-cursor_idle_anim = Animation("Assets\\Sprites\\Cursor", (50.0, 50.0, 50.0))
+cursor_idle_anim = Animation("Assets\\Sprites\\Cursor", 50)
 cursor = Cursor(Transform2D(get_mouse_position(), rot=0, scale=2), [cursor_idle_anim])
 
 # set up spawner which spawns bugs over time
@@ -79,12 +81,12 @@ crawler_anims = []
 
 if BIOME_NAME == "Cave":
 
-    hover_anims.append(Animation("Assets\\Sprites\\Cave_Hover_Bug", (50, 50)))
-    hopper_anims.append(Animation("Assets\\Sprites\\Cave_Hopper\\Idle", (50, 50, 50, 50, 50, 50)))
-    hopper_anims.append(Animation("Assets\\Sprites\\Cave_Hopper\\Jump", (50, 50, 50, 50, 50, 50), is_loop=False))
-    crawler_anims.append(Animation("Assets\\Sprites\\Cave_Crawler\\Idle", (50, 50, 50, 50, 50, 50, 50, 50)))
-    crawler_anims.append(Animation("Assets\\Sprites\\Cave_Crawler\\Walk", (50, 50, 50, 50, 50, 50)))
-    crawler_anims.append(Animation("Assets\\Sprites\\Cave_Crawler\\Fall", (25, 25, 25, 25, 25, 25)))
+    hover_anims.append(Animation("Assets\\Sprites\\Cave_Hover_Bug", 50))
+    hopper_anims.append(Animation("Assets\\Sprites\\Cave_Hopper\\Idle", 50))
+    hopper_anims.append(Animation("Assets\\Sprites\\Cave_Hopper\\Jump", 50, is_loop=False))
+    crawler_anims.append(Animation("Assets\\Sprites\\Cave_Crawler\\Idle", 50))
+    crawler_anims.append(Animation("Assets\\Sprites\\Cave_Crawler\\Walk", 50))
+    crawler_anims.append(Animation("Assets\\Sprites\\Cave_Crawler\\Fall", 25))
 
     fly_pnts = 0
     hover_pnts = 25
@@ -93,15 +95,15 @@ if BIOME_NAME == "Cave":
 
 else:
     
-    fly_anims.append(Animation("Assets\\Sprites\\Mountain_Flyer_Bug", (300.0, 300.0)))
-    hover_anims.append(Animation("Assets\\Sprites\\Mountain_Hover_Bug", (50, 50)))
+    fly_anims.append(Animation("Assets\\Sprites\\Mountain_Flyer_Bug", 300))
+    hover_anims.append(Animation("Assets\\Sprites\\Mountain_Hover_Bug", 50))
 
     fly_pnts = 40
     hover_pnts = 30
     hopper_pnts = 0
     crawler_pnts = 0
 
-spawner = SpawnBugs(max_capacity=12, spawn_rate=1, fly_anims=fly_anims, hover_anims=hover_anims, hopper_anims=hopper_anims, \
+spawner = SpawnBugs(max_capacity=1, spawn_rate=1, fly_anims=fly_anims, hover_anims=hover_anims, hopper_anims=hopper_anims, \
             crawler_anims=crawler_anims, fly_pnts=fly_pnts, hover_pnts=hover_pnts, hop_pnts=hopper_pnts, crawl_pnts=crawler_pnts)
 
 # get the correct background for the biome
@@ -122,7 +124,8 @@ while not window_should_close():
 
     # updates the min and max of the window
     file_data = save_data_handler.get_save_contents()
-    times_purchased = file_data[2] if BIOME_NAME == "Cave" else file_data[3]
+
+    times_purchased = int(file_data[2]) if BIOME_NAME == "Cave" else int(file_data[3])
     window_size = min(BIOME_START_SIZE + (BIOME_SIZE_INCREMENT * (times_purchased - 1)), BIOME_MAX_SIZE)
     set_window_min_size(BIOME_START_SIZE, BIOME_START_SIZE)
     set_window_max_size(window_size, window_size)
@@ -174,8 +177,6 @@ while not window_should_close():
             sprite.render(render_offset)
 
     cursor.render()
-
-    draw_fps(0, 0)
     end_drawing()
 
 close_window()

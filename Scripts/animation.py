@@ -3,7 +3,7 @@ import os
 
 class Animation:
 
-    def __init__(self, folder_path:str, frame_durations:tuple, is_loop = True, on_finish_event = None):
+    def __init__(self, folder_path:str, frame_duration:int, is_loop = True, on_finish_event = None):
         self.texture_paths = []
         self.loaded_textures = []
 
@@ -19,7 +19,7 @@ class Animation:
                     self.loaded_textures.append(load_texture(asset_path))
 
         self.folder_path = folder_path
-        self.frame_durations = frame_durations
+        self.frame_duration = frame_duration
         self.is_loop = is_loop
         self.on_finish_event = on_finish_event
         self.curr_frame = 0
@@ -31,7 +31,7 @@ class Animation:
         if self.curr_frame < len(self.loaded_textures):
 
             self.curr_frame_time += delta
-            total_frame_duration = self.frame_durations[self.curr_frame] / 1000.0
+            total_frame_duration = self.frame_duration / 1000.0
 
             if self.curr_frame_time >= total_frame_duration:
                 self.curr_frame_time -= total_frame_duration
@@ -56,3 +56,7 @@ class Animation:
     
     def get_current_texture_path(self):
         return self.texture_paths[int(self.curr_frame)]
+    
+    def center_position_at_other(self, pos, scale):
+        texture = self.get_current_texture()
+        return Vector2(pos.x - texture.width * 0.5 * scale, pos.y - texture.height * 0.5 * scale)

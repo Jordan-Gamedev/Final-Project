@@ -20,7 +20,7 @@ from transform import Transform2D
 
 # create maximized window
 set_trace_log_level(LOG_ERROR | LOG_FATAL)
-set_config_flags(FLAG_WINDOW_UNDECORATED | FLAG_WINDOW_ALWAYS_RUN | FLAG_WINDOW_RESIZABLE)
+set_config_flags(FLAG_WINDOW_TRANSPARENT | FLAG_WINDOW_UNDECORATED | FLAG_WINDOW_ALWAYS_RUN | FLAG_WINDOW_RESIZABLE)
 init_window(1920, 1080, 'Game')
 maximize_window()
 
@@ -146,20 +146,20 @@ def create_asset_instances():
     global shop ; shop = Shop(starting_jar_cost=10, purchaseable_biomes=[cave_biome, mountain_biome])
 
     # set up player
-    player_idle_anim = Animation("Assets\\Sprites\\Bat", (100.0, 100.0))
+    player_idle_anim = Animation("Assets\\Sprites\\Bat", 100)
     global player ; player = Player(Transform2D(scale=4.9), [player_idle_anim], speed=1000)
     player.transform.pos = player.center_position_at_other(Cursor.global_mouse_position)
     
     # set up spawner which spawns bugs over time
-    fly_idle_anim = Animation("Assets\\Sprites\\Main_Flying_Bug", (300.0, 300.0))
-    hoverer_idle_anim = Animation("Assets\\Sprites\\Main_Hoverer", (50, 50))
-    hopper_idle_anim = Animation("Assets\\Sprites\\Main_Hopper\\Idle", (75, 75, 75, 75, 75, 75))
-    hopper_jump_anim = Animation("Assets\\Sprites\\Main_Hopper\\Jump", (50, 50, 50, 50, 50, 50), is_loop=False)
+    fly_idle_anim = Animation("Assets\\Sprites\\Main_Flying_Bug", 300)
+    hoverer_idle_anim = Animation("Assets\\Sprites\\Main_Hoverer", 50)
+    hopper_idle_anim = Animation("Assets\\Sprites\\Main_Hopper\\Idle", 75)
+    hopper_jump_anim = Animation("Assets\\Sprites\\Main_Hopper\\Jump", 50, is_loop=False)
     global spawner ; spawner = SpawnBugs(max_capacity=15, spawn_rate=1, fly_anims=[fly_idle_anim], hover_anims=[hoverer_idle_anim], \
                     hopper_anims=[hopper_idle_anim, hopper_jump_anim], crawler_anims=[], fly_pnts=10, hover_pnts=5, hop_pnts=15, crawl_pnts=0)
 
     # set up custom cursor
-    cursor_idle_anim = Animation("Assets\\Sprites\\Cursor", (50.0, 50.0, 50.0))
+    cursor_idle_anim = Animation("Assets\\Sprites\\Cursor", 50)
     global cursor ; cursor = Cursor(Transform2D(get_mouse_position(), rot=0, scale=2), [cursor_idle_anim])
 #######################################################################
 
@@ -174,18 +174,18 @@ def go_to_start_menu():
         shop.close_shop()
 
     # set up custom cursor
-    cursor_idle_anim = Animation("Assets\\Sprites\\Cursor", (50, 50, 50))
+    cursor_idle_anim = Animation("Assets\\Sprites\\Cursor", 50)
     global cursor ; cursor = Cursor(Transform2D(get_mouse_position(), rot=0, scale=2), [cursor_idle_anim])
 
-    start_button_hover_anim = Animation("Assets\\Sprites\\Start_Button", (150, 150, 150, 150))
+    start_button_hover_anim = Animation("Assets\\Sprites\\Start_Button", 150)
     pos = Vector2(MONITOR_WIDTH * 0.5, MONITOR_HEIGHT * 0.3)
     start_button = Button(Transform2D(scale=5), [start_button_hover_anim], pos, start_game)
 
-    quit_button_hover_anim = Animation("Assets\\Sprites\\Quit_Button", (150, 150, 150, 150))
+    quit_button_hover_anim = Animation("Assets\\Sprites\\Quit_Button", 150)
     pos = Vector2(MONITOR_WIDTH * 0.5, MONITOR_HEIGHT * 0.6)
     quit_button = Button(Transform2D(scale=5), [quit_button_hover_anim], pos, quit_game)
 
-    settings_button_hover_anim = Animation("Assets\\Sprites\\Settings_Icon", (50, 50, 50, 50, 50), is_loop=False)
+    settings_button_hover_anim = Animation("Assets\\Sprites\\Settings_Icon", 50, is_loop=False)
     pos = Vector2(MONITOR_WIDTH * 0.5 + 300, MONITOR_HEIGHT * 0.3)
     settings_button = Button(Transform2D(scale=2.5), [settings_button_hover_anim], pos, go_to_settings_menu)
 
@@ -198,16 +198,16 @@ def go_to_settings_menu():
         shop.close_shop()
 
     # set up custom cursor
-    cursor_idle_anim = Animation("Assets\\Sprites\\Cursor", (50.0, 50.0, 50.0))
+    cursor_idle_anim = Animation("Assets\\Sprites\\Cursor", 50)
     global cursor ; cursor = Cursor(Transform2D(get_mouse_position(), rot=0, scale=2), [cursor_idle_anim])
 
     # clear save button
-    clear_save_button_hover_anim = Animation("Assets\\Sprites\\Delete_Button", (150, 150, 150, 150), is_loop=True)
+    clear_save_button_hover_anim = Animation("Assets\\Sprites\\Delete_Button", 150, is_loop=True)
     pos = Vector2(MONITOR_WIDTH * 0.5, MONITOR_HEIGHT * 0.5)
     clear_save_button = Button(Transform2D(scale=5), [clear_save_button_hover_anim], pos, delete_save)
 
     # back button
-    back_button_hover_anim = Animation("Assets\\Sprites\\Back_Button", (150, 150, 150, 150), is_loop=True)
+    back_button_hover_anim = Animation("Assets\\Sprites\\Back_Button", 150, is_loop=True)
     pos = Vector2(MONITOR_WIDTH * 0.5, MONITOR_HEIGHT * 0.7)
     back_button = Button(Transform2D(scale=2.5), [back_button_hover_anim], pos, go_to_start_menu)
     
@@ -260,8 +260,8 @@ def game_loop():
     for sprite in Sprite.all_sprites:
         sprite.update(delta_time)
     
-    for jar in Shop.jars:
-        jar.update(delta_time)
+    shop.update(delta_time)
+    
     # drawing
     begin_drawing()
     clear_background(Color(0, 0, 0, 0))
@@ -281,7 +281,7 @@ def game_loop():
     # show how many points the player has
     points_render_pos_x = int(MONITOR_WIDTH * 0.58)
     points_render_pos_y = int(MONITOR_HEIGHT * 0.38)
-    points_text = f"Points: {save_data_handler.get_save_contents()[0]}"
+    points_text = f"Points: {int(save_data_handler.get_save_contents()[0])}"
     points_render_pos_x -= measure_text(points_text, 64) // 2
     points_render_pos_y -= 32
     draw_text(points_text, points_render_pos_x, points_render_pos_y, 64, WHITE)

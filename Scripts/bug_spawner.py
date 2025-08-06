@@ -63,23 +63,23 @@ class SpawnBugs:
         match choice:
             case 'fly':
                 
-                anims = [Animation(animation.folder_path, animation.frame_durations, animation.is_loop, animation.on_finish_event) for animation in self.fly_anims]                
+                anims = [Animation(animation.folder_path, animation.frame_duration, animation.is_loop, animation.on_finish_event) for animation in self.fly_anims]                
                 FlyingBug(bug_transform, anims, damage_size=70.0, max_hp=1.0, points=self.fly_pnts, rot_speed=Vector2(.75, 2), min_move_speed_mult=1, speed=100, anim_speed=5)
             
             case 'hover':
 
-                anims = [Animation(animation.folder_path, animation.frame_durations, animation.is_loop, animation.on_finish_event) for animation in self.hover_anims]
+                anims = [Animation(animation.folder_path, animation.frame_duration, animation.is_loop, animation.on_finish_event) for animation in self.hover_anims]
                 HoverBug(bug_transform, anims, damage_size=50.0, max_hp=0.5, points=self.hover_pnts, jitter=10.0, jitter_speed_mult=.15, max_move_dist=700.0, idle_time=Vector2(3, 6), speed=1200)
 
             case 'hop':
                 
-                anims = [Animation(animation.folder_path, animation.frame_durations, animation.is_loop, animation.on_finish_event) for animation in self.hopper_anims]
+                anims = [Animation(animation.folder_path, animation.frame_duration, animation.is_loop, animation.on_finish_event) for animation in self.hopper_anims]
                 hop_strength = (Vector2(2, 2), Vector2(6, 12))
                 HoppingBug(bug_transform, anims, damage_size=70.0, max_hp=1.5, points=self.hop_pnts, hop_strength=hop_strength, idle_time=Vector2(3, 6), speed=100)
 
             case 'crawl':
 
-                anims = [Animation(animation.folder_path, animation.frame_durations, animation.is_loop, animation.on_finish_event) for animation in self.crawler_anims]
+                anims = [Animation(animation.folder_path, animation.frame_duration, animation.is_loop, animation.on_finish_event) for animation in self.crawler_anims]
                 on_ceiling = random.choice([True, False])
                 CrawlingBug(bug_transform, anims, damage_size=50.0, max_hp=0.65, points=self.crawl_pnts, idle_fall_prob_per_sec=0.01, walk_fall_prob_per_sec=0.025, on_ceiling=on_ceiling, \
                             idle_time=Vector2(1.5, 5), walk_time=Vector2(1.5, 4), speed=100)

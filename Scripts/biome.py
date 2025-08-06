@@ -24,16 +24,16 @@ class Biome:
 
         # create a biome purchase button
         self.purchase_button = Clickable(Transform2D(scale=2.5),\
-            [Animation(button_price_hidden_path, (100,)),\
-            Animation(button_size_price_hidden_path, (100,)),\
-            Animation(button_price_revealed_path, (100,))], anim_speed=0)
+            [Animation(button_price_hidden_path, 100),\
+            Animation(button_size_price_hidden_path, 100),\
+            Animation(button_price_revealed_path, 100)], anim_speed=0)
         self.purchase_button.transform.pos = self.purchase_button.center_position_at_other(Vector2(background_pos.x, background_pos.y + 100))
         self.purchase_button.on_mouse_enter = self.__reveal_pricing
         self.purchase_button.on_mouse_exit = self.__hide_pricing
         self.purchase_button.text_over_sprite_size = 32
 
         # create a biome open button
-        self.open_button = Clickable(Transform2D(scale=0.1), [Animation(background_path, (100,))], anim_speed=0)
+        self.open_button = Clickable(Transform2D(scale=0.1), [Animation(background_path, 100)], anim_speed=0)
         self.open_button.transform.pos = self.open_button.center_position_at_other(background_pos)
         self.open_button.on_mouse_click = self.toggle_biome_status
 

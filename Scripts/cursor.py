@@ -28,6 +28,7 @@ def calc_global_mouse_properties():
         if other_window_has_mouse:
             Cursor.global_mouse_position = vector2_subtract(Cursor.global_mouse_position, get_window_position())
             Cursor.global_mouse_position = vector2_add(Cursor.global_mouse_position, saved_window_position)
+            #print(f"{int(Cursor.global_mouse_position.x)},{int(Cursor.global_mouse_position.y)}")
             
 class Cursor(Sprite):
     

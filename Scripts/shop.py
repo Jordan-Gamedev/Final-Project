@@ -24,12 +24,12 @@ class Shop:
         file_data = save_data_handler.get_save_contents()
         
         # get the number of jars already purchased from the save file
-        self.num_jars = file_data[1]
+        self.num_jars = int(file_data[1])
 
         # set the times purchased for the biomes to the save data's purchase values
         self.purchaseable_biomes = purchaseable_biomes
         for i in range(len(self.purchaseable_biomes)):
-            self.purchaseable_biomes[i].times_purchased = file_data[2 + i]
+            self.purchaseable_biomes[i].times_purchased = int(file_data[2 + i])
             self.purchaseable_biomes[i]._Biome__hide_pricing()
 
         # make the biome purchase buttons able to purchase their respective biomes
@@ -37,8 +37,8 @@ class Shop:
             self.purchaseable_biomes[i].purchase_button.on_mouse_click = lambda i=i : self.buy_biome(i)
 
         # create a jar purchase button
-        self.jar_button = Clickable(Transform2D(scale=2.5), [Animation("Assets\\Sprites\\Shop_Buttons\\Jar_Price_Hidden", (100,)),\
-            Animation("Assets\\Sprites\\Shop_Buttons\\Jar_Price_Revealed", (100,))], anim_speed=0)
+        self.jar_button = Clickable(Transform2D(scale=2.5), [Animation("Assets\\Sprites\\Shop_Buttons\\Jar_Price_Hidden", 100),\
+            Animation("Assets\\Sprites\\Shop_Buttons\\Jar_Price_Revealed", 100)], anim_speed=0)
         self.jar_button.transform.pos = self.jar_button.center_position_at_other(Vector2(self.MONITOR_WIDTH * 0.45, self.MONITOR_HEIGHT * 0.56))
         self.jar_button.on_mouse_enter = self.__reveal_jar_pricing
         self.jar_button.on_mouse_exit = self.__hide_jar_pricing
@@ -58,7 +58,7 @@ class Shop:
         file, file_data = save_data_handler.open_save_file("r+")
         
         # get the points and number of jars
-        points = file_data[0]
+        points = int(file_data[0])
         
         # current jar cost
         jar_cost = self.get_jar_price()
@@ -73,7 +73,7 @@ class Shop:
 
         # spend the points
         points -= jar_cost
-        file_data[0] = f"{points}"
+        file_data[0] = str(points)
         
         # add the jar
         self.num_jars += 1
@@ -87,7 +87,7 @@ class Shop:
 
         play_sound(load_sound("Assets\\Sounds\\Purchase_FX.wav"))
 
-        self.jars.append(Jar(self.restored_jar_texture))
+        self.jars.append(Jar(self.restored_jar_texture, num_jars_restored=self.num_jars))
 
         # successfully purchased
         return True
@@ -136,14 +136,30 @@ class Shop:
         except:
             pass
 
+    def update(self, dt):
+        
+        file_data = save_data_handler.get_save_contents()
+
+        for i in range(self.num_jars):
+            if i >= len(Shop.jars):
+                Shop.jars.append(Jar(self.restored_jar_texture))
+        
+        for i, jar in enumerate(Shop.jars):
+            if jar.bug_anim == None and len(file_data) > i + 4:
+                bug_animation_path, bug_anim_frame_dur, bug_points, bug_scale = file_data[i + 4].split(',')
+                jar.bug_anim = Animation(bug_animation_path, int(bug_anim_frame_dur))
+                jar.points = int(bug_points)
+                jar.bug_scale = float(bug_scale)
+
+            jar.update(dt)
+            
+    
+
     def render(self):
 
         pos = Vector2(self.MONITOR_WIDTH * 0.42, self.MONITOR_HEIGHT * 0.43)
 
         for i in range(self.num_jars):
-            if i >= len(Shop.jars):
-                Shop.jars.append(Jar(self.restored_jar_texture))
-            
             Shop.jars[i].render(pos, i)
 
         for i in range(self.max_jars - self.num_jars):

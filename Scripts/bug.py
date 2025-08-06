@@ -1,17 +1,17 @@
+from os import path
 from pyray import *
 from raylib import *
 from cursor import Cursor
 from dynamic_sprite import *
 from particle_spawner import SpawnParticles
 import save_data_handler
-from shop import Shop
 
 class Bug(DynamicSprite):
     all_bugs:list[Sprite] = []
     blood_anim = None
 
     def create_particle_anim():
-        Bug.blood_anim = Animation("Assets\\Sprites\\Liquid_Drop", (50, 50, 50, 50, 50, 50))
+        Bug.blood_anim = Animation("Assets\\Sprites\\Liquid_Drop", 50)
 
     def __init__(self, transform:Transform2D, animations:list, damage_size:float, max_hp:float, points:int, speed:float, anim_speed:float = 1.0):
         super().__init__(transform, animations, speed, anim_speed)
@@ -25,15 +25,24 @@ class Bug(DynamicSprite):
         self.points = points
         Bug.all_bugs.append(self)
     
-    def is_captured(self) -> bool:
-        if vector2_distance(Cursor.global_mouse_position, self.get_center_position_at_self()) <= self.damage_size and Cursor.is_global_mouse_left_pressed:
-            for jar in Shop.jars:
-                if not jar.bug_anim:
-                    jar.bug_anim = self.animations[0]
-                    jar.bug_scale = self.transform.scale
-                    jar.points = self.points
-                    return True
-        return False
+    def try_capture(self) -> bool:
+        bug_pos = vector2_add(self.get_center_position_at_self(), Vector2(-get_window_position().x, -get_window_position().y))        
+        if vector2_distance(Cursor.global_mouse_position, bug_pos) <= self.damage_size and Cursor.is_global_mouse_left_pressed:
+            file, file_data = save_data_handler.open_save_file("r+")
+            
+            num_jars_restored = int(file_data[1])
+            num_jars_holding_bugs = len(file_data) - 4
+
+            success = num_jars_holding_bugs < num_jars_restored
+
+            if success:
+                file_data.append(f"{path.dirname(self.animations[0].get_current_texture_path())},{self.animations[0].frame_duration},{self.points},{self.transform.scale:.2f}")
+                
+            for data in file_data:
+                file.write(f"{data}\n")
+            
+            save_data_handler.close_save_file(file)
+            return success
 
     def update(self, dt):
         super().update(dt)
@@ -54,7 +63,7 @@ class Bug(DynamicSprite):
                 
             window_pos = get_window_position()
 
-            if self.is_captured():
+            if self.try_capture():
                 Sprite.all_sprites.remove(self)
                 Bug.all_bugs.remove(self)
                 return
@@ -81,7 +90,7 @@ class Bug(DynamicSprite):
                 file, file_data = save_data_handler.open_save_file("r+")
                 
                 # add points
-                points = file_data[0]
+                points = int(file_data[0])
                 points += self.points
                 file_data[0] = str(points)
                 
