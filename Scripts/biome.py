@@ -20,7 +20,7 @@ class Biome:
         self.starting_size = starting_size
         self.size_increment = size_increment
         self.max_size = max_size
-        self.subprocess:Popen = None
+        self.subprocess:subprocess.Popen = None
 
         # create a biome purchase button
         self.purchase_button = Clickable(Transform2D(scale=2.5),\
