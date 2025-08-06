@@ -15,7 +15,7 @@ class Bug(DynamicSprite):
         if not Bug.blood_anim:
             Bug.create_particle_anim()
 
-        self.particle_spawner = SpawnParticles(.05, Bug.blood_anim)
+        self.particle_spawner = SpawnParticles(.05, Bug.blood_anim, load_sound("Assets\\Sounds\\Plop_Sound.wav"))
         self.damage_size:float = damage_size
         self.hp:float = max_hp
         self.points = points
@@ -57,7 +57,10 @@ class Bug(DynamicSprite):
             
             # reward points to the player when a bug dies from health loss
             if self.hp == 0.0:
-                
+                fx = load_sound("Assets\\Sounds\\Eating_Bug.wav")
+                set_sound_volume(fx, .5)
+                play_sound(fx)
+
                 # make this process wait for the saving process to finish
                 while not file_exists("PersistentData\\Save_Data.txt"):
                     pass
@@ -93,4 +96,3 @@ class Bug(DynamicSprite):
             if self.hp == 0.0 or pos.x < world_edge_x[0] or pos.x > world_edge_x[1] or pos.y < world_edge_y[0] or pos.y > world_edge_y[1]:
                 Sprite.all_sprites.remove(self)
                 Bug.all_bugs.remove(self)
-                print("Bug Destroyed")

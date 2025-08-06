@@ -24,24 +24,32 @@ class Animation:
         self.on_finish_event = on_finish_event
         self.curr_frame = 0
         self.curr_frame_time = 0.0
+        self.is_anim_finished = False
 
     def update(self, delta):
         
-        self.curr_frame_time += delta
-        total_frame_duration = self.frame_durations[self.curr_frame] / 1000.0
+        if self.curr_frame < len(self.loaded_textures):
 
-        if self.curr_frame_time >= total_frame_duration:
-            self.curr_frame_time -= total_frame_duration
-            self.curr_frame += 1
+            self.curr_frame_time += delta
+            total_frame_duration = self.frame_durations[self.curr_frame] / 1000.0
+
+            if self.curr_frame_time >= total_frame_duration:
+                self.curr_frame_time -= total_frame_duration
+                self.curr_frame += 1
 
             if self.curr_frame >= len(self.loaded_textures):
-                self.curr_frame = 0
                 
-                if not self.is_loop:
-                    self.curr_frame_time = 0.0
+                self.curr_frame_time = 0.0
+
+                # if it is looping then this animation can continue to play
+                if self.is_loop:
+                    self.curr_frame = 0                  
+                else:
+                    self.curr_frame = len(self.loaded_textures) - 1
                     
-                    if self.on_finish_event != None:
-                        self.on_finish_event()
+                # animation has finished a round, so play finish event
+                if self.on_finish_event != None:
+                    self.on_finish_event()
         
     def get_current_texture(self) -> Texture2D:
         return self.loaded_textures[int(self.curr_frame)]

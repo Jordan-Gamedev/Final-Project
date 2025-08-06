@@ -7,6 +7,7 @@ from animation import Animation
 from biome import Biome
 from bug import Bug
 from bug_spawner import SpawnBugs
+from button import Button
 from clickable import Clickable
 from cursor import Cursor
 from particle import Particle
@@ -15,8 +16,36 @@ from shop import Shop
 from sprite import Sprite
 from transform import Transform2D
 
+######################## set window properties ########################
+
+# create maximized window
+set_config_flags(FLAG_WINDOW_UNDECORATED | FLAG_WINDOW_ALWAYS_RUN | FLAG_WINDOW_RESIZABLE)
+init_window(1920, 1080, 'Game')
+maximize_window()
+
+# make Window's default cursor invisible
+hide_cursor()
+
+# set the maximum frame rate to 60 because the optimization sucks 
+set_target_fps(60)
+
+# make it so you can't exit with a key press
+set_exit_key(KEY_NULL)
+
+# load background art into gpu vram
+background_art = load_texture("Assets\\Sprites\\Background\\Main_Background.jpg")
+
+# load soundtrack
+init_audio_device()
+music = load_music_stream("Assets\\Sounds\\Music_Track.wav")
+set_music_volume(music, .15)
+play_music_stream(music)
+music.looping = True
+#######################################################################
+
 ############################# globals #################################
-background_art = None
+MONITOR_WIDTH = get_monitor_width(get_current_monitor())
+MONITOR_HEIGHT = get_monitor_height(get_current_monitor())
 game_started:bool = False
 player = None
 grass_texture = None
@@ -68,26 +97,6 @@ def set_up_data_files():
     shutil.copyfile("PersistentData\\Save_Data.txt", "PersistentData\\Backup_Save_Data.txt")
 #######################################################################
 
-######################## set window properties ########################
-def set_up_window():
-    # create maximized window
-    set_config_flags(FLAG_WINDOW_UNDECORATED | FLAG_WINDOW_ALWAYS_RUN | FLAG_WINDOW_RESIZABLE)
-    init_window(1920, 1080, 'Game')
-    maximize_window()
-    
-    # make Window's default cursor invisible
-    hide_cursor()
-
-    # set the maximum frame rate to 60 because the optimization sucks 
-    set_target_fps(60)
-    
-    # make it so you can't exit with a key press
-    set_exit_key(KEY_NULL)
-    
-    # load background art into gpu vram
-    global background_art ; background_art = load_texture("Assets\\Sprites\\Background\\Main_Background.jpg")
-#######################################################################
-
 def start_game():
     global game_started ; game_started = True
     Sprite.all_sprites.clear()
@@ -107,6 +116,12 @@ def quit_game():
     if file_exists("PersistentData\\Save_Data.txt") and file_exists("PersistentData\\Backup_Save_Data.txt"):
         shutil.copyfile("PersistentData\\Save_Data.txt", "PersistentData\\Backup_Save_Data.txt")
 
+    # unload music track
+    unload_music_stream(music)
+
+    # close audio device
+    close_audio_device()
+
     # close the game
     close_window()
 
@@ -118,12 +133,12 @@ def create_asset_instances():
     
     # cave biome button details
     cave_biome_button_paths = ["Assets\\Sprites\\Shop_Buttons\\Cave_Price_Hidden", "Assets\\Sprites\\Shop_Buttons\\Cave_Size_Price_Hidden", "Assets\\Sprites\\Shop_Buttons\\Cave_Price_Revealed", "Assets\\Sprites\\Background\\Cave_Background.jpg"]
-    cave_biome_button_pos = Vector2(get_monitor_width(get_current_monitor()) * 0.57, get_monitor_height(get_current_monitor()) * 0.57)
+    cave_biome_button_pos = Vector2(MONITOR_WIDTH * 0.57, MONITOR_HEIGHT * 0.57)
     cave_biome = Biome("Cave", 1500, 250, 1.5, 100, 100, 1000, cave_biome_button_paths[0], cave_biome_button_paths[1], cave_biome_button_paths[2], cave_biome_button_paths[3], cave_biome_button_pos)
 
     # mountain biome button details
     mountain_biome_button_paths = ["Assets\\Sprites\\Shop_Buttons\\Mountain_Price_Hidden", "Assets\\Sprites\\Shop_Buttons\\Mountain_Size_Price_Hidden", "Assets\\Sprites\\Shop_Buttons\\Mountain_Price_Revealed", "Assets\\Sprites\\Background\\Mountain_Background.jpg"]
-    mountain_biome_button_pos = Vector2(get_monitor_width(get_current_monitor()) * 0.7, get_monitor_height(get_current_monitor()) * 0.57)
+    mountain_biome_button_pos = Vector2(MONITOR_WIDTH * 0.7, MONITOR_HEIGHT * 0.57)
     mountain_biome = Biome("Mountain", 2000, 250, 1.5, 100, 100, 1000, mountain_biome_button_paths[0], mountain_biome_button_paths[1], mountain_biome_button_paths[2], mountain_biome_button_paths[3], mountain_biome_button_pos)
 
     # set up shop
@@ -162,34 +177,20 @@ def go_to_start_menu():
         shop.close_shop()
 
     # set up custom cursor
-    cursor_idle_anim = Animation("Assets\\Sprites\\Cursor", (50.0, 50.0, 50.0))
+    cursor_idle_anim = Animation("Assets\\Sprites\\Cursor", (50, 50, 50))
     global cursor ; cursor = Cursor(Transform2D(get_mouse_position(), rot=0, scale=2), [cursor_idle_anim])
 
     start_button_hover_anim = Animation("Assets\\Sprites\\Start_Button", (150, 150, 150, 150))
-    start_button = Clickable(Transform2D(scale=5), [start_button_hover_anim])
-
-    start_button.transform.pos = start_button.center_position_at_other(Vector2(get_monitor_width(get_current_monitor()) * 0.5, get_monitor_height(get_current_monitor()) * 0.3))
-    start_button.curr_anim_speed = 0
-    start_button.on_mouse_enter = lambda : start_button.play_animation(0)
-    start_button.on_mouse_exit = lambda : start_button.stop_animation(0)
-    start_button.on_mouse_click = start_game
+    pos = Vector2(MONITOR_WIDTH * 0.5, MONITOR_HEIGHT * 0.3)
+    start_button = Button(Transform2D(scale=5), [start_button_hover_anim], pos, start_game)
 
     quit_button_hover_anim = Animation("Assets\\Sprites\\Quit_Button", (150, 150, 150, 150))
-    quit_button = Clickable(Transform2D(scale=5), [quit_button_hover_anim])
-    
-    quit_button.transform.pos = quit_button.center_position_at_other(Vector2(get_monitor_width(get_current_monitor()) * 0.5, get_monitor_height(get_current_monitor()) * 0.6))
-    quit_button.curr_anim_speed = 0
-    quit_button.on_mouse_enter = lambda : quit_button.play_animation(0)
-    quit_button.on_mouse_exit = lambda : quit_button.stop_animation(0)
-    quit_button.on_mouse_click = quit_game
+    pos = Vector2(MONITOR_WIDTH * 0.5, MONITOR_HEIGHT * 0.6)
+    quit_button = Button(Transform2D(scale=5), [quit_button_hover_anim], pos, quit_game)
 
-    settings_button_hover_anim = Animation("Assets\\Sprites\\Settings_Icon", (50, 50, 50, 50), is_loop=False)
-    settings_button = Clickable(Transform2D(scale=2.5), [settings_button_hover_anim])
-    settings_button_hover_anim.on_finish_event = lambda : settings_button.stop_animation(0)
-    settings_button.transform.pos = settings_button.center_position_at_other(Vector2(get_monitor_width(get_current_monitor()) * 0.5 + 300, get_monitor_height(get_current_monitor()) * 0.3))
-    settings_button.curr_anim_speed = 0
-    settings_button.on_mouse_enter = lambda : settings_button.play_animation(0)
-    settings_button.on_mouse_click = go_to_settings_menu
+    settings_button_hover_anim = Animation("Assets\\Sprites\\Settings_Icon", (50, 50, 50, 50, 50), is_loop=False)
+    pos = Vector2(MONITOR_WIDTH * 0.5 + 300, MONITOR_HEIGHT * 0.3)
+    settings_button = Button(Transform2D(scale=2.5), [settings_button_hover_anim], pos, go_to_settings_menu)
 
 def go_to_settings_menu():
 
@@ -205,21 +206,13 @@ def go_to_settings_menu():
 
     # clear save button
     clear_save_button_hover_anim = Animation("Assets\\Sprites\\Delete_Button", (150, 150, 150, 150), is_loop=True)
-    clear_save_button = Clickable(Transform2D(scale=5), [clear_save_button_hover_anim])
-    clear_save_button.transform.pos = clear_save_button.center_position_at_other(Vector2(get_monitor_width(get_current_monitor()) * 0.5, get_monitor_height(get_current_monitor()) * 0.5))
-    clear_save_button.curr_anim_speed = 0
-    clear_save_button.on_mouse_enter = lambda : clear_save_button.play_animation(0)
-    clear_save_button.on_mouse_exit = lambda : clear_save_button.stop_animation(0)
-    clear_save_button.on_mouse_click = delete_save
+    pos = Vector2(MONITOR_WIDTH * 0.5, MONITOR_HEIGHT * 0.5)
+    clear_save_button = Button(Transform2D(scale=5), [clear_save_button_hover_anim], pos, delete_save)
 
     # back button
     back_button_hover_anim = Animation("Assets\\Sprites\\Back_Button", (150, 150, 150, 150), is_loop=True)
-    back_button = Clickable(Transform2D(scale=2.5), [back_button_hover_anim])
-    back_button.transform.pos = back_button.center_position_at_other(Vector2(get_monitor_width(get_current_monitor()) * 0.5, get_monitor_height(get_current_monitor()) * 0.7))
-    back_button.curr_anim_speed = 0
-    back_button.on_mouse_enter = lambda : back_button.play_animation(0)
-    back_button.on_mouse_exit = lambda : back_button.stop_animation(0)
-    back_button.on_mouse_click = go_to_start_menu
+    pos = Vector2(MONITOR_WIDTH * 0.5, MONITOR_HEIGHT * 0.7)
+    back_button = Button(Transform2D(scale=2.5), [back_button_hover_anim], pos, go_to_start_menu)
     
 def delete_save():
     # delete data files in case the program crashed last time and the corrupted files are still there
@@ -232,6 +225,8 @@ def start_menu():
     # updating
     delta_time = get_frame_time()
     
+    global music ; update_music_stream(music)
+
     for sprite in Sprite.all_sprites:
         sprite.update(delta_time)
 
@@ -247,7 +242,7 @@ def start_menu():
         if sprite is not cursor:
             sprite.render()
 
-    draw_texture_ex(grass_texture, Vector2(0, get_monitor_height(get_current_monitor()) - (27 * 5)), 0, 2.5, WHITE)
+    draw_texture_ex(grass_texture, Vector2(0, MONITOR_HEIGHT - (27 * 5)), 0, 2.5, WHITE)
 
     # render cursor over everything
     cursor.render()
@@ -260,6 +255,9 @@ def start_menu():
 def game_loop():
     # updating
     delta_time = get_frame_time()
+
+    global music ; update_music_stream(music)
+
     spawner.update(delta_time)
     for sprite in Sprite.all_sprites:
         sprite.update(delta_time)
@@ -286,8 +284,8 @@ def game_loop():
     shop.render()
 
     # show how many points the player has
-    points_render_pos_x = int(get_monitor_width(get_current_monitor()) * 0.58)
-    points_render_pos_y = int(get_monitor_height(get_current_monitor()) * 0.38)
+    points_render_pos_x = int(MONITOR_WIDTH * 0.58)
+    points_render_pos_y = int(MONITOR_HEIGHT * 0.38)
     points_text = f"Points: {last_known_points}"
     points_render_pos_x -= measure_text(points_text, 64) // 2
     points_render_pos_y -= 32
@@ -299,7 +297,7 @@ def game_loop():
             sprite.render()
 
     # render grass over bugs
-    draw_texture_ex(grass_texture, Vector2(0, get_monitor_height(get_current_monitor()) - (27 * 5)), 0, 2.5, WHITE)
+    draw_texture_ex(grass_texture, Vector2(0, MONITOR_HEIGHT - (27 * 5)), 0, 2.5, WHITE)
 
     # render cursor over everything
     cursor.render()
@@ -326,7 +324,6 @@ def game_loop():
 
 def main():
     set_up_data_files()
-    set_up_window()
     go_to_start_menu()
 
     while not window_should_close():

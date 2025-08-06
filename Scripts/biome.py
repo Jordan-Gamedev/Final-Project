@@ -65,14 +65,23 @@ class Biome:
         return min(self.starting_size + (self.size_increment * (self.times_purchased - 1)), self.max_size)
     
     def open_biome(self):
+        if self.subprocess != None and self.subprocess.poll() == 0:
+            self.subprocess = None
+
         if self.subprocess == None and self.times_purchased > 0:
+            play_sound(load_sound("Assets\\Sounds\\Open_Portal_FX.wav"))
             self.subprocess = Popen(["python", "Scripts\\biome_process.py", self.name])
 
     def close_biome(self):
-        if self.subprocess != None:
+        if self.subprocess != None and self.subprocess.poll() == None:
+            play_sound(load_sound("Assets\\Sounds\\Close_Portal_FX.wav"))
             self.subprocess = self.subprocess.kill()
 
     def toggle_biome_status(self):
+        
+        if self.subprocess != None and self.subprocess.poll() == 0:
+            self.subprocess = None
+
         if self.subprocess == None:
             self.open_biome()
         else:

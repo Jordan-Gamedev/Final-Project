@@ -110,6 +110,8 @@ class Shop:
             file.write(f"{data}\n")
         close_save_file(file)
 
+        play_sound(load_sound("Assets\\Sounds\\Purchase_FX.wav"))
+
         # successfully purchased
         return True
 
@@ -149,6 +151,8 @@ class Shop:
             file.write(f"{data}\n")
         close_save_file(file)
         
+        play_sound(load_sound("Assets\\Sounds\\Purchase_FX.wav"))
+
         # successfully purchased
         return True
 
