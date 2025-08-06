@@ -59,7 +59,7 @@ class Shop:
         # create a jar purchase button
         self.jar_button = Clickable(Transform2D(scale=2.5), [Animation("Assets\\Sprites\\Shop_Buttons\\Jar_Price_Hidden", (100,)),\
             Animation("Assets\\Sprites\\Shop_Buttons\\Jar_Price_Revealed", (100,))], anim_speed=0)
-        self.jar_button.transform.pos = self.jar_button.center_position_at_other(Vector2(get_monitor_width(get_current_monitor()) * 0.4, get_monitor_height(get_current_monitor()) * 0.6))
+        self.jar_button.transform.pos = self.jar_button.center_position_at_other(Vector2(get_monitor_width(get_current_monitor()) * 0.45, get_monitor_height(get_current_monitor()) * 0.56))
         self.jar_button.on_mouse_enter = self.__reveal_jar_pricing
         self.jar_button.on_mouse_exit = self.__hide_jar_pricing
         self.jar_button.on_mouse_click = self.buy_jar

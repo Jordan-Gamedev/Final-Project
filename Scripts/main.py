@@ -117,14 +117,14 @@ def quit_game():
 def create_asset_instances():
     
     # cave biome button details
-    cave_biome_button_paths = ["Assets\\Sprites\\Shop_Buttons\\Cave_Price_Hidden", "Assets\\Sprites\\Shop_Buttons\\Cave_Size_Price_Hidden", "Assets\\Sprites\\Shop_Buttons\\Cave_Price_Revealed"]
-    cave_biome_button_pos = Vector2(get_monitor_width(get_current_monitor()) * 0.6, get_monitor_height(get_current_monitor()) * 0.6)
-    cave_biome = Biome("Cave", 1500, 250, 1.5, 100, 100, 1000, cave_biome_button_paths[0], cave_biome_button_paths[1], cave_biome_button_paths[2], cave_biome_button_pos)
+    cave_biome_button_paths = ["Assets\\Sprites\\Shop_Buttons\\Cave_Price_Hidden", "Assets\\Sprites\\Shop_Buttons\\Cave_Size_Price_Hidden", "Assets\\Sprites\\Shop_Buttons\\Cave_Price_Revealed", "Assets\\Sprites\\Background\\Cave_Background.jpg"]
+    cave_biome_button_pos = Vector2(get_monitor_width(get_current_monitor()) * 0.57, get_monitor_height(get_current_monitor()) * 0.57)
+    cave_biome = Biome("Cave", 1500, 250, 1.5, 100, 100, 1000, cave_biome_button_paths[0], cave_biome_button_paths[1], cave_biome_button_paths[2], cave_biome_button_paths[3], cave_biome_button_pos)
 
     # mountain biome button details
-    mountain_biome_button_paths = ["Assets\\Sprites\\Shop_Buttons\\Mountain_Price_Hidden", "Assets\\Sprites\\Shop_Buttons\\Mountain_Size_Price_Hidden", "Assets\\Sprites\\Shop_Buttons\\Mountain_Price_Revealed"]
-    mountain_biome_button_pos = Vector2(get_monitor_width(get_current_monitor()) * 0.6, get_monitor_height(get_current_monitor()) * 0.8)
-    mountain_biome = Biome("Mountain", 2000, 250, 1.5, 100, 100, 1000, mountain_biome_button_paths[0], mountain_biome_button_paths[1], mountain_biome_button_paths[2], mountain_biome_button_pos)
+    mountain_biome_button_paths = ["Assets\\Sprites\\Shop_Buttons\\Mountain_Price_Hidden", "Assets\\Sprites\\Shop_Buttons\\Mountain_Size_Price_Hidden", "Assets\\Sprites\\Shop_Buttons\\Mountain_Price_Revealed", "Assets\\Sprites\\Background\\Mountain_Background.jpg"]
+    mountain_biome_button_pos = Vector2(get_monitor_width(get_current_monitor()) * 0.7, get_monitor_height(get_current_monitor()) * 0.57)
+    mountain_biome = Biome("Mountain", 2000, 250, 1.5, 100, 100, 1000, mountain_biome_button_paths[0], mountain_biome_button_paths[1], mountain_biome_button_paths[2], mountain_biome_button_paths[3], mountain_biome_button_pos)
 
     # set up shop
     global shop ; shop = Shop(starting_jar_cost=10, purchaseable_biomes=[cave_biome, mountain_biome])
@@ -281,12 +281,17 @@ def game_loop():
     if is_key_pressed(KEY_ESCAPE):
         global game_started ; game_started = False
         go_to_start_menu()
-    
-    # show how many points the player has
-    draw_text(f"Points: {last_known_points}", int(get_monitor_width(get_current_monitor()) * 0.52), int(get_monitor_height(get_current_monitor()) * 0.52), 64, WHITE)
 
     # render the shop's glass jars
     shop.render()
+
+    # show how many points the player has
+    points_render_pos_x = int(get_monitor_width(get_current_monitor()) * 0.58)
+    points_render_pos_y = int(get_monitor_height(get_current_monitor()) * 0.38)
+    points_text = f"Points: {last_known_points}"
+    points_render_pos_x -= measure_text(points_text, 64) // 2
+    points_render_pos_y -= 32
+    draw_text(points_text, points_render_pos_x, points_render_pos_y, 64, WHITE)
 
     # render all sprites except the cursor
     for sprite in Sprite.all_sprites:

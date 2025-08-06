@@ -7,7 +7,7 @@ from transform import Transform2D
 class Biome:
 
     def __init__(self, name:str, initial_price:int, starting_expand_price:int, expand_price_hike_mult:int, starting_size:int, size_increment:int, \
-                max_size:int, button_price_hidden_path:str, button_size_price_hidden_path:str, button_price_revealed_path:str, button_pos:Vector2):
+                max_size:int, button_price_hidden_path:str, button_size_price_hidden_path:str, button_price_revealed_path:str, background_path:str, background_pos:Vector2):
         
         # biome pricing
         self.initial_price = initial_price
@@ -27,10 +27,15 @@ class Biome:
             [Animation(button_price_hidden_path, (100,)),\
             Animation(button_size_price_hidden_path, (100,)),\
             Animation(button_price_revealed_path, (100,))], anim_speed=0)
-        self.purchase_button.transform.pos = self.purchase_button.center_position_at_other(button_pos)
+        self.purchase_button.transform.pos = self.purchase_button.center_position_at_other(Vector2(background_pos.x, background_pos.y + 100))
         self.purchase_button.on_mouse_enter = self.__reveal_pricing
         self.purchase_button.on_mouse_exit = self.__hide_pricing
         self.purchase_button.text_over_sprite_size = 32
+
+        # create a biome open button
+        self.open_button = Clickable(Transform2D(scale=0.1), [Animation(background_path, (100,))], anim_speed=0)
+        self.open_button.transform.pos = self.open_button.center_position_at_other(background_pos)
+        self.open_button.on_mouse_click = self.toggle_biome_status
 
     def __del__(self):
         self.close_biome()
@@ -66,6 +71,12 @@ class Biome:
     def close_biome(self):
         if self.subprocess != None:
             self.subprocess = self.subprocess.kill()
+
+    def toggle_biome_status(self):
+        if self.subprocess == None:
+            self.open_biome()
+        else:
+            self.close_biome()
 
     def __reveal_pricing(self):
         self.purchase_button.play_animation(2)
