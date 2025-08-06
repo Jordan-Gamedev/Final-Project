@@ -37,6 +37,7 @@ class Bug(DynamicSprite):
 
             if success:
                 file_data.append(f"{path.dirname(self.animations[0].get_current_texture_path())},{self.animations[0].frame_duration},{self.points},{self.transform.scale:.2f}")
+                play_sound(load_sound("Assets\\Sounds\\Jar_Clink.wav"))
                 
             for data in file_data:
                 file.write(f"{data}\n")

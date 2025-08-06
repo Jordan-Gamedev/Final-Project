@@ -20,8 +20,8 @@ from transform import Transform2D
 
 # create maximized window
 set_trace_log_level(LOG_ERROR | LOG_FATAL)
-set_config_flags(FLAG_WINDOW_TRANSPARENT | FLAG_WINDOW_UNDECORATED | FLAG_WINDOW_ALWAYS_RUN | FLAG_WINDOW_RESIZABLE)
-init_window(1920, 1080, 'Game')
+set_config_flags(FLAG_WINDOW_UNDECORATED | FLAG_WINDOW_ALWAYS_RUN | FLAG_WINDOW_RESIZABLE)
+init_window(1920, 1080, 'The Hungry Entomologist')
 maximize_window()
 
 # make Window's default cursor invisible
@@ -54,6 +54,7 @@ grass_texture = None
 cursor = None
 spawner = None
 shop:Shop = None
+should_draw_text = False
 
 #######################################################################
 
@@ -150,12 +151,12 @@ def create_asset_instances():
     cave_biome_button_paths = ["Assets\\Sprites\\Shop_Buttons\\Cave_Price_Hidden", "Assets\\Sprites\\Shop_Buttons\\Cave_Size_Price_Hidden", "Assets\\Sprites\\Shop_Buttons\\Cave_Price_Revealed", "Assets\\Sprites\\Background\\Cave_Background.jpg"]
     cave_biome_button_pos = Vector2(MONITOR_WIDTH * 0.57, MONITOR_HEIGHT * 0.57)
     min_monitor_dim = min(MONITOR_WIDTH, MONITOR_HEIGHT)
-    cave_biome = Biome("Cave", 1500, 250, 1.5, int(0.25 * min_monitor_dim), int(0.1 * min_monitor_dim), int(.85 * min_monitor_dim), cave_biome_button_paths[0], cave_biome_button_paths[1], cave_biome_button_paths[2], cave_biome_button_paths[3], cave_biome_button_pos)
+    cave_biome = Biome("Cave", 800, 250, 1.5, int(0.25 * min_monitor_dim), int(0.1 * min_monitor_dim), int(.85 * min_monitor_dim), cave_biome_button_paths[0], cave_biome_button_paths[1], cave_biome_button_paths[2], cave_biome_button_paths[3], cave_biome_button_pos)
 
     # mountain biome button details
     mountain_biome_button_paths = ["Assets\\Sprites\\Shop_Buttons\\Mountain_Price_Hidden", "Assets\\Sprites\\Shop_Buttons\\Mountain_Size_Price_Hidden", "Assets\\Sprites\\Shop_Buttons\\Mountain_Price_Revealed", "Assets\\Sprites\\Background\\Mountain_Background.jpg"]
     mountain_biome_button_pos = Vector2(MONITOR_WIDTH * 0.7, MONITOR_HEIGHT * 0.57)
-    mountain_biome = Biome("Mountain", 2000, 250, 1.5, int(0.25 * min_monitor_dim), int(0.1 * min_monitor_dim), int(.85 * min_monitor_dim), mountain_biome_button_paths[0], mountain_biome_button_paths[1], mountain_biome_button_paths[2], mountain_biome_button_paths[3], mountain_biome_button_pos)
+    mountain_biome = Biome("Mountain", 1200, 250, 1.5, int(0.25 * min_monitor_dim), int(0.1 * min_monitor_dim), int(.85 * min_monitor_dim), mountain_biome_button_paths[0], mountain_biome_button_paths[1], mountain_biome_button_paths[2], mountain_biome_button_paths[3], mountain_biome_button_pos)
 
     # set up shop
     global shop ; shop = Shop(starting_jar_cost=10, purchaseable_biomes=[cave_biome, mountain_biome])
@@ -179,6 +180,8 @@ def create_asset_instances():
 #######################################################################
 
 def go_to_start_menu():
+    global should_draw_text
+    should_draw_text = False
     # remove previous scene
     Sprite.all_sprites.clear()
     Bug.all_bugs.clear()
@@ -204,8 +207,10 @@ def go_to_start_menu():
     pos = Vector2(MONITOR_WIDTH * 0.5 + 300, MONITOR_HEIGHT * 0.3)
     settings_button = Button(Transform2D(scale=2.5), [settings_button_hover_anim], pos, go_to_settings_menu)
 
-def go_to_settings_menu():
 
+def go_to_settings_menu():
+    global should_draw_text
+    should_draw_text = True
     # remove previous scene
     Sprite.all_sprites.clear()
     Bug.all_bugs.clear()
@@ -265,7 +270,12 @@ def start_menu():
             sprite.render()
 
     draw_texture_ex(grass_texture, Vector2(0, MONITOR_HEIGHT - (27 * 5)), 0, 2.5, WHITE)
-
+    text = "How to Play:\nClick/Hold Right Mouse Button to Move\nLeft Click to capture bugs in jars\n" if should_draw_text else "The Hungry Entomologist"
+    if should_draw_text:
+        draw_text(text, 10, 10, 50, GRAY)
+    else:
+        draw_text(text, MONITOR_WIDTH // 2 - measure_text(text, 50) // 2, int(MONITOR_HEIGHT * 0.1), 50, GRAY)
+        
     # render cursor over everything
     cursor.render()
 
