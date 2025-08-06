@@ -134,12 +134,13 @@ def create_asset_instances():
     # cave biome button details
     cave_biome_button_paths = ["Assets\\Sprites\\Shop_Buttons\\Cave_Price_Hidden", "Assets\\Sprites\\Shop_Buttons\\Cave_Size_Price_Hidden", "Assets\\Sprites\\Shop_Buttons\\Cave_Price_Revealed", "Assets\\Sprites\\Background\\Cave_Background.jpg"]
     cave_biome_button_pos = Vector2(MONITOR_WIDTH * 0.57, MONITOR_HEIGHT * 0.57)
-    cave_biome = Biome("Cave", 1500, 250, 1.5, 100, 100, 1000, cave_biome_button_paths[0], cave_biome_button_paths[1], cave_biome_button_paths[2], cave_biome_button_paths[3], cave_biome_button_pos)
+    min_monitor_dim = min(MONITOR_WIDTH, MONITOR_HEIGHT)
+    cave_biome = Biome("Cave", 1500, 250, 1.5, int(0.25 * min_monitor_dim), int(0.1 * min_monitor_dim), int(.85 * min_monitor_dim), cave_biome_button_paths[0], cave_biome_button_paths[1], cave_biome_button_paths[2], cave_biome_button_paths[3], cave_biome_button_pos)
 
     # mountain biome button details
     mountain_biome_button_paths = ["Assets\\Sprites\\Shop_Buttons\\Mountain_Price_Hidden", "Assets\\Sprites\\Shop_Buttons\\Mountain_Size_Price_Hidden", "Assets\\Sprites\\Shop_Buttons\\Mountain_Price_Revealed", "Assets\\Sprites\\Background\\Mountain_Background.jpg"]
     mountain_biome_button_pos = Vector2(MONITOR_WIDTH * 0.7, MONITOR_HEIGHT * 0.57)
-    mountain_biome = Biome("Mountain", 2000, 250, 1.5, 100, 100, 1000, mountain_biome_button_paths[0], mountain_biome_button_paths[1], mountain_biome_button_paths[2], mountain_biome_button_paths[3], mountain_biome_button_pos)
+    mountain_biome = Biome("Mountain", 2000, 250, 1.5, int(0.25 * min_monitor_dim), int(0.1 * min_monitor_dim), int(.85 * min_monitor_dim), mountain_biome_button_paths[0], mountain_biome_button_paths[1], mountain_biome_button_paths[2], mountain_biome_button_paths[3], mountain_biome_button_pos)
 
     # set up shop
     global shop ; shop = Shop(starting_jar_cost=10, purchaseable_biomes=[cave_biome, mountain_biome])
@@ -257,7 +258,7 @@ def game_loop():
     spawner.update(delta_time)
     for sprite in Sprite.all_sprites:
         sprite.update(delta_time)
-        
+
     # drawing
     begin_drawing()
     clear_background(Color(0, 0, 0, 0))

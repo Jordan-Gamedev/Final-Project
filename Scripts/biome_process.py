@@ -19,11 +19,16 @@ BIOME_START_SIZE = int(sys.argv[2])
 BIOME_SIZE_INCREMENT = int(sys.argv[3])
 BIOME_MAX_SIZE = int(sys.argv[4])
 
+# get the current max window size
+file_data = save_data_handler.get_save_contents()
+times_purchased = file_data[2] if BIOME_NAME == "Cave" else file_data[3]
+curr_max_window_size = min(BIOME_START_SIZE + (BIOME_SIZE_INCREMENT * (times_purchased - 1)), BIOME_MAX_SIZE)
+
 # create a small resizable window
 set_config_flags(FLAG_WINDOW_RESIZABLE | FLAG_WINDOW_TOPMOST)
-init_window(BIOME_START_SIZE, BIOME_START_SIZE, BIOME_NAME)
+init_window(max(BIOME_START_SIZE, curr_max_window_size // 2), max(BIOME_START_SIZE, curr_max_window_size // 2), BIOME_NAME)
 set_window_min_size(BIOME_START_SIZE, BIOME_START_SIZE)
-set_window_max_size(BIOME_START_SIZE, BIOME_START_SIZE)
+set_window_max_size(curr_max_window_size, curr_max_window_size)
 hide_cursor()
 
 MONITOR_WIDTH = get_monitor_width(get_current_monitor())

@@ -44,7 +44,7 @@ class CrawlingBug(Bug):
         super().update(dt)
 
         # the ground and ceiling positions
-        ground_pos = get_monitor_height(get_current_monitor()) - 150
+        ground_pos = get_monitor_height(get_current_monitor()) - 100
         ceil_pos = 47
         
         # checks if the bug is grounded or clinging to the ceiling
