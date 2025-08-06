@@ -5,9 +5,9 @@ import random
 
 class CrawlingBug(Bug):
     def __init__(self, transform:Transform2D, animations:list, damage_size:float, max_hp:float, points:int, idle_fall_prob_per_sec:float, \
-                walk_fall_prob_per_sec:float, on_ceiling:bool, idle_time:Vector2, walk_time:Vector2, speed:float, anim_speed:float = 1.0):
+                walk_fall_prob_per_sec:float, on_ceiling:bool, idle_time:Vector2, walk_time:Vector2, speed:float, anim_speed:float = 1.0, blood_color=GREEN):
         
-        super().__init__(transform, animations, damage_size, max_hp, points, speed, anim_speed)
+        super().__init__(transform, animations, damage_size, max_hp, points, speed, anim_speed, blood_color)
         
         # Probability of falling off of ceiling every second while standing still
         self.idle_fall_prob_per_sec = idle_fall_prob_per_sec

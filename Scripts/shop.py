@@ -87,7 +87,7 @@ class Shop:
 
         play_sound(load_sound("Assets\\Sounds\\Purchase_FX.wav"))
 
-        self.jars.append(Jar(self.restored_jar_texture, num_jars_restored=self.num_jars))
+        self.jars.append(Jar(self.restored_jar_texture))
 
         # successfully purchased
         return True

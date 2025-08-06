@@ -6,9 +6,9 @@ from bug import *
 
 
 class FlyingBug(Bug):
-    def __init__(self, transform:Transform2D, animations:list, damage_size:float, max_hp:float, points:int, rot_speed:Vector2, min_move_speed_mult:float, speed:float, anim_speed:float = 1.0):
+    def __init__(self, transform:Transform2D, animations:list, damage_size:float, max_hp:float, points:int, rot_speed:Vector2, min_move_speed_mult:float, speed:float, anim_speed:float = 1.0, blood_color=GREEN):
         
-        super().__init__(transform, animations, damage_size, max_hp, points, speed, anim_speed)
+        super().__init__(transform, animations, damage_size, max_hp, points, speed, anim_speed, blood_color)
         
         # the min/max speed to rotate towards a target rotation
         self.potential_rot_speed:Vector2 = rot_speed

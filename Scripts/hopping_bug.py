@@ -4,9 +4,9 @@ from bug import *
 import random
 
 class HoppingBug(Bug):
-    def __init__(self, transform:Transform2D, animations:list, damage_size:float, max_hp:float, points:int, hop_strength:Vector2, idle_time:Vector2, speed:float, anim_speed:float = 1.0):
+    def __init__(self, transform:Transform2D, animations:list, damage_size:float, max_hp:float, points:int, hop_strength:Vector2, idle_time:Vector2, speed:float, anim_speed:float = 1.0, blood_color=GREEN):
         
-        super().__init__(transform, animations, damage_size, max_hp, points, speed, anim_speed)
+        super().__init__(transform, animations, damage_size, max_hp, points, speed, anim_speed, blood_color)
         
         # A Vector2 that indicates the direction and strength of the initial velocity
         self.hop_strength = hop_strength

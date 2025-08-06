@@ -39,7 +39,8 @@ background_art = load_texture("Assets\\Sprites\\Background\\Main_Background.jpg"
 # load soundtrack
 init_audio_device()
 music = load_music_stream("Assets\\Sounds\\Music_Track.wav")
-set_music_volume(music, .15)
+music_volume = .15
+set_music_volume(music, music_volume)
 play_music_stream(music)
 music.looping = True
 #######################################################################
@@ -53,6 +54,7 @@ grass_texture = None
 cursor = None
 spawner = None
 shop:Shop = None
+
 #######################################################################
 
 ########################## create data files ##########################
@@ -70,6 +72,19 @@ def set_up_data_files():
     open("Data\\Shared_Main_Process_Sprite_Data.txt", "x").close()
     open("Data\\Player_Data.txt", "x").close()
     open("Data\\Mouse_Data.txt", "x").close()
+
+    # checks if save data is corrupted
+    try:
+        if file_exists("PersistentData\\Save_Data.txt"):
+            with open("PersistentData\\Save_Data.txt", "r") as file:
+                contents = [line.strip() for line in file if line.strip()]
+                contents[0] = int(contents[0])
+                contents[1] = int(contents[1])
+                contents[2] = int(contents[2])
+                contents[3] = int(contents[3])
+    except:
+        os.remove("PersistentData\\Save_Data.txt")
+
 
     # delete corrupt backup save (worse case scenario for the user)
     if file_exists("PersistentData\\Backup_Save_Data.saving"):
@@ -203,8 +218,13 @@ def go_to_settings_menu():
 
     # clear save button
     clear_save_button_hover_anim = Animation("Assets\\Sprites\\Delete_Button", 150, is_loop=True)
-    pos = Vector2(MONITOR_WIDTH * 0.5, MONITOR_HEIGHT * 0.5)
+    pos = Vector2(MONITOR_WIDTH * 0.5, MONITOR_HEIGHT * 0.35)
     clear_save_button = Button(Transform2D(scale=5), [clear_save_button_hover_anim], pos, delete_save)
+
+    # Mute music button
+    mute_music_button_hover_anim = Animation("Assets\\Sprites\\Music_Button", 150, is_loop=True)
+    pos = Vector2(MONITOR_WIDTH * 0.5, MONITOR_HEIGHT * 0.55)
+    music_button = Button(Transform2D(scale=5), [mute_music_button_hover_anim], pos, mute_music)
 
     # back button
     back_button_hover_anim = Animation("Assets\\Sprites\\Back_Button", 150, is_loop=True)
@@ -216,6 +236,11 @@ def delete_save():
     if os.path.exists("PersistentData"):
         shutil.rmtree("PersistentData", ignore_errors=True)
     set_up_data_files()
+
+def mute_music():
+    global music_volume
+    music_volume = 0 if music_volume > 0 else 0.15
+    set_music_volume(music, music_volume)
 
 ############################# start menu ##############################
 def start_menu():

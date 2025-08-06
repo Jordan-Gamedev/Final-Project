@@ -92,6 +92,7 @@ if BIOME_NAME == "Cave":
     hover_pnts = 25
     hopper_pnts = 35
     crawler_pnts = 5
+    blood_color = RED
 
 else:
     
@@ -102,9 +103,10 @@ else:
     hover_pnts = 30
     hopper_pnts = 0
     crawler_pnts = 0
+    blood_color = BLUE
 
-spawner = SpawnBugs(max_capacity=1, spawn_rate=1, fly_anims=fly_anims, hover_anims=hover_anims, hopper_anims=hopper_anims, \
-            crawler_anims=crawler_anims, fly_pnts=fly_pnts, hover_pnts=hover_pnts, hop_pnts=hopper_pnts, crawl_pnts=crawler_pnts)
+spawner = SpawnBugs(max_capacity=10, spawn_rate=1, fly_anims=fly_anims, hover_anims=hover_anims, hopper_anims=hopper_anims, \
+        crawler_anims=crawler_anims, fly_pnts=fly_pnts, hover_pnts=hover_pnts, hop_pnts=hopper_pnts, crawl_pnts=crawler_pnts, blood_color=blood_color)
 
 # get the correct background for the biome
 if BIOME_NAME == "Cave":

@@ -5,13 +5,14 @@ from animation import Animation
 from transform import Transform2D
 
 class SpawnParticles:
-    def __init__(self, spawn_rate, particle_anim:Animation, sound:Sound):
+    def __init__(self, spawn_rate, particle_anim:Animation, sound:Sound, color:Color):
         self.spawn_particle = False
         self.spawn_rate = spawn_rate
         self.spawn_pos = Vector2()
         self.particle_anim = particle_anim
         self.sound_cntr = 8
         self.sound = sound
+        self.color = color
         set_sound_volume(sound, 2)
 
     def update(self, dt):
@@ -37,6 +38,6 @@ class SpawnParticles:
         self.sound_cntr += 1
         if self.sound_cntr % 10 == 0:
             play_sound(self.sound)
-        particle.sprite_color = RED
+        particle.sprite_color = self.color
         particle.vel.x = random.uniform(-1, 1) * 50
         particle.vel.y = -32

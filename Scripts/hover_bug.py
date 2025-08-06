@@ -6,9 +6,9 @@ from bug import *
 
 class HoverBug(Bug):
     def __init__(self, transform:Transform2D, animations:list, damage_size:float, max_hp:float, points:int, \
-                  jitter:float, jitter_speed_mult:float, max_move_dist:float, idle_time:Vector2, speed:float, anim_speed:float = 1.0):
+                  jitter:float, jitter_speed_mult:float, max_move_dist:float, idle_time:Vector2, speed:float, anim_speed:float = 1.0, blood_color=GREEN):
         
-        super().__init__(transform, animations, damage_size, max_hp, points, speed, anim_speed)
+        super().__init__(transform, animations, damage_size, max_hp, points, speed, anim_speed, blood_color)
         
         # the distance around the idle point that it make small movements towards
         self.jitter = jitter
