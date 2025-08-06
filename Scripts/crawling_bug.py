@@ -30,7 +30,7 @@ class CrawlingBug(Bug):
 
         # the ground and ceiling positions
         ground_pos = get_monitor_height(get_current_monitor()) - 150
-        ceil_pos = 0
+        ceil_pos = 47
 
         # flip the sprite vertically to cling to ceiling
         if on_ceiling:
@@ -45,7 +45,7 @@ class CrawlingBug(Bug):
 
         # the ground and ceiling positions
         ground_pos = get_monitor_height(get_current_monitor()) - 150
-        ceil_pos = 0
+        ceil_pos = 47
         
         # checks if the bug is grounded or clinging to the ceiling
         is_grounded = True if self.transform.pos.y >= ground_pos else False

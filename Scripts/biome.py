@@ -70,7 +70,7 @@ class Biome:
 
         if self.subprocess == None and self.times_purchased > 0:
             play_sound(load_sound("Assets\\Sounds\\Open_Portal_FX.wav"))
-            self.subprocess = Popen(["python", "Scripts\\biome_process.py", self.name])
+            self.subprocess = Popen(args=["python", "Scripts\\biome_process.py", self.name, str(self.starting_size), str(self.size_increment), str(self.max_size)])
 
     def close_biome(self):
         if self.subprocess != None and self.subprocess.poll() == None:

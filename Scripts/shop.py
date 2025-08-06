@@ -1,33 +1,11 @@
-from io import TextIOWrapper
-import os
 from pyray import *
 
 from animation import Animation
 from biome import Biome
 from clickable import Clickable
+import save_data_handler
 from sprite import Sprite
 from transform import Transform2D
-
-def open_save_file() -> TextIOWrapper:
-        
-        # make this process wait for the saving process to finish
-        while not file_exists("PersistentData\\Save_Data.txt"):
-            pass
-        
-        # renaming a file can sometimes cause permission errors for a few frames, so keep trying until success
-        while True:
-            
-            try:
-                # open and get file data
-                os.rename("PersistentData\\Save_Data.txt", "PersistentData\\Save_Data.saving")
-                file = open("PersistentData\\Save_Data.saving", "r+")
-                return file
-            except:
-                pass
-
-def close_save_file(file:TextIOWrapper):
-    file.close()
-    os.rename("PersistentData\\Save_Data.saving", "PersistentData\\Save_Data.txt")
 
 class Shop:
 
@@ -39,17 +17,15 @@ class Shop:
         self.jar_price_hike_mult = jar_price_hike_mult
 
         # get data from the save file
-        file = open_save_file()
-        file_data = [line for line in file]
-        close_save_file(file)
+        file_data = save_data_handler.get_save_contents()
         
         # get the number of jars already purchased from the save file
-        self.num_jars = int(file_data[1])
+        self.num_jars = file_data[1]
 
         # set the times purchased for the biomes to the save data's purchase values
         self.purchaseable_biomes = purchaseable_biomes
         for i in range(len(self.purchaseable_biomes)):
-            self.purchaseable_biomes[i].times_purchased = int(file_data[2 + i])
+            self.purchaseable_biomes[i].times_purchased = file_data[2 + i]
             self.purchaseable_biomes[i]._Biome__hide_pricing()
 
         # make the biome purchase buttons able to purchase their respective biomes
@@ -75,15 +51,10 @@ class Shop:
     def buy_jar(self) -> bool:
 
         # safely open the save file for reading and writing
-        file:TextIOWrapper = open_save_file()
-
-        # get the data from the file and wipe the file
-        file_data = [line.strip() for line in file.readlines()]
-        file.seek(0)
-        file.truncate()
+        file, file_data = save_data_handler.open_save_file("r+")
         
         # get the points and number of jars
-        points = int(file_data[0])
+        points = file_data[0]
         
         # current jar cost
         jar_cost = self.get_jar_price()
@@ -93,7 +64,7 @@ class Shop:
             # unsuccessful purchase
             for data in file_data:
                 file.write(f"{data}\n")
-            close_save_file(file)
+            save_data_handler.close_save_file(file)
             return False
 
         # spend the points
@@ -108,7 +79,7 @@ class Shop:
         # finalize the change
         for data in file_data:
             file.write(f"{data}\n")
-        close_save_file(file)
+        save_data_handler.close_save_file(file)
 
         play_sound(load_sound("Assets\\Sounds\\Purchase_FX.wav"))
 
@@ -118,13 +89,8 @@ class Shop:
     def buy_biome(self, biome_index:int) -> bool:
 
         # safely open the save file for reading and writing
-        file:TextIOWrapper = open_save_file()
+        file, file_data = save_data_handler.open_save_file("r+")
 
-        # get the data from the file and wipe the file
-        file_data = [line.strip() for line in file.readlines()]
-        file.seek(0)
-        file.truncate()
-        
         # get the points
         points = int(file_data[0])
 
@@ -133,7 +99,7 @@ class Shop:
             # unsuccessful purchase
             for data in file_data:
                 file.write(f"{data}\n")
-            close_save_file(file)
+            save_data_handler.close_save_file(file)
             return False
 
         # spend the points
@@ -149,7 +115,7 @@ class Shop:
         # finalize the change
         for data in file_data:
             file.write(f"{data}\n")
-        close_save_file(file)
+        save_data_handler.close_save_file(file)
         
         play_sound(load_sound("Assets\\Sounds\\Purchase_FX.wav"))
 

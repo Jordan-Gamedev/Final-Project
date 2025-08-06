@@ -8,17 +8,18 @@ from biome import Biome
 from bug import Bug
 from bug_spawner import SpawnBugs
 from button import Button
-from clickable import Clickable
 from cursor import Cursor
 from particle import Particle
 from player import Player
 from shop import Shop
+import save_data_handler
 from sprite import Sprite
 from transform import Transform2D
 
 ######################## set window properties ########################
 
 # create maximized window
+set_trace_log_level(LOG_ERROR | LOG_FATAL)
 set_config_flags(FLAG_WINDOW_UNDECORATED | FLAG_WINDOW_ALWAYS_RUN | FLAG_WINDOW_RESIZABLE)
 init_window(1920, 1080, 'Game')
 maximize_window()
@@ -51,7 +52,6 @@ player = None
 grass_texture = None
 cursor = None
 spawner = None
-last_known_points = 0
 shop:Shop = None
 #######################################################################
 
@@ -150,20 +150,16 @@ def create_asset_instances():
     player.transform.pos = player.center_position_at_other(Cursor.global_mouse_position)
     
     # set up spawner which spawns bugs over time
-    gnat_idle_anim = Animation("Assets\\Sprites\\Gnat", (300.0, 300.0))
-    hoverer_idle_anim = Animation("Assets\\Sprites\\Hoverer", (50, 50))
-    hopper_idle_anim = Animation("Assets\\Sprites\\Hopper\\Idle", (50, 50, 50, 50, 50, 50))
-    hopper_jump_anim = Animation("Assets\\Sprites\\Hopper\\Jump", (50, 50, 50, 50, 50, 50), is_loop=False)
-    crawler_idle_anim = Animation("Assets\\Sprites\\Crawler\\Idle", (50, 50, 50, 50, 50, 50, 50, 50))
-    crawler_walk_anim = Animation("Assets\\Sprites\\Crawler\\Walk", (50, 50, 50, 50, 50, 50))
-    crawler_fall_anim = Animation("Assets\\Sprites\\Crawler\\Fall", (25, 25, 25, 25, 25, 25))
-    global spawner ; spawner = SpawnBugs(max_capacity=15, spawn_rate=1, fly_anims=[gnat_idle_anim], hover_anims=[hoverer_idle_anim], \
-                    hopper_anims=[hopper_idle_anim, hopper_jump_anim], crawler_anims=[crawler_idle_anim, crawler_walk_anim, crawler_fall_anim])
+    fly_idle_anim = Animation("Assets\\Sprites\\Main_Flying_Bug", (300.0, 300.0))
+    hoverer_idle_anim = Animation("Assets\\Sprites\\Main_Hoverer", (50, 50))
+    hopper_idle_anim = Animation("Assets\\Sprites\\Main_Hopper\\Idle", (75, 75, 75, 75, 75, 75))
+    hopper_jump_anim = Animation("Assets\\Sprites\\Main_Hopper\\Jump", (50, 50, 50, 50, 50, 50), is_loop=False)
+    global spawner ; spawner = SpawnBugs(max_capacity=15, spawn_rate=1, fly_anims=[fly_idle_anim], hover_anims=[hoverer_idle_anim], \
+                    hopper_anims=[hopper_idle_anim, hopper_jump_anim], crawler_anims=[], fly_pnts=10, hover_pnts=5, hop_pnts=15, crawl_pnts=0)
 
     # set up custom cursor
     cursor_idle_anim = Animation("Assets\\Sprites\\Cursor", (50.0, 50.0, 50.0))
     global cursor ; cursor = Cursor(Transform2D(get_mouse_position(), rot=0, scale=2), [cursor_idle_anim])
-
 #######################################################################
 
 def go_to_start_menu():
@@ -261,12 +257,7 @@ def game_loop():
     spawner.update(delta_time)
     for sprite in Sprite.all_sprites:
         sprite.update(delta_time)
-
-    # get points from save data
-    if file_exists("PersistentData\\Save_Data.txt"):
-        with open("PersistentData\\Save_Data.txt", "r") as save_data_file:
-            global last_known_points ; last_known_points = int(save_data_file.readline())
-
+        
     # drawing
     begin_drawing()
     clear_background(Color(0, 0, 0, 0))
@@ -286,7 +277,7 @@ def game_loop():
     # show how many points the player has
     points_render_pos_x = int(MONITOR_WIDTH * 0.58)
     points_render_pos_y = int(MONITOR_HEIGHT * 0.38)
-    points_text = f"Points: {last_known_points}"
+    points_text = f"Points: {save_data_handler.get_save_contents()[0]}"
     points_render_pos_x -= measure_text(points_text, 64) // 2
     points_render_pos_y -= 32
     draw_text(points_text, points_render_pos_x, points_render_pos_y, 64, WHITE)

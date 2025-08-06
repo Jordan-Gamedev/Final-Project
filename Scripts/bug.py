@@ -3,6 +3,7 @@ from pyray import *
 from raylib import *
 from dynamic_sprite import *
 from particle_spawner import SpawnParticles
+import save_data_handler
 
 class Bug(DynamicSprite):
     all_bugs:list[Sprite] = []
@@ -60,38 +61,20 @@ class Bug(DynamicSprite):
                 fx = load_sound("Assets\\Sounds\\Eating_Bug.wav")
                 set_sound_volume(fx, .5)
                 play_sound(fx)
-
-                # make this process wait for the saving process to finish
-                while not file_exists("PersistentData\\Save_Data.txt"):
-                    pass
                 
-                # renaming a file can sometimes cause permission errors for a few frames, so keep trying until success
-                while True:
-                    
-                    try:
-                        # open and get file data
-                        os.rename("PersistentData\\Save_Data.txt", "PersistentData\\Save_Data.saving")
-                        file = open("PersistentData\\Save_Data.saving", "r+")
-                        break
-
-                    except:
-                        pass
-
-                file_data = [line.strip() for line in file.readlines()]
-                file.seek(0)
-                file.truncate()
+                file, file_data = save_data_handler.open_save_file("r+")
                 
                 # add points
-                points = int(file_data[0])
+                points = file_data[0]
                 points += self.points
-                file_data[0] = f"{points}"
+                file_data[0] = str(points)
                 
                 # finalize change
                 for data in file_data:
                     file.write(f"{data}\n")
-                file.close()
-                os.rename("PersistentData\\Save_Data.saving", "PersistentData\\Save_Data.txt")
-            
+                
+                save_data_handler.close_save_file(file)
+
             pos = self.transform.pos
             if self.hp == 0.0 or pos.x < world_edge_x[0] or pos.x > world_edge_x[1] or pos.y < world_edge_y[0] or pos.y > world_edge_y[1]:
                 Sprite.all_sprites.remove(self)

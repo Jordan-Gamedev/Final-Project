@@ -24,6 +24,9 @@ class HoppingBug(Bug):
         self.vel.y = random.uniform(-self.hop_strength[0].y, -self.hop_strength[1].y)
         self.play_animation(0)
 
+        if (self.vel.x < 0 and self.facing_direction_x == 1) or (self.vel.x > 0 and self.facing_direction_x == -1):
+            self.flip_sprite_horiz()
+
     def update(self, dt):
 
         super().update(dt)

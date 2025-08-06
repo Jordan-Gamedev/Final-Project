@@ -1,26 +1,41 @@
-import win32api
-import win32con
-
 from pathlib import Path
 from pyray import *
 from raylib import *
+import sys
+import win32api
+import win32con
 
 from animation import *
 from bug_spawner import SpawnBugs
 from cursor import *
+import save_data_handler
 from sprite import *
 
 ######################## set window properties ########################
 
-# get currently used monitor
-current_monitor = get_current_monitor()
+# get the biome stats
+BIOME_NAME = sys.argv[1]
+BIOME_START_SIZE = int(sys.argv[2])
+BIOME_SIZE_INCREMENT = int(sys.argv[3])
+BIOME_MAX_SIZE = int(sys.argv[4])
 
 # create a small resizable window
 set_config_flags(FLAG_WINDOW_RESIZABLE | FLAG_WINDOW_TOPMOST)
-init_window(500, 500, 'Mountain Biome')
-set_window_min_size(250, 250)
-set_window_max_size(500, 500)
+init_window(BIOME_START_SIZE, BIOME_START_SIZE, BIOME_NAME)
+set_window_min_size(BIOME_START_SIZE, BIOME_START_SIZE)
+set_window_max_size(BIOME_START_SIZE, BIOME_START_SIZE)
 hide_cursor()
+
+MONITOR_WIDTH = get_monitor_width(get_current_monitor())
+MONITOR_HEIGHT = get_monitor_height(get_current_monitor())
+
+init_audio_device()
+
+# set the starting biome position based on biome type
+if BIOME_NAME == "Cave":
+    set_window_position(int(MONITOR_WIDTH * 0.25), int(MONITOR_HEIGHT) // 2)
+else:
+    set_window_position(int(MONITOR_WIDTH * 0.75), int(MONITOR_HEIGHT) // 2)
 
 # make it so that the only way to close the biome is with the window exit button
 set_exit_key(KEY_NULL)
@@ -52,17 +67,43 @@ cursor_idle_anim = Animation("Assets\\Sprites\\Cursor", (50.0, 50.0, 50.0))
 cursor = Cursor(Transform2D(get_mouse_position(), rot=0, scale=2), [cursor_idle_anim])
 
 # set up spawner which spawns bugs over time
-gnat_idle_anim = Animation("Assets\\Sprites\\Gnat", (300.0, 300.0))
-hoverer_idle_anim = Animation("Assets\\Sprites\\Hoverer", (50, 50))
-hopper_idle_anim = Animation("Assets\\Sprites\\Hopper\\Idle", (50, 50, 50, 50, 50, 50))
-hopper_jump_anim = Animation("Assets\\Sprites\\Hopper\\Jump", (50, 50, 50, 50, 50, 50), is_loop=False)
-crawler_idle_anim = Animation("Assets\\Sprites\\Crawler\\Idle", (50, 50, 50, 50, 50, 50, 50, 50))
-crawler_walk_anim = Animation("Assets\\Sprites\\Crawler\\Walk", (50, 50, 50, 50, 50, 50))
-crawler_fall_anim = Animation("Assets\\Sprites\\Crawler\\Fall", (25, 25, 25, 25, 25, 25))
-spawner = SpawnBugs(max_capacity=12, spawn_rate=1, fly_anims=[gnat_idle_anim], hover_anims=[hoverer_idle_anim], \
-                hopper_anims=[hopper_idle_anim, hopper_jump_anim], crawler_anims=[crawler_idle_anim, crawler_walk_anim, crawler_fall_anim])
+fly_anims = []
+hover_anims = []
+hopper_anims = []
+crawler_anims = []
 
-background_art = load_texture("Assets\\Sprites\\Background\\Mountain_Background.jpg")
+if BIOME_NAME == "Cave":
+
+    hover_anims.append(Animation("Assets\\Sprites\\Cave_Hover_Bug", (50, 50)))
+    hopper_anims.append(Animation("Assets\\Sprites\\Cave_Hopper\\Idle", (50, 50, 50, 50, 50, 50)))
+    hopper_anims.append(Animation("Assets\\Sprites\\Cave_Hopper\\Jump", (50, 50, 50, 50, 50, 50), is_loop=False))
+    crawler_anims.append(Animation("Assets\\Sprites\\Cave_Crawler\\Idle", (50, 50, 50, 50, 50, 50, 50, 50)))
+    crawler_anims.append(Animation("Assets\\Sprites\\Cave_Crawler\\Walk", (50, 50, 50, 50, 50, 50)))
+    crawler_anims.append(Animation("Assets\\Sprites\\Cave_Crawler\\Fall", (25, 25, 25, 25, 25, 25)))
+
+    fly_pnts = 0
+    hover_pnts = 25
+    hopper_pnts = 35
+    crawler_pnts = 5
+
+else:
+    
+    fly_anims.append(Animation("Assets\\Sprites\\Mountain_Flyer_Bug", (300.0, 300.0)))
+    hover_anims.append(Animation("Assets\\Sprites\\Mountain_Hover_Bug", (50, 50)))
+
+    fly_pnts = 40
+    hover_pnts = 30
+    hopper_pnts = 0
+    crawler_pnts = 0
+
+spawner = SpawnBugs(max_capacity=12, spawn_rate=1, fly_anims=fly_anims, hover_anims=hover_anims, hopper_anims=hopper_anims, \
+            crawler_anims=crawler_anims, fly_pnts=fly_pnts, hover_pnts=hover_pnts, hop_pnts=hopper_pnts, crawl_pnts=crawler_pnts)
+
+# get the correct background for the biome
+if BIOME_NAME == "Cave":
+    background_art = load_texture("Assets\\Sprites\\Background\\Cave_Background.jpg")
+else:
+    background_art = load_texture("Assets\\Sprites\\Background\\Mountain_Background.jpg")
 
 while not window_should_close():
 
@@ -74,6 +115,13 @@ while not window_should_close():
     for sprite in Sprite.all_sprites:
         sprite.update(delta_time)
 
+    # updates the min and max of the window
+    file_data = save_data_handler.get_save_contents()
+    times_purchased = file_data[2] if BIOME_NAME == "Cave" else file_data[3]
+    window_size = min(BIOME_START_SIZE + (BIOME_SIZE_INCREMENT * (times_purchased - 1)), BIOME_MAX_SIZE)
+    set_window_min_size(BIOME_START_SIZE, BIOME_START_SIZE)
+    set_window_max_size(window_size, window_size)
+    
     contents = []
 
     with open("Data\\Shared_Main_Process_Sprite_Data.txt") as file:
@@ -126,6 +174,4 @@ while not window_should_close():
     end_drawing()
 
 close_window()
-
-if file_exists("Data\\Shared_Main_Process_Sprite_Data.sub1"):
-    os.rename("Data\\Shared_Main_Process_Sprite_Data.sub1", "Data\\Shared_Main_Process_Sprite_Data.main")
+close_audio_device()
