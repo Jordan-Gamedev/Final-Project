@@ -1,7 +1,7 @@
 from animation import Animation
 from clickable import Clickable
 from pyray import *
-from subprocess import Popen
+import subprocess
 from transform import Transform2D
 
 class Biome:
@@ -70,12 +70,16 @@ class Biome:
 
         if self.subprocess == None and self.times_purchased > 0:
             play_sound(load_sound("Assets\\Sounds\\Open_Portal_FX.wav"))
-            self.subprocess = Popen(args=["python", "Scripts\\biome_process.py", self.name, str(self.starting_size), str(self.size_increment), str(self.max_size)])
+            
+            if file_exists("Scripts\\biome_process.exe"):
+                self.subprocess = subprocess.Popen(args=["Scripts\\biome_process.exe", self.name, str(self.starting_size), str(self.size_increment), str(self.max_size)])
+            else:
+                self.subprocess = subprocess.Popen(args=["biome_process.exe", self.name, str(self.starting_size), str(self.size_increment), str(self.max_size)])
 
     def close_biome(self):
         if self.subprocess != None and self.subprocess.poll() == None:
             play_sound(load_sound("Assets\\Sounds\\Close_Portal_FX.wav"))
-            self.subprocess = self.subprocess.kill()
+            subprocess.call(["taskkill", "/T", "/PID", str(self.subprocess.pid)])            
 
     def toggle_biome_status(self):
         
