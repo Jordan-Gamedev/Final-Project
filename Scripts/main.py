@@ -241,6 +241,10 @@ def delete_save():
         shutil.rmtree("PersistentData", ignore_errors=True)
     set_up_data_files()
 
+    if shop != None:
+        for jar in Shop.jars:
+            jar.points = 0
+
 def mute_music():
     global music_volume
     music_volume = 0 if music_volume > 0 else 0.15
