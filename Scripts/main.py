@@ -207,7 +207,6 @@ def go_to_start_menu():
     pos = Vector2(MONITOR_WIDTH * 0.5 + 300, MONITOR_HEIGHT * 0.3)
     settings_button = Button(Transform2D(scale=2.5), [settings_button_hover_anim], pos, go_to_settings_menu)
 
-
 def go_to_settings_menu():
     global should_draw_text
     should_draw_text = True
@@ -357,7 +356,6 @@ def main():
     go_to_start_menu()
 
     while not window_should_close():
-
         if game_started:
             game_loop()
         else:
