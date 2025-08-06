@@ -46,26 +46,31 @@ class Shop:
         # get the number of jars already purchased from the save file
         self.num_jars = int(file_data[1])
 
-        # biome economy
-        file_data = file_data[2:len(file_data)]
-
         # set the times purchased for the biomes to the save data's purchase values
         self.purchaseable_biomes = purchaseable_biomes
         for i in range(len(self.purchaseable_biomes)):
-            self.purchaseable_biomes[i].times_purchased = int(file_data[i])
+            self.purchaseable_biomes[i].times_purchased = int(file_data[2 + i])
+            self.purchaseable_biomes[i]._Biome__hide_pricing()
+
+        # make the biome purchase buttons able to purchase their respective biomes
+        for i in range(len(self.purchaseable_biomes)):
+            self.purchaseable_biomes[i].purchase_button.on_mouse_click = lambda i=i : self.buy_biome(i)
 
         # create a jar purchase button
-        jar_button_hover_anim = Animation("Assets\\Sprites\\Start_Button", (150, 150, 150, 150))
-        self.jar_button = Clickable(Transform2D(scale=5), [jar_button_hover_anim])
-        self.jar_button.transform.pos = self.jar_button.center_position_at_other(Vector2(get_monitor_width(get_current_monitor()) * 0.5, get_monitor_height(get_current_monitor()) * 0.6))
-        self.jar_button.curr_anim_speed = 0
-        self.jar_button.on_mouse_enter = lambda : self.jar_button.play_animation(0)
-        self.jar_button.on_mouse_exit = lambda : self.jar_button.stop_animation(0)
-        self.jar_button.on_mouse_click = lambda : self.buy_jar()
+        self.jar_button = Clickable(Transform2D(scale=2.5), [Animation("Assets\\Sprites\\Shop_Buttons\\Jar_Price_Hidden", (100,)),\
+            Animation("Assets\\Sprites\\Shop_Buttons\\Jar_Price_Revealed", (100,))], anim_speed=0)
+        self.jar_button.transform.pos = self.jar_button.center_position_at_other(Vector2(get_monitor_width(get_current_monitor()) * 0.4, get_monitor_height(get_current_monitor()) * 0.6))
+        self.jar_button.on_mouse_enter = self.__reveal_jar_pricing
+        self.jar_button.on_mouse_exit = self.__hide_jar_pricing
+        self.jar_button.on_mouse_click = self.buy_jar
+        self.jar_button.text_over_sprite_size = 32
 
         # load jar textures
         self.restored_jar_texture = load_texture("Assets\\Sprites\\Bug_Bottle\\Bug_Bottle_1.png")
         self.broken_jar_texture = load_texture("Assets\\Sprites\\Bug_Bottle\\Bug_Bottle_2.png")
+
+    def get_jar_price(self) -> int:
+        return int(self.starting_jar_cost * (self.jar_price_hike_mult ** self.num_jars))
 
     def buy_jar(self) -> bool:
 
@@ -81,7 +86,7 @@ class Shop:
         points = int(file_data[0])
         
         # current jar cost
-        jar_cost = int(self.starting_jar_cost * (self.jar_price_hike_mult ** self.num_jars))
+        jar_cost = self.get_jar_price()
 
         # player has all the jars or is too broke to buy a jar
         if self.num_jars == self.max_jars or points < jar_cost:
@@ -97,13 +102,14 @@ class Shop:
         
         # add the jar
         self.num_jars += 1
+        self.__reveal_jar_pricing()
         file_data[1] = self.num_jars
 
         # finalize the change
         for data in file_data:
             file.write(f"{data}\n")
         close_save_file(file)
-        
+
         # successfully purchased
         return True
 
@@ -120,8 +126,8 @@ class Shop:
         # get the points
         points = int(file_data[0])
 
-        # player is too broke to buy this biome or the biome is maxed (obtains biome otherwise)
-        if points < self.purchaseable_biomes[biome_index].get_price() or not self.purchaseable_biomes[biome_index].obtain():
+        # player is too broke to buy this biome or the biome is maxed
+        if points < self.purchaseable_biomes[biome_index].get_price() or not self.purchaseable_biomes[biome_index].can_obtain():
             # unsuccessful purchase
             for data in file_data:
                 file.write(f"{data}\n")
@@ -130,10 +136,13 @@ class Shop:
 
         # spend the points
         points -= self.purchaseable_biomes[biome_index].get_price()
-        file_data[0] = f"{points}"
+        file_data[0] = str(points)
+
+        # obtain the biome
+        self.purchaseable_biomes[biome_index].obtain()
 
         # save the biome purchase
-        file_data[biome_index + 2] = f"{self.purchaseable_biomes[biome_index].times_purchased}\n"
+        file_data[biome_index + 2] = str(self.purchaseable_biomes[biome_index].times_purchased)
 
         # finalize the change
         for data in file_data:
@@ -161,3 +170,15 @@ class Shop:
 
         for i in range(self.max_jars - self.num_jars):
             draw_texture_ex(self.broken_jar_texture, Vector2(pos.x + (monitor_width * (i + self.num_jars) * 0.07), pos.y), 0, 3, WHITE)
+
+    def __reveal_jar_pricing(self):
+        self.jar_button.play_animation(1)
+
+        if self.num_jars < self.max_jars:
+            self.jar_button.text_over_sprite = str(self.get_jar_price())
+        else:
+            self.jar_button.text_over_sprite = "MAX"
+    
+    def __hide_jar_pricing(self):
+        self.jar_button.play_animation(0)
+        self.jar_button.text_over_sprite = ""

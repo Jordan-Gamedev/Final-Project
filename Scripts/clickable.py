@@ -17,6 +17,8 @@ class Clickable(Sprite):
         self.on_mouse_stay = on_mouse_stay
         self.on_mouse_absent = on_mouse_absent
         self.__is_mouse_in = False
+        self.text_over_sprite = ""
+        self.text_over_sprite_size = 0
 
     def update(self, dt):
 
@@ -48,3 +50,12 @@ class Clickable(Sprite):
         # mouse is still outside of hitbox
         elif self.on_mouse_absent != None and not was_mouse_in_prev and not self.__is_mouse_in:
             self.on_mouse_absent()
+
+    def render(self):
+        super().render()
+
+        text_pos_x = int(self.get_center_position_at_self().x)
+        text_pos_y = int(self.get_center_position_at_self().y)
+        text_pos_x -= measure_text(self.text_over_sprite, self.text_over_sprite_size) // 2
+        text_pos_y -= self.text_over_sprite_size // 2
+        draw_text(self.text_over_sprite, text_pos_x, text_pos_y, self.text_over_sprite_size, WHITE)

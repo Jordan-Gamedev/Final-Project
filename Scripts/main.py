@@ -15,7 +15,7 @@ from shop import Shop
 from sprite import Sprite
 from transform import Transform2D
 
-######################### globals #####################################
+############################# globals #################################
 background_art = None
 game_started:bool = False
 player = None
@@ -115,9 +115,19 @@ def quit_game():
 
 ############################ import assets ############################
 def create_asset_instances():
+    
+    # cave biome button details
+    cave_biome_button_paths = ["Assets\\Sprites\\Shop_Buttons\\Cave_Price_Hidden", "Assets\\Sprites\\Shop_Buttons\\Cave_Size_Price_Hidden", "Assets\\Sprites\\Shop_Buttons\\Cave_Price_Revealed"]
+    cave_biome_button_pos = Vector2(get_monitor_width(get_current_monitor()) * 0.6, get_monitor_height(get_current_monitor()) * 0.6)
+    cave_biome = Biome("Cave", 1500, 250, 1.5, 100, 100, 1000, cave_biome_button_paths[0], cave_biome_button_paths[1], cave_biome_button_paths[2], cave_biome_button_pos)
+
+    # mountain biome button details
+    mountain_biome_button_paths = ["Assets\\Sprites\\Shop_Buttons\\Mountain_Price_Hidden", "Assets\\Sprites\\Shop_Buttons\\Mountain_Size_Price_Hidden", "Assets\\Sprites\\Shop_Buttons\\Mountain_Price_Revealed"]
+    mountain_biome_button_pos = Vector2(get_monitor_width(get_current_monitor()) * 0.6, get_monitor_height(get_current_monitor()) * 0.8)
+    mountain_biome = Biome("Mountain", 2000, 250, 1.5, 100, 100, 1000, mountain_biome_button_paths[0], mountain_biome_button_paths[1], mountain_biome_button_paths[2], mountain_biome_button_pos)
 
     # set up shop
-    global shop ; shop = Shop(starting_jar_cost=10, purchaseable_biomes=[Biome("Cave", 1500, 250, 1.5, 100, 100, 1000), Biome("Mountain", 2000, 250, 1.5, 100, 100, 1000)])
+    global shop ; shop = Shop(starting_jar_cost=10, purchaseable_biomes=[cave_biome, mountain_biome])
 
     # set up player
     player_idle_anim = Animation("Assets\\Sprites\\Bat", (100.0, 100.0))
