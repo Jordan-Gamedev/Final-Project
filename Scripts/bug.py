@@ -1,9 +1,10 @@
-import os
 from pyray import *
 from raylib import *
+from cursor import Cursor
 from dynamic_sprite import *
 from particle_spawner import SpawnParticles
 import save_data_handler
+from shop import Shop
 
 class Bug(DynamicSprite):
     all_bugs:list[Sprite] = []
@@ -11,8 +12,10 @@ class Bug(DynamicSprite):
 
     def create_particle_anim():
         Bug.blood_anim = Animation("Assets\\Sprites\\Liquid_Drop", (50, 50, 50, 50, 50, 50))
-        
+
     def __init__(self, transform:Transform2D, animations:list, damage_size:float, max_hp:float, points:int, speed:float, anim_speed:float = 1.0):
+        super().__init__(transform, animations, speed, anim_speed)
+        
         if not Bug.blood_anim:
             Bug.create_particle_anim()
 
@@ -21,9 +24,17 @@ class Bug(DynamicSprite):
         self.hp:float = max_hp
         self.points = points
         Bug.all_bugs.append(self)
-        super().__init__(transform, animations, speed, anim_speed)
-        print("Bug Created")
     
+    def is_captured(self) -> bool:
+        if vector2_distance(Cursor.global_mouse_position, self.get_center_position_at_self()) <= self.damage_size and Cursor.is_global_mouse_left_pressed:
+            for jar in Shop.jars:
+                if not jar.bug_anim:
+                    jar.bug_anim = self.animations[0]
+                    jar.bug_scale = self.transform.scale
+                    jar.points = self.points
+                    return True
+        return False
+
     def update(self, dt):
         super().update(dt)
 
@@ -43,6 +54,11 @@ class Bug(DynamicSprite):
                 
             window_pos = get_window_position()
 
+            if self.is_captured():
+                Sprite.all_sprites.remove(self)
+                Bug.all_bugs.remove(self)
+                return
+            
             player_is_in_window = window_pos.x < player_pos.x < window_pos.x + get_screen_width() and \
             window_pos.y < player_pos.y < window_pos.y + get_screen_height()
 

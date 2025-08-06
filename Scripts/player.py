@@ -13,7 +13,7 @@ class Player(DynamicSprite):
 
     def update(self, dt):
 
-        if Cursor.is_global_mouse_clicking:
+        if Cursor.is_global_mouse_right_down:
             self.target_pos = self.center_position_at_other(Cursor.global_mouse_position)
 
         if vector2_distance(self.target_pos, self.transform.pos) > self.speed * dt:

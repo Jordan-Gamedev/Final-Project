@@ -256,9 +256,12 @@ def game_loop():
     global music ; update_music_stream(music)
 
     spawner.update(delta_time)
+
     for sprite in Sprite.all_sprites:
         sprite.update(delta_time)
-
+    
+    for jar in Shop.jars:
+        jar.update(delta_time)
     # drawing
     begin_drawing()
     clear_background(Color(0, 0, 0, 0))

@@ -3,13 +3,17 @@ from pyray import *
 from animation import Animation
 from biome import Biome
 from clickable import Clickable
+from jar import Jar
 import save_data_handler
 from sprite import Sprite
 from transform import Transform2D
 
 class Shop:
+    jars:list[Jar] = []
 
     def __init__(self, max_jars = 5, starting_jar_cost = 250, jar_price_hike_mult = 2, purchaseable_biomes:list[Biome] = []):
+        self.MONITOR_WIDTH = get_monitor_width(get_current_monitor())
+        self.MONITOR_HEIGHT = get_monitor_height(get_current_monitor())
         
         # jar economy
         self.max_jars = max_jars
@@ -35,7 +39,7 @@ class Shop:
         # create a jar purchase button
         self.jar_button = Clickable(Transform2D(scale=2.5), [Animation("Assets\\Sprites\\Shop_Buttons\\Jar_Price_Hidden", (100,)),\
             Animation("Assets\\Sprites\\Shop_Buttons\\Jar_Price_Revealed", (100,))], anim_speed=0)
-        self.jar_button.transform.pos = self.jar_button.center_position_at_other(Vector2(get_monitor_width(get_current_monitor()) * 0.45, get_monitor_height(get_current_monitor()) * 0.56))
+        self.jar_button.transform.pos = self.jar_button.center_position_at_other(Vector2(self.MONITOR_WIDTH * 0.45, self.MONITOR_HEIGHT * 0.56))
         self.jar_button.on_mouse_enter = self.__reveal_jar_pricing
         self.jar_button.on_mouse_exit = self.__hide_jar_pricing
         self.jar_button.on_mouse_click = self.buy_jar
@@ -82,6 +86,8 @@ class Shop:
         save_data_handler.close_save_file(file)
 
         play_sound(load_sound("Assets\\Sounds\\Purchase_FX.wav"))
+
+        self.jars.append(Jar(self.restored_jar_texture))
 
         # successfully purchased
         return True
@@ -132,14 +138,16 @@ class Shop:
 
     def render(self):
 
-        monitor_width = get_monitor_width(get_current_monitor())
-        pos = Vector2(monitor_width * 0.42, get_monitor_height(get_current_monitor()) * 0.43)
+        pos = Vector2(self.MONITOR_WIDTH * 0.42, self.MONITOR_HEIGHT * 0.43)
 
         for i in range(self.num_jars):
-            draw_texture_ex(self.restored_jar_texture, Vector2(pos.x + (monitor_width * i * 0.07), pos.y), 0, 3, WHITE)
+            if i >= len(Shop.jars):
+                Shop.jars.append(Jar(self.restored_jar_texture))
+            
+            Shop.jars[i].render(pos, i)
 
         for i in range(self.max_jars - self.num_jars):
-            draw_texture_ex(self.broken_jar_texture, Vector2(pos.x + (monitor_width * (i + self.num_jars) * 0.07), pos.y), 0, 3, WHITE)
+            draw_texture_ex(self.broken_jar_texture, Vector2(pos.x + (self.MONITOR_WIDTH * (i + self.num_jars) * 0.07), pos.y), 0, 3, WHITE)
 
     def __reveal_jar_pricing(self):
         self.jar_button.play_animation(1)
