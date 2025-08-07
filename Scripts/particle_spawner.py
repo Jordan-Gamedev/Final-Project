@@ -16,28 +16,32 @@ class SpawnParticles:
         set_sound_volume(sound, 2)
 
     def update(self, dt):
+        # do not run the update loop if particle spawning is disabled
         if not self.spawn_particle:
             self.current_time = self.spawn_rate
             return
-
+        # decrement the timer based on frametime
         self.current_time -= dt
 
         # Exit early if the spawn timer has not yet reached zero
         if (self.current_time > 0):
             return
 
+        # reset the timer
         self.current_time = self.spawn_rate
 
+        # get the x range of particle spawn positions and choose and value
         spawn_bounds_x = (self.spawn_pos.x - 30, self.spawn_pos.x + 30)
-
         spawn_pos_x = random.uniform(spawn_bounds_x[0], spawn_bounds_x[1])
-
-        particle_transform = Transform2D(Vector2(spawn_pos_x, self.spawn_pos.y), 0, 1)
-                
+        # set the particle transform position and create an instance of that particle
+        particle_transform = Transform2D(Vector2(spawn_pos_x, self.spawn_pos.y), 0, 1)      
         particle = Particle(particle_transform, self.particle_anim, speed=10, anim_speed=2)
+        
+        # increment the sound counter and check if the sound can play based on that number
         self.sound_cntr += 1
         if self.sound_cntr % 10 == 0:
             play_sound(self.sound)
+        # set the particle color and provide a random x velocity and set y velocity
         particle.sprite_color = self.color
         particle.vel.x = random.uniform(-1, 1) * 50
         particle.vel.y = -32
