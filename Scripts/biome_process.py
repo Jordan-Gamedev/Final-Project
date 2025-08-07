@@ -11,8 +11,6 @@ from cursor import *
 import save_data_handler
 from sprite import *
 
-######################## set window properties ########################
-
 set_trace_log_level(LOG_ERROR | LOG_FATAL)
 
 # get the biome stats
@@ -105,7 +103,7 @@ else:
     crawler_pnts = 0
     blood_color = BLUE
 
-spawner = SpawnBugs(max_capacity=10, spawn_rate=1, fly_anims=fly_anims, hover_anims=hover_anims, hopper_anims=hopper_anims, \
+spawner = SpawnBugs(max_capacity=10, spawn_rate=2, fly_anims=fly_anims, hover_anims=hover_anims, hopper_anims=hopper_anims, \
         crawler_anims=crawler_anims, fly_pnts=fly_pnts, hover_pnts=hover_pnts, hop_pnts=hopper_pnts, crawl_pnts=crawler_pnts, blood_color=blood_color)
 
 # get the correct background for the biome
@@ -118,6 +116,7 @@ while not window_should_close():
 
     delta_time = get_frame_time()
 
+    # update spawner
     spawner.update(delta_time)
 
     # update local sprites
@@ -126,27 +125,26 @@ while not window_should_close():
 
     # updates the min and max of the window
     file_data = save_data_handler.get_save_contents()
-
     times_purchased = int(file_data[2]) if BIOME_NAME == "Cave" else int(file_data[3])
     window_size = min(BIOME_START_SIZE + (BIOME_SIZE_INCREMENT * (times_purchased - 1)), BIOME_MAX_SIZE)
     set_window_min_size(BIOME_START_SIZE, BIOME_START_SIZE)
     set_window_max_size(window_size, window_size)
     
+    # wait for the main process to send its sprite data
     contents = []
-
     with open("Data\\Shared_Main_Process_Sprite_Data.txt") as file:
         while len(contents) == 0:
             contents = [line for line in file]
 
     begin_drawing()
 
+    # draw the background
     clear_background(WHITE)
-
     source_rect = Rectangle(0, 0, background_art.width, background_art.height)
-    dest_rect = Rectangle(0, 0, GetMonitorWidth(get_current_monitor()), GetMonitorHeight(get_current_monitor()))
-    
+    dest_rect = Rectangle(0, 0, MONITOR_WIDTH, MONITOR_HEIGHT)
     draw_texture_pro(background_art, source_rect, dest_rect, Vector2(get_window_position().x, get_window_position().y), 0, WHITE)
     
+    # draw main process's sprites if they are in this window's area
     try:
         for line in contents:
             if ',' in line:
@@ -167,7 +165,6 @@ while not window_should_close():
                         draw_texture_ex(tex, Vector2(float(pos_x) - get_window_position().x, float(pos_y) - get_window_position().y), float(rot), float(scale), WHITE)
                         unload_image(image)
                     else:
-
                         draw_texture_ex(texture_cache[texture_path], Vector2(float(pos_x) - get_window_position().x, float(pos_y) - get_window_position().y), float(rot), float(scale), WHITE)
     except:
         pass
@@ -178,7 +175,9 @@ while not window_should_close():
         if sprite is not cursor:
             sprite.render(render_offset)
 
+    # render cursor
     cursor.render()
+
     end_drawing()
 
 close_window()
