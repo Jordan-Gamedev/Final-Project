@@ -17,7 +17,6 @@ from sprite import Sprite
 from transform import Transform2D
 
 ######################## set window properties ########################
-
 # create maximized window
 set_trace_log_level(LOG_ERROR | LOG_FATAL)
 set_config_flags(FLAG_WINDOW_UNDECORATED | FLAG_WINDOW_ALWAYS_RUN | FLAG_WINDOW_RESIZABLE)
@@ -55,7 +54,6 @@ cursor = None
 spawner = None
 shop:Shop = None
 should_draw_text = False
-
 #######################################################################
 
 ########################## create data files ##########################
@@ -113,14 +111,17 @@ def set_up_data_files():
     shutil.copyfile("PersistentData\\Save_Data.txt", "PersistentData\\Backup_Save_Data.txt")
 #######################################################################
 
+######################## sets up the game scene #######################
 def start_game():
     global game_started ; game_started = True
     Sprite.all_sprites.clear()
     create_asset_instances()
+#######################################################################
 
+############# performs cleanup and closes the application #############
 def quit_game():
     
-    # end the process if it is active
+    # close up the shop and its biomes
     if shop != None:
         shop.close_shop()
 
@@ -143,6 +144,7 @@ def quit_game():
 
     # close the application
     exit(0)
+#######################################################################
 
 ############################ import assets ############################
 def create_asset_instances():
@@ -165,6 +167,7 @@ def create_asset_instances():
     player_idle_anim = Animation("Assets\\Sprites\\Bat", 100)
     global player ; player = Player(Transform2D(scale=4.9), [player_idle_anim], speed=1000)
     player.transform.pos = player.center_position_at_other(Cursor.global_mouse_position)
+    player.target_pos = player.transform.pos
     
     # set up spawner which spawns bugs over time
     fly_idle_anim = Animation("Assets\\Sprites\\Main_Flying_Bug", 300)
@@ -179,12 +182,12 @@ def create_asset_instances():
     global cursor ; cursor = Cursor(Transform2D(get_mouse_position(), rot=0, scale=2), [cursor_idle_anim])
 #######################################################################
 
+#################### sets up the start menu scene #####################
 def go_to_start_menu():
-    global should_draw_text
-    should_draw_text = False
     # remove previous scene
     Sprite.all_sprites.clear()
     Bug.all_bugs.clear()
+    global should_draw_text ; should_draw_text = False
 
     global grass_texture ; grass_texture = load_texture("Assets\\Sprites\\Background\\Grass_1.png")
 
@@ -206,15 +209,16 @@ def go_to_start_menu():
     settings_button_hover_anim = Animation("Assets\\Sprites\\Settings_Icon", 50, is_loop=False)
     pos = Vector2(MONITOR_WIDTH * 0.5 + 300, MONITOR_HEIGHT * 0.3)
     settings_button = Button(Transform2D(scale=2.5), [settings_button_hover_anim], pos, go_to_settings_menu)
+#######################################################################
 
+################### sets up the settings menu scene ###################
 def go_to_settings_menu():
-    global should_draw_text
-    should_draw_text = True
     # remove previous scene
     Sprite.all_sprites.clear()
     Bug.all_bugs.clear()
     if shop != None:
         shop.close_shop()
+    global should_draw_text ; should_draw_text = True
 
     # set up custom cursor
     cursor_idle_anim = Animation("Assets\\Sprites\\Cursor", 50)
@@ -234,21 +238,26 @@ def go_to_settings_menu():
     back_button_hover_anim = Animation("Assets\\Sprites\\Back_Button", 150, is_loop=True)
     pos = Vector2(MONITOR_WIDTH * 0.5, MONITOR_HEIGHT * 0.7)
     back_button = Button(Transform2D(scale=2.5), [back_button_hover_anim], pos, go_to_start_menu)
-    
+#######################################################################
+
+################ deletes the save and sets up a new one ###############
 def delete_save():
     # delete data files in case the program crashed last time and the corrupted files are still there
     if os.path.exists("PersistentData"):
         shutil.rmtree("PersistentData", ignore_errors=True)
     set_up_data_files()
 
+    # clears jar memory in RAM
     if shop != None:
-        for jar in Shop.jars:
-            jar.points = 0
+        Shop.jars.clear()
+#######################################################################
 
+########################### mutes the music ###########################
 def mute_music():
     global music_volume
     music_volume = 0 if music_volume > 0 else 0.15
     set_music_volume(music, music_volume)
+#######################################################################
 
 ############################# start menu ##############################
 def start_menu():
@@ -355,17 +364,25 @@ def game_loop():
         file.write(new_file_contents)
 #######################################################################
 
+########################### runs on startup ###########################
 def main():
+
+    # set up the temporary and persistent data files
     set_up_data_files()
+
+    # go to the starting menu screen
     go_to_start_menu()
 
+    # loop for rendering and updating while the window is open
     while not window_should_close():
         if game_started:
             game_loop()
         else:
             start_menu()
 
+    # close the game when the game window closes
     quit_game()
+#######################################################################
 
 if __name__ == "__main__":
     main()
