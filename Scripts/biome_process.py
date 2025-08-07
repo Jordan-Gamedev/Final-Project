@@ -11,7 +11,7 @@ from cursor import *
 import save_data_handler
 from sprite import *
 
-set_trace_log_level(LOG_ERROR | LOG_FATAL)
+set_trace_log_level(RL_LOG_NONE | LOG_ALL)
 
 # get the biome stats
 BIOME_NAME = sys.argv[1]

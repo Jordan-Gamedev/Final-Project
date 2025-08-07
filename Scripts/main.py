@@ -18,7 +18,7 @@ from transform import Transform2D
 
 ######################## set window properties ########################
 # create maximized window
-set_trace_log_level(LOG_ERROR | LOG_FATAL)
+set_trace_log_level(RL_LOG_NONE | LOG_ALL)
 set_config_flags(FLAG_WINDOW_UNDECORATED | FLAG_WINDOW_ALWAYS_RUN | FLAG_WINDOW_RESIZABLE)
 init_window(1920, 1080, 'The Hungry Entomologist')
 maximize_window()
@@ -174,7 +174,7 @@ def create_asset_instances():
     hoverer_idle_anim = Animation("Assets\\Sprites\\Main_Hoverer", 50)
     hopper_idle_anim = Animation("Assets\\Sprites\\Main_Hopper\\Idle", 75)
     hopper_jump_anim = Animation("Assets\\Sprites\\Main_Hopper\\Jump", 50, is_loop=False)
-    global spawner ; spawner = SpawnBugs(max_capacity=15, spawn_rate=1, fly_anims=[fly_idle_anim], hover_anims=[hoverer_idle_anim], \
+    global spawner ; spawner = SpawnBugs(max_capacity=15, spawn_rate=2, fly_anims=[fly_idle_anim], hover_anims=[hoverer_idle_anim], \
                     hopper_anims=[hopper_idle_anim, hopper_jump_anim], crawler_anims=[], fly_pnts=10, hover_pnts=5, hop_pnts=15, crawl_pnts=0)
 
     # set up custom cursor

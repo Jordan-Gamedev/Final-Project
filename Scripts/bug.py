@@ -30,10 +30,18 @@ class Bug(DynamicSprite):
         Bug.all_bugs.append(self)
     
     def try_capture(self) -> bool:
+        
         # find the bug's current position
         bug_pos = vector2_add(self.get_center_position_at_self(), Vector2(-get_window_position().x, -get_window_position().y))        
-        # check if the cursor is within capture distance and the click button is pressed
-        if vector2_distance(Cursor.global_mouse_position, bug_pos) <= self.damage_size and Cursor.is_global_mouse_left_pressed:
+        
+        # checks if the bug is in its biome window
+        window_pos = get_window_position()
+        bug_is_in_window = window_pos.x < self.get_center_position_at_self().x < window_pos.x + get_screen_width() and \
+            window_pos.y < self.get_center_position_at_self().y < window_pos.y + get_screen_height()
+        
+        # check if the bug is visible for capture, the left click button is pressed, and whether the bug is within capture distance
+        if bug_is_in_window and Cursor.is_global_mouse_left_pressed and vector2_distance(Cursor.global_mouse_position, bug_pos) <= self.damage_size:
+            
             # get the save file and data with read/write permissions
             file, file_data = save_data_handler.open_save_file("r+")
             # get the number of jars available and the number of captured jars
@@ -82,7 +90,7 @@ class Bug(DynamicSprite):
             
             # check if the player is within the window bounds
             player_is_in_window = window_pos.x < player_pos.x < window_pos.x + get_screen_width() and \
-            window_pos.y < player_pos.y < window_pos.y + get_screen_height()
+                window_pos.y < player_pos.y < window_pos.y + get_screen_height()
 
             # check if the player is in bug damaging range
             if player_is_in_window and vector2_distance(self.get_center_position_at_self(), player_pos) <= self.damage_size:
