@@ -11,6 +11,7 @@ class Clickable(Sprite):
     def __init__(self, transform:Transform2D, animations:list[Animation], anim_speed:float = 1.0, \
                 on_mouse_click = None, on_mouse_enter = None, on_mouse_exit = None, on_mouse_stay = None, on_mouse_absent = None):
         super().__init__(transform, animations, anim_speed)
+        # initialize the mouse events, default text, and size
         self.on_mouse_click = on_mouse_click
         self.on_mouse_enter = on_mouse_enter
         self.on_mouse_exit = on_mouse_exit
@@ -53,9 +54,11 @@ class Clickable(Sprite):
 
     def render(self):
         super().render()
-
+        # calculate the text position in relation to the button sprite
         text_pos_x = int(self.get_center_position_at_self().x)
         text_pos_y = int(self.get_center_position_at_self().y)
+        # center the text based on the text length
         text_pos_x -= measure_text(self.text_over_sprite, self.text_over_sprite_size) // 2
         text_pos_y -= self.text_over_sprite_size // 2
+        # draw the text over the button
         draw_text(self.text_over_sprite, text_pos_x, text_pos_y, self.text_over_sprite_size, WHITE)
