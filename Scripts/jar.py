@@ -1,5 +1,4 @@
 from pyray import *
-from animation import Animation
 import save_data_handler
 from transform import Transform2D
 
@@ -14,12 +13,14 @@ class Jar:
         self.bug_scale = 1
     
     def update(self, dt):
+        # check if the jar is empty
         if not self.bug_anim:
             return
         
         # play bug animation if it is in the container
         self.bug_anim.update(dt)
 
+        # update the cyclical timer
         if self.curr_time > 0:
             self.curr_time -= dt
         else:
@@ -39,15 +40,18 @@ class Jar:
             save_data_handler.close_save_file(file)
     
     def render(self, pos, num):
+        # get the height and width of the current screen
         monitor_width = get_monitor_width(get_current_monitor())
         monitor_height = get_monitor_height(get_current_monitor())
-
+       
+        # set the positions of the jars based on the which jar number is being rendered
         pos = Vector2(monitor_width * 0.42 + (monitor_width * num * 0.07), monitor_height * 0.43)
-        
         self.transform.pos = pos
+        # check to see if the jar is filled
         if self.bug_anim is not None:
+            # set the bug position based on the jar's position
             bug_pos = Vector2(pos.x + self.restored_jar_texture.width * 1.5, pos.y + self.restored_jar_texture.height * 1.5)
             bug_pos = self.bug_anim.center_position_at_other(bug_pos, self.bug_scale)
             draw_texture_ex(self.bug_anim.get_current_texture(), bug_pos, 0, self.bug_scale, WHITE)
-            
+        # draw the jar over the bug
         draw_texture_ex(self.restored_jar_texture, pos, 0, 3, WHITE)
