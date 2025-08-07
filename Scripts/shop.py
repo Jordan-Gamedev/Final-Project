@@ -9,9 +9,13 @@ from sprite import Sprite
 from transform import Transform2D
 
 class Shop:
+
+    # active jars stored in RAM
     jars:list[Jar] = []
 
     def __init__(self, max_jars = 5, starting_jar_cost = 250, jar_price_hike_mult = 2, purchaseable_biomes:list[Biome] = []):
+        
+        # get the monitor size for rendering later
         self.MONITOR_WIDTH = get_monitor_width(get_current_monitor())
         self.MONITOR_HEIGHT = get_monitor_height(get_current_monitor())
         
@@ -49,9 +53,11 @@ class Shop:
         self.restored_jar_texture = load_texture("Assets\\Sprites\\Bug_Bottle\\Bug_Bottle_1.png")
         self.broken_jar_texture = load_texture("Assets\\Sprites\\Bug_Bottle\\Bug_Bottle_2.png")
 
+    # gets the current purchase price for a new jar
     def get_jar_price(self) -> int:
         return int(self.starting_jar_cost * (self.jar_price_hike_mult ** self.num_jars))
 
+    # buy a jar if available for purchase
     def buy_jar(self) -> bool:
 
         # safely open the save file for reading and writing
@@ -92,6 +98,7 @@ class Shop:
         # successfully purchased
         return True
 
+    # buy/upgrade a biome if available for purchase
     def buy_biome(self, biome_index:int) -> bool:
 
         # safely open the save file for reading and writing
@@ -128,6 +135,7 @@ class Shop:
         # successfully purchased
         return True
 
+    # close all biomes and remove jar purchase button
     def close_shop(self):
         for biome in self.purchaseable_biomes:
             biome.close_biome()
@@ -136,14 +144,17 @@ class Shop:
         except:
             pass
 
+    # updates in the game loop
     def update(self, dt):
         
         file_data = save_data_handler.get_save_contents()
 
+        # add jars that aren't loaded in RAM yet
         for i in range(self.num_jars):
             if i >= len(Shop.jars):
                 Shop.jars.append(Jar(self.restored_jar_texture))
         
+        # place the save data of the jars into these jars for updating
         for i, jar in enumerate(Shop.jars):
             if jar.bug_anim == None and len(file_data) > i + 4:
                 bug_animation_path, bug_anim_frame_dur, bug_points, bug_scale = file_data[i + 4].split(',')
@@ -151,20 +162,24 @@ class Shop:
                 jar.points = int(bug_points)
                 jar.bug_scale = float(bug_scale)
 
+            # update the purchased jar
             jar.update(dt)
             
-    
-
+    # renders in the game loop
     def render(self):
 
+        # position of first jar
         pos = Vector2(self.MONITOR_WIDTH * 0.42, self.MONITOR_HEIGHT * 0.43)
 
+        # render built jars
         for i in range(self.num_jars):
             Shop.jars[i].render(pos, i)
 
+        # render broken jars
         for i in range(self.max_jars - self.num_jars):
             draw_texture_ex(self.broken_jar_texture, Vector2(pos.x + (self.MONITOR_WIDTH * (i + self.num_jars) * 0.07), pos.y), 0, 3, WHITE)
 
+    # displays the current purchase price of the jars
     def __reveal_jar_pricing(self):
         self.jar_button.play_animation(1)
 
@@ -173,6 +188,7 @@ class Shop:
         else:
             self.jar_button.text_over_sprite = "MAX"
     
+    # hides the current purchase price of the jars
     def __hide_jar_pricing(self):
         self.jar_button.play_animation(0)
         self.jar_button.text_over_sprite = ""

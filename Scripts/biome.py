@@ -37,19 +37,23 @@ class Biome:
         self.open_button.transform.pos = self.open_button.center_position_at_other(background_pos)
         self.open_button.on_mouse_click = self.toggle_biome_status
 
+    # close the biome when deleted
     def __del__(self):
         self.close_biome()
 
+    # gets the current purchase price of the biome (initial and upgrades)
     def get_price(self) -> int:
         if self.times_purchased == 0:
             return self.initial_price
         else:
             return int(self.starting_expand_price * (self.expand_price_hike_mult ** (self.times_purchased - 1)))
     
+    # whether the biome is currently purchasable
     def can_obtain(self) -> bool:
         # only obtain if it still has room to expand
         return self.get_size() < self.max_size
     
+    # purchase the biome
     def obtain(self):
 
         # purchase biome
@@ -59,11 +63,14 @@ class Biome:
         if self.times_purchased == 1:
             self.open_biome()
 
+        # show the new pricing
         self.__reveal_pricing()
 
+    # get the current window size of the biome based on how many times it was purchased
     def get_size(self):
         return min(self.starting_size + (self.size_increment * (self.times_purchased - 1)), self.max_size)
     
+    # open the biome by creating a subprocess
     def open_biome(self):
         if self.subprocess != None and self.subprocess.poll() == 0:
             self.subprocess = None
@@ -76,11 +83,13 @@ class Biome:
             else:
                 self.subprocess = subprocess.Popen(args=["biome_process.exe", self.name, str(self.starting_size), str(self.size_increment), str(self.max_size)])
 
+    # closes the biome by killing the process
     def close_biome(self):
         if self.subprocess != None and self.subprocess.poll() == None:
             play_sound(load_sound("Assets\\Sounds\\Close_Portal_FX.wav"))
             subprocess.call(["taskkill", "/T", "/PID", str(self.subprocess.pid)])            
 
+    # opens the biome if it was closed and closes the biome if it was open
     def toggle_biome_status(self):
         
         if self.subprocess != None and self.subprocess.poll() == 0:
@@ -91,6 +100,7 @@ class Biome:
         else:
             self.close_biome()
 
+    # displays the current purchase price of the biome
     def __reveal_pricing(self):
         self.purchase_button.play_animation(2)
         if self.get_size() < self.max_size:
@@ -98,6 +108,7 @@ class Biome:
         else:
             self.purchase_button.text_over_sprite = "MAX"
 
+    # hides the current purchase price of the biome
     def __hide_pricing(self):
         self.purchase_button.text_over_sprite = ""
         if self.times_purchased == 0:
