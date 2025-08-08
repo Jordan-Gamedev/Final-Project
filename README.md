@@ -13,3 +13,11 @@ To play the game :
 Open 'The Hungry Entomologist' folder
 
 Run main.exe
+
+To cheat :
+
+	1) Play the game past the main menu at least once or click on delete save in the settings
+	2) Quit the game
+	3) Open 'The Hungry Entomologist\PersistentData\SaveData.txt'
+	4) Edit the first line to whatever value you want your points to be
+	5) Save and exit
