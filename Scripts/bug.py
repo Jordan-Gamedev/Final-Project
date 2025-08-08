@@ -10,10 +10,14 @@ class Bug(DynamicSprite):
     # keep track of all bug instances
     all_bugs:list[Sprite] = []
     blood_anim = None
+    SCREEN_WIDTH = 0
+    SCREEN_HEIGHT = 0
 
     def create_particle_anim():
         # get the particle animation
         Bug.blood_anim = Animation("Assets\\Sprites\\Liquid_Drop", 50)
+        Bug.SCREEN_WIDTH = get_screen_width() if get_window_position().x == 0 and get_window_position().y == 0 else get_monitor_width(get_current_monitor())
+        Bug.SCREEN_HEIGHT = get_screen_height() if get_window_position().x == 0 and get_window_position().y == 0 else get_monitor_height(get_current_monitor())
 
     def __init__(self, transform:Transform2D, animations:list, damage_size:float, max_hp:float, points:int, speed:float, anim_speed:float = 1.0, blood_color=GREEN):
         super().__init__(transform, animations, speed, anim_speed)

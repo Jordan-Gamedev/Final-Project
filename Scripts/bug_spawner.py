@@ -29,8 +29,8 @@ class SpawnBugs:
 
         self.current_time = spawn_rate
         # set the spawn bounds to be just outside the window
-        self.spawn_bounds_x = (-100, get_monitor_width(get_current_monitor()) + 100)
-        self.spawn_bounds_y = (0, get_monitor_height(get_current_monitor()) - 100)
+        self.spawn_bounds_x = (-get_monitor_width(get_current_monitor()) * 0.05, get_monitor_width(get_current_monitor()) * 1.05)
+        self.spawn_bounds_y = (0, get_monitor_height(get_current_monitor()) * 0.95)
 
         self.blood_color = blood_color
 
@@ -63,6 +63,7 @@ class SpawnBugs:
             choices.append('hop')
         if self.crawler_anims:
             choices.append('crawl')
+            choices.append('crawl')
         
         # choose a random bug and set the bug's spawn position
         choice = random.choice(choices)
@@ -88,6 +89,6 @@ class SpawnBugs:
             case 'crawl':
                 # get the animation list of the crawl bug and create an instance of that bug
                 anims = [Animation(animation.folder_path, animation.frame_duration, animation.is_loop, animation.on_finish_event) for animation in self.crawler_anims]
-                on_ceiling = random.choice([True, False])
-                CrawlingBug(bug_transform, anims, damage_size=50.0, max_hp=0.65, points=self.crawl_pnts, idle_fall_prob_per_sec=0.01, walk_fall_prob_per_sec=0.025, on_ceiling=on_ceiling, \
+                on_ceiling = random.choice([True, True, True, False])
+                CrawlingBug(bug_transform, anims, damage_size=50.0, max_hp=0.65, points=self.crawl_pnts, idle_fall_prob_per_sec=0.01, walk_fall_prob_per_sec=0.02, on_ceiling=on_ceiling, \
                             idle_time=Vector2(1.5, 5), walk_time=Vector2(1.5, 4), speed=100, blood_color=self.blood_color)

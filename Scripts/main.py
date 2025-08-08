@@ -45,8 +45,8 @@ music.looping = True
 #######################################################################
 
 ############################# globals #################################
-MONITOR_WIDTH = get_monitor_width(get_current_monitor())
-MONITOR_HEIGHT = get_monitor_height(get_current_monitor())
+SCREEN_WIDTH = get_screen_width()
+SCREEN_HEIGHT = get_screen_height()
 game_started:bool = False
 player = None
 grass_texture = None
@@ -151,14 +151,16 @@ def create_asset_instances():
     
     # cave biome button details
     cave_biome_button_paths = ["Assets\\Sprites\\Shop_Buttons\\Cave_Price_Hidden", "Assets\\Sprites\\Shop_Buttons\\Cave_Size_Price_Hidden", "Assets\\Sprites\\Shop_Buttons\\Cave_Price_Revealed", "Assets\\Sprites\\Background\\Cave_Background.jpg"]
-    cave_biome_button_pos = Vector2(MONITOR_WIDTH * 0.57, MONITOR_HEIGHT * 0.57)
-    min_monitor_dim = min(MONITOR_WIDTH, MONITOR_HEIGHT)
-    cave_biome = Biome("Cave", 800, 250, 1.5, int(0.25 * min_monitor_dim), int(0.1 * min_monitor_dim), int(.85 * min_monitor_dim), cave_biome_button_paths[0], cave_biome_button_paths[1], cave_biome_button_paths[2], cave_biome_button_paths[3], cave_biome_button_pos)
+    cave_biome_button_pos = Vector2(SCREEN_WIDTH * 0.57, SCREEN_HEIGHT * 0.58)
+    min_monitor_dim = min(SCREEN_WIDTH, SCREEN_HEIGHT)
+    cave_biome = Biome("Cave", 800, 250, 1.5, int(0.25 * min_monitor_dim), int(0.1 * min_monitor_dim), \
+            int(.9 * min_monitor_dim), cave_biome_button_paths[0], cave_biome_button_paths[1], cave_biome_button_paths[2], cave_biome_button_paths[3], cave_biome_button_pos)
 
     # mountain biome button details
     mountain_biome_button_paths = ["Assets\\Sprites\\Shop_Buttons\\Mountain_Price_Hidden", "Assets\\Sprites\\Shop_Buttons\\Mountain_Size_Price_Hidden", "Assets\\Sprites\\Shop_Buttons\\Mountain_Price_Revealed", "Assets\\Sprites\\Background\\Mountain_Background.jpg"]
-    mountain_biome_button_pos = Vector2(MONITOR_WIDTH * 0.7, MONITOR_HEIGHT * 0.57)
-    mountain_biome = Biome("Mountain", 1200, 250, 1.5, int(0.25 * min_monitor_dim), int(0.1 * min_monitor_dim), int(.85 * min_monitor_dim), mountain_biome_button_paths[0], mountain_biome_button_paths[1], mountain_biome_button_paths[2], mountain_biome_button_paths[3], mountain_biome_button_pos)
+    mountain_biome_button_pos = Vector2(SCREEN_WIDTH * 0.7, SCREEN_HEIGHT * 0.58)
+    mountain_biome = Biome("Mountain", 1200, 250, 1.5, int(0.25 * min_monitor_dim), int(0.1 * min_monitor_dim), \
+            int(.9 * min_monitor_dim), mountain_biome_button_paths[0], mountain_biome_button_paths[1], mountain_biome_button_paths[2], mountain_biome_button_paths[3], mountain_biome_button_pos)
 
     # set up shop
     global shop ; shop = Shop(starting_jar_cost=10, purchaseable_biomes=[cave_biome, mountain_biome])
@@ -199,15 +201,15 @@ def go_to_start_menu():
     global cursor ; cursor = Cursor(Transform2D(get_mouse_position(), rot=0, scale=2), [cursor_idle_anim])
 
     start_button_hover_anim = Animation("Assets\\Sprites\\Start_Button", 150)
-    pos = Vector2(MONITOR_WIDTH * 0.5, MONITOR_HEIGHT * 0.3)
+    pos = Vector2(SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.3)
     start_button = Button(Transform2D(scale=5), [start_button_hover_anim], pos, start_game)
 
     quit_button_hover_anim = Animation("Assets\\Sprites\\Quit_Button", 150)
-    pos = Vector2(MONITOR_WIDTH * 0.5, MONITOR_HEIGHT * 0.6)
+    pos = Vector2(SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.6)
     quit_button = Button(Transform2D(scale=5), [quit_button_hover_anim], pos, quit_game)
 
     settings_button_hover_anim = Animation("Assets\\Sprites\\Settings_Icon", 50, is_loop=False)
-    pos = Vector2(MONITOR_WIDTH * 0.5 + 300, MONITOR_HEIGHT * 0.3)
+    pos = Vector2(SCREEN_WIDTH * 0.5 + 300, SCREEN_HEIGHT * 0.3)
     settings_button = Button(Transform2D(scale=2.5), [settings_button_hover_anim], pos, go_to_settings_menu)
 #######################################################################
 
@@ -226,17 +228,17 @@ def go_to_settings_menu():
 
     # clear save button
     clear_save_button_hover_anim = Animation("Assets\\Sprites\\Delete_Button", 150, is_loop=True)
-    pos = Vector2(MONITOR_WIDTH * 0.5, MONITOR_HEIGHT * 0.35)
+    pos = Vector2(SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.35)
     clear_save_button = Button(Transform2D(scale=5), [clear_save_button_hover_anim], pos, delete_save)
 
     # Mute music button
     mute_music_button_hover_anim = Animation("Assets\\Sprites\\Music_Button", 150, is_loop=True)
-    pos = Vector2(MONITOR_WIDTH * 0.5, MONITOR_HEIGHT * 0.55)
+    pos = Vector2(SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.55)
     music_button = Button(Transform2D(scale=5), [mute_music_button_hover_anim], pos, mute_music)
 
     # back button
     back_button_hover_anim = Animation("Assets\\Sprites\\Back_Button", 150, is_loop=True)
-    pos = Vector2(MONITOR_WIDTH * 0.5, MONITOR_HEIGHT * 0.7)
+    pos = Vector2(SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.7)
     back_button = Button(Transform2D(scale=2.5), [back_button_hover_anim], pos, go_to_start_menu)
 #######################################################################
 
@@ -273,7 +275,7 @@ def start_menu():
     begin_drawing()
     clear_background(Color(0, 0, 0, 0))
     source_rect = Rectangle(0, 0, background_art.width, background_art.height)
-    dest_rect = Rectangle(0, 0, GetScreenWidth(), GetScreenHeight())
+    dest_rect = Rectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)
     draw_texture_pro(background_art, source_rect, dest_rect, Vector2(), 0, WHITE)
     
     # render all sprites except the cursor
@@ -281,12 +283,13 @@ def start_menu():
         if sprite is not cursor:
             sprite.render()
 
-    draw_texture_ex(grass_texture, Vector2(0, MONITOR_HEIGHT - (27 * 5)), 0, 2.5, WHITE)
+    draw_texture_ex(grass_texture, Vector2(0, SCREEN_HEIGHT * 0.95), 0, 2.5, WHITE)
+    
     text = "How to Play:\nClick/Hold Right Mouse Button to Move\nLeft Click to capture bugs in jars\n" if should_draw_text else "The Hungry Entomologist"
     if should_draw_text:
         draw_text(text, 10, 10, 50, GRAY)
     else:
-        draw_text(text, MONITOR_WIDTH // 2 - measure_text(text, 50) // 2, int(MONITOR_HEIGHT * 0.1), 50, GRAY)
+        draw_text(text, SCREEN_WIDTH // 2 - measure_text(text, 50) // 2, int(SCREEN_HEIGHT * 0.1), 50, GRAY)
         
     # render cursor over everything
     cursor.render()
@@ -314,7 +317,7 @@ def game_loop():
     clear_background(Color(0, 0, 0, 0))
 
     source_rect = Rectangle(0, 0, background_art.width, background_art.height)
-    dest_rect = Rectangle(0, 0, GetScreenWidth(), GetScreenHeight())
+    dest_rect = Rectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)
     draw_texture_pro(background_art, source_rect, dest_rect, Vector2(), 0, WHITE)
 
     # go back to start menu if the escape key is pressed
@@ -326,8 +329,8 @@ def game_loop():
     shop.render()
 
     # show how many points the player has
-    points_render_pos_x = int(MONITOR_WIDTH * 0.58)
-    points_render_pos_y = int(MONITOR_HEIGHT * 0.38)
+    points_render_pos_x = int(SCREEN_WIDTH * 0.58)
+    points_render_pos_y = int(SCREEN_HEIGHT * 0.38)
     points_text = f"Points: {int(save_data_handler.get_save_contents()[0])}"
     points_render_pos_x -= measure_text(points_text, 64) // 2
     points_render_pos_y -= 32
@@ -339,7 +342,7 @@ def game_loop():
             sprite.render()
 
     # render grass over bugs
-    draw_texture_ex(grass_texture, Vector2(0, MONITOR_HEIGHT - (27 * 5)), 0, 2.5, WHITE)
+    draw_texture_ex(grass_texture, Vector2(0, SCREEN_HEIGHT * .95), 0, 2.5, WHITE)
 
     # render cursor over everything
     cursor.render()

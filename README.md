@@ -1,4 +1,6 @@
 Only supports Windows Devices
+Recommended to run on 16:9 or 16:10 monitors
+Doesn't work with duplicate displays
 
 -Tested on Windows 11 and the following devices : 
 

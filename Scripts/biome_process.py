@@ -103,7 +103,7 @@ else:
     crawler_pnts = 0
     blood_color = BLUE
 
-spawner = SpawnBugs(max_capacity=10, spawn_rate=2, fly_anims=fly_anims, hover_anims=hover_anims, hopper_anims=hopper_anims, \
+spawner = SpawnBugs(max_capacity=15, spawn_rate=2, fly_anims=fly_anims, hover_anims=hover_anims, hopper_anims=hopper_anims, \
         crawler_anims=crawler_anims, fly_pnts=fly_pnts, hover_pnts=hover_pnts, hop_pnts=hopper_pnts, crawl_pnts=crawler_pnts, blood_color=blood_color)
 
 # get the correct background for the biome

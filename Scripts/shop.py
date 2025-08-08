@@ -15,9 +15,9 @@ class Shop:
 
     def __init__(self, max_jars = 5, starting_jar_cost = 250, jar_price_hike_mult = 2, purchaseable_biomes:list[Biome] = []):
         
-        # get the monitor size for rendering later
-        self.MONITOR_WIDTH = get_monitor_width(get_current_monitor())
-        self.MONITOR_HEIGHT = get_monitor_height(get_current_monitor())
+        # get the screen size for rendering later
+        self.SCREEN_WIDTH = get_screen_width()
+        self.SCREEN_HEIGHT = get_screen_height()
         
         # jar economy
         self.max_jars = max_jars
@@ -43,7 +43,7 @@ class Shop:
         # create a jar purchase button
         self.jar_button = Clickable(Transform2D(scale=2.5), [Animation("Assets\\Sprites\\Shop_Buttons\\Jar_Price_Hidden", 100),\
             Animation("Assets\\Sprites\\Shop_Buttons\\Jar_Price_Revealed", 100)], anim_speed=0)
-        self.jar_button.transform.pos = self.jar_button.center_position_at_other(Vector2(self.MONITOR_WIDTH * 0.45, self.MONITOR_HEIGHT * 0.56))
+        self.jar_button.transform.pos = self.jar_button.center_position_at_other(Vector2(self.SCREEN_WIDTH * 0.45, self.SCREEN_HEIGHT * 0.58))
         self.jar_button.on_mouse_enter = self.__reveal_jar_pricing
         self.jar_button.on_mouse_exit = self.__hide_jar_pricing
         self.jar_button.on_mouse_click = self.buy_jar
@@ -169,7 +169,7 @@ class Shop:
     def render(self):
 
         # position of first jar
-        pos = Vector2(self.MONITOR_WIDTH * 0.42, self.MONITOR_HEIGHT * 0.43)
+        pos = Vector2(self.SCREEN_WIDTH * 0.42, self.SCREEN_HEIGHT * 0.42)
 
         # render built jars
         for i in range(self.num_jars):
@@ -177,7 +177,7 @@ class Shop:
 
         # render broken jars
         for i in range(self.max_jars - self.num_jars):
-            draw_texture_ex(self.broken_jar_texture, Vector2(pos.x + (self.MONITOR_WIDTH * (i + self.num_jars) * 0.07), pos.y), 0, 3, WHITE)
+            draw_texture_ex(self.broken_jar_texture, Vector2(pos.x + (self.SCREEN_WIDTH * (i + self.num_jars) * 0.07), pos.y), 0, 3, WHITE)
 
     # displays the current purchase price of the jars
     def __reveal_jar_pricing(self):

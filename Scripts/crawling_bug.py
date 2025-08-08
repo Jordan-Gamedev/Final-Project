@@ -25,12 +25,14 @@ class CrawlingBug(Bug):
         self.current_fall_check_time = 0.0
         
         # flip the sprite horizontally if it is facing the wrong direction
-        if transform.pos.x > get_monitor_width(get_current_monitor()) / 2:
+        if self.transform.pos.x > Bug.SCREEN_WIDTH / 2:
             self.flip_sprite_horiz()
 
+        bug_height = self.get_current_animation().get_current_texture().height * self.transform.scale
+
         # the ground and ceiling positions
-        ground_pos = get_monitor_height(get_current_monitor()) - 150
-        ceil_pos = 47
+        ground_pos = int(Bug.SCREEN_HEIGHT * 0.97 - bug_height)
+        ceil_pos = int(Bug.SCREEN_HEIGHT * 0.03 + bug_height)
 
         # flip the sprite vertically to cling to ceiling
         if on_ceiling:
@@ -43,9 +45,11 @@ class CrawlingBug(Bug):
 
         super().update(dt)
 
+        bug_height = self.get_current_animation().get_current_texture().height * self.transform.scale
+
         # the ground and ceiling positions
-        ground_pos = get_monitor_height(get_current_monitor()) - 100
-        ceil_pos = 47
+        ground_pos = int(Bug.SCREEN_HEIGHT * 0.97 - bug_height)
+        ceil_pos = int(Bug.SCREEN_HEIGHT * 0.03 + bug_height)
         
         # checks if the bug is grounded or clinging to the ceiling
         is_grounded = True if self.transform.pos.y >= ground_pos else False

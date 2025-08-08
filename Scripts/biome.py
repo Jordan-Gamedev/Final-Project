@@ -27,7 +27,7 @@ class Biome:
             [Animation(button_price_hidden_path, 100),\
             Animation(button_size_price_hidden_path, 100),\
             Animation(button_price_revealed_path, 100)], anim_speed=0)
-        self.purchase_button.transform.pos = self.purchase_button.center_position_at_other(Vector2(background_pos.x, background_pos.y + 100))
+        self.purchase_button.transform.pos = self.purchase_button.center_position_at_other(Vector2(background_pos.x, background_pos.y * 1.16))
         self.purchase_button.on_mouse_enter = self.__reveal_pricing
         self.purchase_button.on_mouse_exit = self.__hide_pricing
         self.purchase_button.text_over_sprite_size = 32
@@ -78,8 +78,8 @@ class Biome:
         if self.subprocess == None and self.times_purchased > 0:
             play_sound(load_sound("Assets\\Sounds\\Open_Portal_FX.wav"))
             
-            if file_exists("Scripts\\biome_process.exe"):
-                self.subprocess = subprocess.Popen(args=["Scripts\\biome_process.exe", self.name, str(self.starting_size), str(self.size_increment), str(self.max_size)])
+            if file_exists("Scripts\\biome_process.py"):
+                self.subprocess = subprocess.Popen(args=["python", "Scripts\\biome_process.py", self.name, str(self.starting_size), str(self.size_increment), str(self.max_size)])
             else:
                 self.subprocess = subprocess.Popen(args=["biome_process.exe", self.name, str(self.starting_size), str(self.size_increment), str(self.max_size)])
 

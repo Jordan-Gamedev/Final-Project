@@ -34,7 +34,7 @@ class HoppingBug(Bug):
     def update(self, dt):
         super().update(dt)
         # find the ground positon based on the monitor height and check if the bug is grounded
-        ground_pos = get_monitor_height(get_current_monitor()) - 150
+        ground_pos = int((Bug.SCREEN_HEIGHT * 0.97) - (self.get_current_animation().get_current_texture().height * self.transform.scale))
         is_grounded = True if self.transform.pos.y >= ground_pos else False
 
         # clamp the y velocity if the bug is grounded, push the bug to the ground position, and update idle time

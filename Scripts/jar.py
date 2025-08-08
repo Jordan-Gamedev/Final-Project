@@ -41,11 +41,11 @@ class Jar:
     
     def render(self, pos, num):
         # get the height and width of the current screen
-        monitor_width = get_monitor_width(get_current_monitor())
-        monitor_height = get_monitor_height(get_current_monitor())
+        screen_width = get_screen_width()
+        screen_height = get_screen_height()
        
         # set the positions of the jars based on the which jar number is being rendered
-        pos = Vector2(monitor_width * 0.42 + (monitor_width * num * 0.07), monitor_height * 0.43)
+        pos = Vector2(screen_width * 0.42 + (screen_width * num * 0.07), pos.y)
         self.transform.pos = pos
         # check to see if the jar is filled
         if self.bug_anim is not None:
